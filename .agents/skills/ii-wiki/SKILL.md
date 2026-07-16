@@ -1,6 +1,6 @@
 ---
 name: ii-wiki
-description: "Answer architecture and work-scoping questions about DYWIDAG's Infrastructure Intelligence platform across its multi-repository application estate. Locate the nearby infrastructure-intelligence-wiki repository, use its wiki as the knowledge map, and verify relevant facts against its repository clones. Use when the user asks how an Infrastructure Intelligence application or service works, which repositories a change touches, where a contract or data flow lives, or how to scope work across the platform before building."
+description: "Answer architecture and work-scoping questions about DYWIDAG's Infrastructure Intelligence platform across its multi-repository application estate. Resolve the infrastructure-intelligence-wiki checkout relative to the current repository, use its wiki as the knowledge map, and verify relevant facts against its repository clones. Use when the user asks how an Infrastructure Intelligence application or service works, which repositories a change touches, where a contract or data flow lives, or how to scope work across the platform before building."
 ---
 
 # Infrastructure Intelligence platform query
@@ -16,19 +16,46 @@ files just to answer platform questions.
 
 ## Locate the II Wiki
 
-Resolve the wiki location from the current workspace; never assume a user-specific
-absolute path.
+The II Wiki's Git repository is named `infrastructure-intelligence-wiki`. Resolve its
+location from the current checkout; never assume a user-specific absolute path. The
+normal layout places it beside the repository where Codex is working:
 
-1. Find the active repository root with `git rev-parse --show-toplevel`, falling back
-   to the current working directory when it is not a Git repository.
-2. If that root is `infrastructure-intelligence-wiki`, use it directly. Otherwise,
-   first check for an `infrastructure-intelligence-wiki` sibling beside the active
-   repository. If necessary, check the nearby workspace roots or walk up the active
-   path and look for a child repository with that exact name.
-3. Accept a candidate only when it contains both `wiki/index.md` and `raw/repos/`.
-   If no valid candidate is available, ask the user where the II Wiki is checked out.
+```text
+<repositories-directory>/
+├── <current-repository>/
+└── infrastructure-intelligence-wiki/
+```
 
-Call the resolved directory `<wiki-root>` throughout this workflow.
+Run this lookup before reading the wiki. It checks the current repository itself,
+then the expected sibling location, then repeats from each ancestor to support
+repositories opened through a nested worktree directory:
+
+```sh
+start="$(git rev-parse --show-toplevel 2>/dev/null || pwd -P)"
+cursor="$start"
+wiki_root=""
+
+while [ -n "$cursor" ]; do
+  if [ "$(basename "$cursor")" = "infrastructure-intelligence-wiki" ]; then
+    candidate="$cursor"
+  else
+    candidate="$(dirname "$cursor")/infrastructure-intelligence-wiki"
+  fi
+
+  if [ -f "$candidate/wiki/index.md" ] && [ -d "$candidate/raw/repos" ]; then
+    wiki_root="$candidate"
+    break
+  fi
+
+  parent="$(dirname "$cursor")"
+  [ "$parent" = "$cursor" ] && break
+  cursor="$parent"
+done
+```
+
+Use `wiki_root` as `<wiki-root>`. If it is empty, ask the user where
+`infrastructure-intelligence-wiki` is checked out; do not guess an obsolete path or
+search the entire machine.
 
 ## The one rule
 
