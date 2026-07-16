@@ -1,0 +1,4 @@
+interface:
+  display_name: "Discovery"
+  short_description: "Investigate a feature with an architecture discovery report"
+  default_prompt: "Use $discovery to investigate this feature and produce an architecture discovery report."

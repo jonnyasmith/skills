@@ -1,0 +1,7 @@
+interface:
+  display_name: "Deslop"
+  short_description: "Remove AI-generated code slop from a change"
+  default_prompt: "Use $deslop to clean up AI-generated code slop in the current branch."
+
+policy:
+  allow_implicit_invocation: false
