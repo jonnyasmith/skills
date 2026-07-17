@@ -1,0 +1,7 @@
+interface:
+  display_name: "Excalidraw Diagram"
+  short_description: "Create Excalidraw diagrams that explain an argument"
+  default_prompt: "Use $excalidraw-diagram to create a diagram for this workflow or architecture."
+
+policy:
+  allow_implicit_invocation: false
