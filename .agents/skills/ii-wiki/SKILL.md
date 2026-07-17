@@ -26,9 +26,10 @@ normal layout places it beside the repository where Codex is working:
 └── infrastructure-intelligence-wiki/
 ```
 
-Run this lookup before reading the wiki. It checks the current repository itself,
-then the expected sibling location, then repeats from each ancestor to support
-repositories opened through a nested worktree directory:
+Run this lookup before reading the wiki. It first checks the current repository,
+the expected sibling location, and each ancestor. If Codex is running in a linked
+Git worktree stored elsewhere, it then follows the worktree's common Git directory
+back to the primary checkout and checks beside that checkout:
 
 ```sh
 start="$(git rev-parse --show-toplevel 2>/dev/null || pwd -P)"
@@ -51,6 +52,19 @@ while [ -n "$cursor" ]; do
   [ "$parent" = "$cursor" ] && break
   cursor="$parent"
 done
+
+if [ -z "$wiki_root" ]; then
+  common_git_dir="$(git -C "$start" rev-parse --path-format=absolute --git-common-dir 2>/dev/null || true)"
+
+  if [ "$(basename "$common_git_dir")" = ".git" ]; then
+    primary_checkout="$(dirname "$common_git_dir")"
+    candidate="$(dirname "$primary_checkout")/infrastructure-intelligence-wiki"
+
+    if [ -f "$candidate/wiki/index.md" ] && [ -d "$candidate/raw/repos" ]; then
+      wiki_root="$candidate"
+    fi
+  fi
+fi
 ```
 
 Use `wiki_root` as `<wiki-root>`. If it is empty, ask the user where
