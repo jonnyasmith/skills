@@ -16,7 +16,7 @@ You're always in a context (the repo root, or a working target within it). If th
 
 Create files **lazily** — only when you have something to write, never scaffolded empty. If no `domain.md` exists, create it when the first term is resolved. If no `docs/adr/` exists, create it when the first ADR is needed.
 
-**Making a new glossary reachable.** If you create the *first* `domain.md` for a nested working target that has no `AGENTS.md` of its own yet (an embryonic target), add a single in-route line to the parent's `AGENTS.md` routing section pointing at the new `domain.md` — otherwise nothing will find it. That one line is the only structural edit this skill makes; growing the target into a full `AGENTS.md` is `setup-repo-skills`' job, not yours.
+**Making a new glossary reachable.** If you create the *first* `domain.md` for a nested working target that has no `AGENTS.md` of its own yet, add a single in-route line to the parent's `AGENTS.md` routing section pointing at the new `domain.md` — otherwise nothing will find it. That one line is the only structural edit this skill makes; scaffolding the target into a full `AGENTS.md` unit is `setup-repo-skills`' job, not yours.
 
 ## During the session
 
