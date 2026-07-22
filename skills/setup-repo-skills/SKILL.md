@@ -146,6 +146,8 @@ Preserve any commit protocol / review-loop the repo already keeps; don't overwri
 
 Each working target's own `AGENTS.md` repeats the shape: its instructions (verify gate, invariants) + a routing section pointing at its `docs/agents/domain.md` (solution-wide terms → `../docs/agents/domain.md`), its `docs/adr/`, and its conventions.
 
+**Wire every new target into its parent.** Whenever you scaffold a target's `AGENTS.md` (or add an embryonic target's `domain.md`), add the matching down-route to the parent's routing section — a trigger line stating *when* to descend, in task terms ("Working on the store of record / a migration → `db/AGENTS.md`"), never a bare label. A target nobody routes to is unreachable, so this edit is not optional. A full target earns a down-route to its `AGENTS.md`; an embryonic one gets an in-route straight to its `domain.md` until it earns an `AGENTS.md`.
+
 Write the convention docs from the seed templates:
 
 - [issue-tracker-github.md](./issue-tracker-github.md) — GitHub issue tracker

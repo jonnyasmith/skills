@@ -9,7 +9,7 @@ Actively build and sharpen the project's domain model as you design. This is the
 
 ## Where the model lives
 
-You're already in a context (the repo root, or a working target within it), and its `AGENTS.md` routing has pointed you at that context's files. You don't need to reason about the tree:
+You're always in a context (the repo root, or a working target within it). If the repo is set up, its `AGENTS.md` routing has already pointed you at that context's files, so you don't need to reason about the tree; if it isn't, the paths below are where the files go regardless:
 
 - **Glossary** → `docs/agents/domain.md` for the context you're working in. Root holds solution-wide terms; a working target holds its inner terms and defers solution-wide ones upward.
 - **Decisions** → `docs/adr/` for the context (root for system-wide, a target's for its internal ones).
