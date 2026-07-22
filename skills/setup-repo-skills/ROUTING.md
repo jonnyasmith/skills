@@ -28,7 +28,7 @@ Ask: *is this needed on every task, whatever path it takes?*
 
 ## Routing leads; nothing explains the routing system in Tier 0
 
-The index is the payload of the always-on layer, so it comes first — straight after the title, with at most a sentence or two of orientation ("read a line's target when your task matches its trigger; the tree is the map"). Do **not** front the file with prose that teaches the reading discipline: a page of `Read before you name` / `Read before you decide` standing rules is budget spent explaining the system instead of routing the task. The model we copy is a terse index — you learn where to go from the list, not from an essay before it. Any nuance about *how* to use a routed file (use exact terms, don't coin, surface ADR contradictions) belongs thinly inside that file, never hoisted into Tier 0.
+The index is the payload of the always-on layer, so it comes first — straight after the title, with no orientation prose at all. Don't explain what an `AGENTS.md` is or how routing works; agents already know, and the index is self-evident from its trigger lines. In particular, do **not** front the file with prose that teaches the reading discipline: a page of `Read before you name` / `Read before you decide` standing rules is budget spent explaining the system instead of routing the task. The model we copy is a terse index — you learn where to go from the list, not from an essay before it. Any nuance about *how* to use a routed file (use exact terms, don't coin, surface ADR contradictions) belongs thinly inside that file, never hoisted into Tier 0.
 
 ## The two core files are pointers, not rules
 

@@ -103,18 +103,14 @@ Let the user edit before writing.
 - If only `CLAUDE.md` exists: create `AGENTS.md` as the real file. If `CLAUDE.md` holds real content, migrate that content into `AGENTS.md` (with confirmation — never silently relocate someone's root instructions) and reduce `CLAUDE.md` to `@AGENTS.md`. If it's already thin, just add the shim import.
 - If neither exists, create `AGENTS.md`, plus a `CLAUDE.md` shim so Claude Code loads it too.
 
-**The root `AGENTS.md` leads with routing.** This layer is paid for on every task, so its primary payload is the index — put it first, right after the title, with no preamble explaining the system (see [ROUTING.md](./ROUTING.md)). Write lines as **triggers, not labels**:
+**The root `AGENTS.md` leads with routing.** This layer is paid for on every task, so its primary payload is the index — put it first, right after the title, with no preamble (no orientation sentence explaining what an `AGENTS.md` is or how routing works — agents already know; see [ROUTING.md](./ROUTING.md)). Write lines as **triggers, not labels**:
 
 ```markdown
 # <repo>
 
 ## Routing — read only what the task needs, when it needs it
 
-Always-loaded index. Nothing deeper is loaded until a line here sends you there; read a
-line's target when your task matches its trigger. Every directory level has its own
-`AGENTS.md` indexing that level — the tree is the map.
-
-### Working targets
+### Working targets            ← this whole subsection only when targets exist; omit it otherwise
 - Working on <target's job, in task terms> → <target>/AGENTS.md
 
 ### This context
