@@ -73,7 +73,7 @@ Defaults are the five canonical roles, each label equal to its name: `needs-tria
 
 **Section C — Working targets.** Skip if exploration found none. Default to **root-only** — one context at the repo root.
 
-When working targets exist (or the user names one), confirm which ones to wire in now. **Default every target to embryonic — a full `AGENTS.md` is earned, not automatic.** A target earns its own `AGENTS.md` only when it *already* has substance to route to: its own verify gate, conventions, or committed decisions. A freshly-created or still-empty directory has none of that, so it is embryonic by definition — it is reached by a direct in-route from its parent to where its `docs/agents/domain.md` will live (created later by `/domain-modeling`), and gets **no `AGENTS.md` and no `docs/` scaffolding of its own**. Never write an `AGENTS.md` shell whose routing points only at files that don't exist yet — that is the failure mode this default exists to prevent.
+When working targets exist (or the user names one), confirm which ones to create now. Each confirmed target gets **the same unit as the root** — its own `AGENTS.md` + `docs/adr/` + `docs/agents/` — and is wired into its parent's routing. The structure is identical at every level; only content and reach differ. It recurses: a target may itself have working targets, scaffolded the same way, as deep as the repo nests.
 
 **Section D — Legacy migration.** Skip if no legacy files were found.
 
@@ -92,7 +92,7 @@ Show a draft of everything before writing:
 - The root `AGENTS.md` — its **Routing section** (leading) plus any genuine invariants / migrated `CLAUDE.md` content after it
 - The `CLAUDE.md` shim (if applicable)
 - The contents of `docs/agents/issue-tracker.md` and `docs/agents/triage-labels.md` (the latter only when `triage` is installed)
-- For each new working target: its `AGENTS.md`, or (for an embryonic target) just the parent in-route
+- For each new working target: its `AGENTS.md` + `docs/adr/` + `docs/agents/`, and the parent's down-route to it
 
 Let the user edit before writing.
 
@@ -113,8 +113,7 @@ Let the user edit before writing.
 
 ### Working targets ← this whole subsection only when targets exist; omit it otherwise
 
-- Working on <target's job, in task terms> → <target>/docs/agents/domain.md ← embryonic (the default): in-route to its future domain.md
-- Working on <a substantial target's job> → <target>/AGENTS.md ← only once the target has earned its own AGENTS.md
+- Working on <target's job, in task terms> → <target>/AGENTS.md
 
 ### This context
 
@@ -128,7 +127,7 @@ The `domain.md` and `docs/adr/` lines are **bare where-pointers**, not prose rul
 
 _Genuine invariants (optional, after routing)._ If the repo keeps always-on working rules that apply whatever path a task takes — a commit protocol, a review loop, a comment-discipline rule — place them **after** the routing section, kept terse. Preserve any the repo already has; migrate real `CLAUDE.md` content here rather than into a preamble. Never invent invariants the repo hasn't asked for.
 
-Each **substantial** target's own `AGENTS.md` repeats the shape and leads the same way, titled with its capitalised name:
+Each target's own `AGENTS.md` repeats this shape and leads the same way, titled with its capitalised name:
 
 ```markdown
 # Web Instructions
@@ -144,7 +143,7 @@ Each **substantial** target's own `AGENTS.md` repeats the shape and leads the sa
 
 It routes **only to its own local docs** — never back up to the root's. Do not add `solution-wide vocabulary → ../docs/agents/domain.md` or `system-wide decisions → ../docs/adr/` lines: the root `AGENTS.md` is always loaded first, so its solution-wide pointers are already in context as the agent descends, and re-pointing at them from a target is pure duplication. Keep any target-local invariants (its verify gate) terse after the index, never as a preamble.
 
-**Wire every new target into its parent.** Whenever you wire in a target, add the matching route to the parent's routing section — a trigger line stating _when_ to descend, in task terms ("Working on the store of record / a migration → …"), never a bare label. A target nobody routes to is unreachable, so this edit is not optional. A substantial target earns a down-route to its `AGENTS.md` (`… → db/AGENTS.md`); an embryonic one gets an in-route straight to where its `docs/agents/domain.md` will live (`… → db/docs/agents/domain.md`, created later by `/domain-modeling`) until it earns an `AGENTS.md`. The skill itself never writes a target's `domain.md`.
+**Wire every new target into its parent.** Each target you create gets a matching down-route in its parent's routing section — a trigger line stating _when_ to descend, in task terms ("Working on the store of record / a migration → `db/AGENTS.md`"), never a bare label. A target nobody routes to is unreachable, so this edit is not optional. (`domain.md` itself is never written here — it's created lazily by `/domain-modeling` at whichever level the first term resolves.)
 
 Write the convention docs from the seed templates:
 
