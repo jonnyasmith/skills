@@ -1,116 +1,162 @@
 ---
 name: setup-repo-skills
-description: Configure this repo for the engineering skills — set up its issue tracker, triage label vocabulary, and domain doc layout. Run once before first use of the other engineering skills.
+description: Configure this repo for the engineering skills — scaffold its AGENTS.md routing, issue tracker, triage labels, and per-context docs layout. Idempotent and re-runnable; run it again to add a newly-emerged service or area.
 disable-model-invocation: true
 ---
 
 # Setup Repo Skills
 
-Scaffold the per-repo configuration that the engineering skills assume:
+Scaffold and maintain the per-repo structure the engineering skills assume — the recursive documentation-architecture unit, one per context:
 
-- **Issue tracker** — where issues live (GitHub by default; local markdown is also supported out of the box)
-- **Triage labels** — the strings used for the five canonical triage roles
-- **Domain docs** — where `CONTEXT.md` and ADRs live, and the consumer rules for reading them
+```
+<context>/
+├── AGENTS.md          ← this context's instructions + a routing section
+└── docs/
+    ├── adr/           ← decisions scoped to this context (immutable, numbered)
+    └── agents/        ← the context's reference library:
+        ├── domain.md  ← glossary (created lazily by /domain-modeling, not here)
+        └── …          ← conventions / process (issue-tracker, triage, design-system…)
+```
 
-This is a prompt-driven skill, not a deterministic script. Explore, present what you found, confirm with the user, then write.
+A **context** is any node that owns a bounded domain: the repository root (the *solution*) or a **working target** (an app, package, or service) nested inside it. Every context has this same shape; only content and reach change. The root `AGENTS.md` is the one file the harness auto-loads, so everything deeper is reached by **explicit routing** from it.
+
+This skill is **idempotent and re-runnable**:
+- **First run** scaffolds the root context.
+- **Later runs** add a newly-emerged working target, or heal drift — always additively, never clobbering user edits.
+
+It is prompt-driven, not a deterministic script. Explore, present what you found, confirm, then write.
+
+## What this skill writes vs. what it doesn't
+
+- **Writes:** the structure — `AGENTS.md` (instructions + routing), the `CLAUDE.md` → `@AGENTS.md` shim, the `docs/agents/` and `docs/adr/` shape, and the convention docs (issue-tracker, triage labels). It authors the routing lines. See [ROUTING.md](./ROUTING.md) for how to write routing that actually fires.
+- **Doesn't write:** `docs/agents/domain.md` (the glossary — created lazily by `/domain-modeling` when the first term resolves) or any ADR (appended when a decision is made). A missing file means "nothing to say yet", not "incomplete".
 
 ## Process
 
 ### 1. Explore
 
-Look at the current repo to understand its starting state. Read whatever exists; don't assume:
+Read the current state; don't assume:
 
-- `git remote -v` and `.git/config` — is this a GitHub repo? Which one?
-- `AGENTS.md` and `CLAUDE.md` at the repo root — does either exist? Is there already an `## Agent skills` section in either?
-- `CONTEXT.md` and `CONTEXT-MAP.md` at the repo root
-- `docs/adr/` and any `src/*/docs/adr/` directories
-- `docs/agents/` — does this skill's prior output already exist?
-- `.scratch/` — sign that a local-markdown issue tracker convention is already in use
-- Is the `triage` skill installed? (a `triage` skill folder alongside this one, or `triage` in your available skills.) This decides whether Section B runs at all.
-- Monorepo signals — a `pnpm-workspace.yaml`, a `workspaces` field in `package.json`, or a populated `packages/*` with its own `src/`. Present only in a genuinely large multi-package repo; their absence means single-context, which is almost every repo.
+- `git remote -v` and `.git/config` — is this a GitHub or GitLab repo? Which one?
+- `AGENTS.md` and `CLAUDE.md` at the repo root — do either exist? Is `CLAUDE.md` already a `@AGENTS.md` shim, or does it hold real content? Is there already a routing section in `AGENTS.md`?
+- `docs/agents/` and `docs/adr/` at the root — has this skill already run?
+- **Legacy layout** — `CONTEXT.md`, `CONTEXT-MAP.md`, or `src/*/CONTEXT.md`. Their presence means the repo predates this pattern and is a candidate for migration (Section D).
+- `.scratch/` — sign that a local-markdown issue tracker convention is already in use.
+- Is the `triage` skill installed? (a `triage` folder alongside this one, or `triage` in your available skills.) Decides whether Section B runs.
+- **Working targets** — nested contexts that deserve their own `AGENTS.md`: workspace members (`pnpm-workspace.yaml`, a `workspaces` field, `packages/*`/apps with their own `src/`), or a path the user names explicitly. Their presence means the repo is multi-context.
 
 ### 2. Present findings and ask
 
-Summarise what's present and what's missing. Then take the sections in order — one section, one answer, then the next.
-
-Lead each section with the recommended answer so the user can accept it in a word. Give a one-line explainer only when the choice genuinely branches; skip the section entirely when exploration already settled it (Section B when `triage` isn't installed, Section C when there's no monorepo).
+Summarise what's present and what's missing. Then take the sections in order — one section, one answer, then the next. Lead each section with the recommended answer so the user can accept it in a word. Skip a section entirely when exploration already settled it (B when `triage` isn't installed; C when there are no working targets; D when there's no legacy layout).
 
 **Section A — Issue tracker.**
 
-> Explainer: The "issue tracker" is where issues live for this repo. Skills like `to-tickets`, `triage`, `to-spec`, and `qa` read from and write to it — they need to know whether to call `gh issue create`, write a markdown file under `.scratch/`, or follow some other workflow you describe. Pick the place you actually track work for this repo.
+> Explainer: the "issue tracker" is where issues live for this repo. Skills like `to-tickets`, `triage`, `to-spec`, and `qa` read from and write to it — they need to know whether to call `gh issue create`, `glab issue create`, write a markdown file under `.scratch/`, or follow some other workflow.
 
-Default posture: these skills were designed for GitHub. If a `git remote` points at GitHub, propose that. If a `git remote` points at GitLab (`gitlab.com` or a self-hosted host), propose GitLab. Otherwise (or if the user prefers), offer:
+Default posture: these skills were designed for GitHub. If a `git remote` points at GitHub, propose that; at GitLab, propose GitLab. Otherwise (or if the user prefers), offer:
 
-- **GitHub** — issues live in the repo's GitHub Issues (uses the `gh` CLI)
-- **GitLab** — issues live in the repo's GitLab Issues (uses the [`glab`](https://gitlab.com/gitlab-org/cli) CLI)
-- **Local markdown** — issues live as files under `.scratch/<feature>/` in this repo (good for solo projects or repos without a remote)
-- **Other** (Jira, Linear, etc.) — ask the user to describe the workflow in one paragraph; the skill will record it as freeform prose
+- **GitHub** — issues in GitHub Issues (uses the `gh` CLI)
+- **GitLab** — issues in GitLab Issues (uses the [`glab`](https://gitlab.com/gitlab-org/cli) CLI)
+- **Local markdown** — issues as files under `.scratch/<feature>/` (good for solo projects or repos without a remote)
+- **Other** (Jira, Linear, etc.) — ask for a one-paragraph description; record it as freeform prose
 
-Record the choice in `docs/agents/issue-tracker.md`. The GitHub and GitLab templates carry a "PRs as a request surface" flag, defaulted **off** — leave it off and don't raise it; a user who wants external PRs in the triage queue can flip the flag in the file later.
+Record the choice in `docs/agents/issue-tracker.md`. The GitHub and GitLab templates carry a "PRs as a request surface" flag, defaulted **off** — leave it off and don't raise it.
 
-**Section B — Triage label vocabulary.** Skip this section entirely if the `triage` skill isn't installed (exploration told you) — an uninstalled skill needs no labels.
+**Section B — Triage label vocabulary.** Skip entirely if `triage` isn't installed.
 
-If it is installed, ask exactly one question:
+If it is, ask one question:
 
-> Do you want to keep the default triage labels? (recommended: **yes**)
+> Keep the default triage labels? (recommended: **yes**)
 
-The defaults are the five canonical roles, each label string equal to its name: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. On **yes**, write them as-is. Only if the user says no — usually because their tracker already uses other names (e.g. `bug:triage` for `needs-triage`) — collect the overrides so `triage` applies existing labels instead of creating duplicates.
+Defaults are the five canonical roles, each label equal to its name: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. On **yes**, write them as-is. Only on **no** — usually because the tracker already uses other names (e.g. `bug:triage` for `needs-triage`) — collect the overrides so `triage` applies existing labels instead of creating duplicates.
 
-**Section C — Domain docs.** Default to **single-context** — one `CONTEXT.md` + `docs/adr/` at the repo root. This fits almost every repo; write it without asking.
+**Section C — Working targets.** Skip if exploration found none. Default to **root-only** — one context at the repo root.
 
-Offer **multi-context** — a root `CONTEXT-MAP.md` pointing to per-context `CONTEXT.md` files — only when exploration found monorepo signals. Then confirm which layout they want.
+When working targets exist (or the user names one), confirm which ones get their own `AGENTS.md` now. Scaffold a target only when it has substance (its own verify gate, conventions, or decisions). A target too new for that is **embryonic**: it carries only `docs/agents/domain.md` (created later by `/domain-modeling`) and is reached by a direct in-route from its parent — don't scaffold an empty `AGENTS.md` for it.
+
+**Section D — Legacy migration.** Skip if no legacy files were found.
+
+If `CONTEXT.md`/`CONTEXT-MAP.md`/`src/*/CONTEXT.md` exist, offer to migrate:
+
+- `CONTEXT.md` → `docs/agents/domain.md` (a straight move; content unchanged — it's already a glossary)
+- `src/<ctx>/CONTEXT.md` → `<ctx>/docs/agents/domain.md`
+- `CONTEXT-MAP.md` → **dissolved**: its per-context pointers become routing lines in the root `AGENTS.md`; the map file is deleted (the tree is the map now)
+
+Present the moves; migrate only on confirmation.
 
 ### 3. Confirm and edit
 
-Show the user a draft of:
+Show a draft of everything before writing:
 
-- The `## Agent skills` block to add to whichever of `CLAUDE.md` / `AGENTS.md` is being edited (see step 4 for selection rules)
-- The contents of `docs/agents/issue-tracker.md`, `docs/agents/domain.md`, and `docs/agents/triage-labels.md` (the last only when `triage` is installed)
+- The root `AGENTS.md` — its **Instructions** (the standing rules below + any migrated `CLAUDE.md` content) and its **Routing section**
+- The `CLAUDE.md` shim (if applicable)
+- The contents of `docs/agents/issue-tracker.md` and `docs/agents/triage-labels.md` (the latter only when `triage` is installed)
+- For each new working target: its `AGENTS.md`, or (for an embryonic target) just the parent in-route
 
-Let them edit before writing.
+Let the user edit before writing.
 
 ### 4. Write
 
-**Pick the file to edit:**
+**Pick the instructions file.** `AGENTS.md` is the single home for instructions; `CLAUDE.md` is only a `@AGENTS.md` import shim:
 
-- If `CLAUDE.md` exists, edit it.
-- Else if `AGENTS.md` exists, edit it.
-- If neither exists, ask the user which one to create — don't pick for them.
+- If `AGENTS.md` exists, edit it. Ensure `CLAUDE.md`, if present, is the one-line shim `@AGENTS.md`.
+- If only `CLAUDE.md` exists: create `AGENTS.md` as the real file. If `CLAUDE.md` holds real content, migrate that content into `AGENTS.md` (with confirmation — never silently relocate someone's root instructions) and reduce `CLAUDE.md` to `@AGENTS.md`. If it's already thin, just add the shim import.
+- If neither exists, create `AGENTS.md`, plus a `CLAUDE.md` shim so Claude Code loads it too.
 
-Never create `AGENTS.md` when `CLAUDE.md` already exists (or vice versa) — always edit the one that's already there.
+**The root `AGENTS.md` has two parts:**
 
-If an `## Agent skills` block already exists in the chosen file, update its contents in-place rather than appending a duplicate. Don't overwrite user edits to the surrounding sections.
-
-The block:
+*Instructions* — always-relevant working rules, kept small (this layer is paid for on every task). Include the two standing rules, stated once and declared to apply at every level:
 
 ```markdown
-## Agent skills
+### Read before you name
 
-### Issue tracker
+Before writing anything that names a domain concept — an issue title, a test name,
+a proposal, a hypothesis, a commit message, ADR wording — read the `domain.md` for
+the context you are working in, plus the root `domain.md` for solution-wide terms.
+Use its exact terms; avoid the synonyms it lists under _Avoid_. If a concept you need
+is not defined, that is a signal: either you are inventing language the project does
+not use (reconsider), or there is a real gap (note it for domain-modeling — do not
+silently coin a term). Skip only for tasks that produce no domain-named output.
 
-[one-line summary of where issues are tracked]. See `docs/agents/issue-tracker.md`.
+### Read before you decide or diverge
 
-### Triage labels
-
-[one-line summary of the label vocabulary]. See `docs/agents/triage-labels.md`.
-
-### Domain docs
-
-[one-line summary of layout — "single-context" or "multi-context"]. See `docs/agents/domain.md`.
+Before proposing an architectural change, or working in an area governed by a decision,
+scan the `docs/adr/` filenames for the context (they are titled) and read only the ones
+touching your area — the root `docs/adr/` for system-wide decisions, a target's for its
+internal ones. If your output would contradict an ADR, surface it explicitly rather than
+silently overriding it.
 ```
 
-Include the `### Triage labels` sub-block, and write `docs/agents/triage-labels.md`, only when `triage` is installed and Section B ran. When it isn't, both are omitted.
+Preserve any commit protocol / review-loop the repo already keeps; don't overwrite user prose around the standing rules.
 
-Then write the docs files using the seed templates in this skill folder as a starting point:
+*Routing section* — the always-loaded index that forces lazy loading. Write lines as **triggers, not labels** (see [ROUTING.md](./ROUTING.md)):
+
+```markdown
+## Routing — read only what the task needs, when it needs it
+
+### Working targets
+- Working on <target's job, in task terms> → <target>/AGENTS.md
+
+### This context
+- Vocabulary → docs/agents/domain.md
+- Decisions → docs/adr/
+- Issue tracker → docs/agents/issue-tracker.md
+- Triage labels → docs/agents/triage-labels.md   ← only when triage is installed
+```
+
+Each working target's own `AGENTS.md` repeats the shape: its instructions (verify gate, invariants) + a routing section pointing at its `docs/agents/domain.md` (solution-wide terms → `../docs/agents/domain.md`), its `docs/adr/`, and its conventions.
+
+Write the convention docs from the seed templates:
 
 - [issue-tracker-github.md](./issue-tracker-github.md) — GitHub issue tracker
 - [issue-tracker-gitlab.md](./issue-tracker-gitlab.md) — GitLab issue tracker
 - [issue-tracker-local.md](./issue-tracker-local.md) — local-markdown issue tracker
 - [triage-labels.md](./triage-labels.md) — label mapping (only if `triage` is installed)
-- [domain.md](./domain.md) — domain doc consumer rules + layout
 
-For "other" issue trackers, write `docs/agents/issue-tracker.md` from scratch using the user's description.
+For "other" trackers, write `docs/agents/issue-tracker.md` from scratch using the user's description.
+
+**On a re-run, be additive.** Create only what's missing. If a routing section or standing rule already exists, update it in place — never append a duplicate, never clobber surrounding edits. Surface drift as an offer ("the root `AGENTS.md` is missing the current standing-rule wording — update it?"), not an automatic rewrite.
 
 ### 5. Done
 
-Tell the user the setup is complete and which engineering skills will now read from these files. Mention they can edit `docs/agents/*.md` directly later — re-running this skill is only necessary if they want to switch issue trackers or restart from scratch.
+Tell the user what was set up (or added) and which engineering skills now read from it. They can edit `docs/agents/*.md` and `AGENTS.md` directly later; re-run this skill to add a new working target, migrate legacy files, or heal drift.
