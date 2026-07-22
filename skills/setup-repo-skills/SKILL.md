@@ -88,7 +88,7 @@ Present the moves; migrate only on confirmation.
 
 Show a draft of everything before writing:
 
-- The root `AGENTS.md` — its **Instructions** (the standing rules below + any migrated `CLAUDE.md` content) and its **Routing section**
+- The root `AGENTS.md` — its **Routing section** (leading) plus any genuine invariants / migrated `CLAUDE.md` content after it
 - The `CLAUDE.md` shim (if applicable)
 - The contents of `docs/agents/issue-tracker.md` and `docs/agents/triage-labels.md` (the latter only when `triage` is installed)
 - For each new working target: its `AGENTS.md`, or (for an embryonic target) just the parent in-route
@@ -103,48 +103,32 @@ Let the user edit before writing.
 - If only `CLAUDE.md` exists: create `AGENTS.md` as the real file. If `CLAUDE.md` holds real content, migrate that content into `AGENTS.md` (with confirmation — never silently relocate someone's root instructions) and reduce `CLAUDE.md` to `@AGENTS.md`. If it's already thin, just add the shim import.
 - If neither exists, create `AGENTS.md`, plus a `CLAUDE.md` shim so Claude Code loads it too.
 
-**The root `AGENTS.md` has two parts:**
-
-*Instructions* — always-relevant working rules, kept small (this layer is paid for on every task). Include the two standing rules, stated once and declared to apply at every level:
+**The root `AGENTS.md` leads with routing.** This layer is paid for on every task, so its primary payload is the index — put it first, right after the title, with no preamble explaining the system (see [ROUTING.md](./ROUTING.md)). Write lines as **triggers, not labels**:
 
 ```markdown
-### Read before you name
+# <repo>
 
-Before writing anything that names a domain concept — an issue title, a test name,
-a proposal, a hypothesis, a commit message, ADR wording — read the `domain.md` for
-the context you are working in, plus the root `domain.md` for solution-wide terms.
-Use its exact terms; avoid the synonyms it lists under _Avoid_. If a concept you need
-is not defined, that is a signal: either you are inventing language the project does
-not use (reconsider), or there is a real gap (note it for domain-modeling — do not
-silently coin a term). Skip only for tasks that produce no domain-named output.
-
-### Read before you decide or diverge
-
-Before proposing an architectural change, or working in an area governed by a decision,
-scan the `docs/adr/` filenames for the context (they are titled) and read only the ones
-touching your area — the root `docs/adr/` for system-wide decisions, a target's for its
-internal ones. If your output would contradict an ADR, surface it explicitly rather than
-silently overriding it.
-```
-
-Preserve any commit protocol / review-loop the repo already keeps; don't overwrite user prose around the standing rules.
-
-*Routing section* — the always-loaded index that forces lazy loading. Write lines as **triggers, not labels** (see [ROUTING.md](./ROUTING.md)):
-
-```markdown
 ## Routing — read only what the task needs, when it needs it
+
+Always-loaded index. Nothing deeper is loaded until a line here sends you there; read a
+line's target when your task matches its trigger. Every directory level has its own
+`AGENTS.md` indexing that level — the tree is the map.
 
 ### Working targets
 - Working on <target's job, in task terms> → <target>/AGENTS.md
 
 ### This context
-- Vocabulary → docs/agents/domain.md
-- Decisions → docs/adr/
-- Issue tracker → docs/agents/issue-tracker.md
-- Triage labels → docs/agents/triage-labels.md   ← only when triage is installed
+- Solution-wide vocabulary → docs/agents/domain.md
+- System-wide decisions → docs/adr/
+- Issue tracker (<one-clause note on where issues live>) → docs/agents/issue-tracker.md
+- Triage labels (<list the five labels>) → docs/agents/triage-labels.md   ← only when triage is installed
 ```
 
-Each working target's own `AGENTS.md` repeats the shape: its instructions (verify gate, invariants) + a routing section pointing at its `docs/agents/domain.md` (solution-wide terms → `../docs/agents/domain.md`), its `docs/adr/`, and its conventions.
+The `domain.md` and `docs/adr/` lines are **bare where-pointers**, not prose rules. Do **not** author `Read before you name` / `Read before you decide` standing-rule essays — that discipline is carried by the routing line itself, and any nuance (use exact terms, don't coin, surface ADR contradictions) lives thinly in the routed file, never in this always-on layer. Keeping Tier 0 to routing-plus-invariants is the whole point of progressive disclosure.
+
+*Genuine invariants (optional, after routing).* If the repo keeps always-on working rules that apply whatever path a task takes — a commit protocol, a review loop, a comment-discipline rule — place them **after** the routing section, kept terse. Preserve any the repo already has; migrate real `CLAUDE.md` content here rather than into a preamble. Never invent invariants the repo hasn't asked for.
+
+Each working target's own `AGENTS.md` repeats the shape and leads the same way: a routing section pointing at its `docs/agents/domain.md` (solution-wide terms → `../docs/agents/domain.md`), its `docs/adr/`, and its conventions — with any target-local invariants (its verify gate) kept terse after the index, never as a preamble.
 
 **Wire every new target into its parent.** Whenever you scaffold a target's `AGENTS.md` (or add an embryonic target's `domain.md`), add the matching down-route to the parent's routing section — a trigger line stating *when* to descend, in task terms ("Working on the store of record / a migration → `db/AGENTS.md`"), never a bare label. A target nobody routes to is unreachable, so this edit is not optional. A full target earns a down-route to its `AGENTS.md`; an embryonic one gets an in-route straight to its `domain.md` until it earns an `AGENTS.md`.
 
@@ -157,7 +141,7 @@ Write the convention docs from the seed templates:
 
 For "other" trackers, write `docs/agents/issue-tracker.md` from scratch using the user's description.
 
-**On a re-run, be additive.** Create only what's missing. If a routing section or standing rule already exists, update it in place — never append a duplicate, never clobber surrounding edits. Surface drift as an offer ("the root `AGENTS.md` is missing the current standing-rule wording — update it?"), not an automatic rewrite.
+**On a re-run, be additive.** Create only what's missing. If a routing section already exists, update it in place — never append a duplicate, never clobber surrounding edits. Surface drift as an offer ("the root `AGENTS.md` still leads with a routing-system preamble instead of the index — tighten it?"), not an automatic rewrite.
 
 ### 5. Done
 

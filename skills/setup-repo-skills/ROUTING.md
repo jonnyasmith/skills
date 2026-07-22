@@ -23,16 +23,20 @@ Routing is only as reliable as the trigger that gates it — the same lesson as 
 
 Ask: *is this needed on every task, whatever path it takes?*
 
-- **Yes → always-on.** Write it into the root `AGENTS.md`: the non-negotiable invariants (commit protocol, review loop, the standing read-rules) and the routing index itself.
+- **Yes → always-on.** Write it into the root `AGENTS.md`: the routing index itself (its primary payload), plus any non-negotiable invariants (commit protocol, review loop, comment discipline) after it.
 - **No — only when the task touches area X → lazy.** Put it behind a routing line whose trigger names X: a target's conventions, vocabulary, decisions.
 
-## The two core files are the exception
+## Routing leads; nothing explains the routing system in Tier 0
 
-`domain.md` and `docs/adr/` recur in every substantial context, and *when* to read them is identical everywhere. So their trigger is hoisted into a standing rule in the root `AGENTS.md` (`read before you name`, `read before you decide`), and their routing line is just a bare *where*-pointer:
+The index is the payload of the always-on layer, so it comes first — straight after the title, with at most a sentence or two of orientation ("read a line's target when your task matches its trigger; the tree is the map"). Do **not** front the file with prose that teaches the reading discipline: a page of `Read before you name` / `Read before you decide` standing rules is budget spent explaining the system instead of routing the task. The model we copy is a terse index — you learn where to go from the list, not from an essay before it. Any nuance about *how* to use a routed file (use exact terms, don't coin, surface ADR contradictions) belongs thinly inside that file, never hoisted into Tier 0.
+
+## The two core files are pointers, not rules
+
+`domain.md` and `docs/adr/` recur in every substantial context, and *when* to read them is near-identical everywhere. Their routing line carries that trigger inline and stays a bare *where*-pointer — no separate standing-rule prose:
 
 ```markdown
-- Vocabulary → docs/agents/domain.md (solution-wide terms → ../docs/agents/domain.md)
-- Decisions → docs/adr/
+- Solution-wide vocabulary → docs/agents/domain.md (a target's own terms → ./docs/agents/domain.md)
+- System-wide decisions → docs/adr/
 ```
 
-Every other routing line carries its own trigger.
+Every other routing line likewise carries its own trigger.
