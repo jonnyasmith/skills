@@ -30,7 +30,7 @@ It is prompt-driven, not a deterministic script. Explore, present what you found
 ## What this skill writes vs. what it doesn't
 
 - **Writes:** the structure — `AGENTS.md` (instructions + routing), the `CLAUDE.md` → `@AGENTS.md` shim, the `docs/agents/` and `docs/adr/` shape, and the convention docs (issue-tracker, triage labels). It authors the routing lines. See [ROUTING.md](./ROUTING.md) for how to write routing that actually fires.
-- **Doesn't write:** `docs/agents/domain.md` (the glossary — created lazily by `/domain-modeling` when the first term resolves) or any ADR (appended when a decision is made). A missing file means "nothing to say yet", not "incomplete".
+- **Doesn't write:** `docs/agents/domain.md` (the glossary — created lazily by `/domain-modeling` when the first term resolves) or any ADR (appended when a decision is made). A missing file means "nothing to say yet", not "incomplete". Because a context is scaffolded before it holds any ADRs, drop a `.gitkeep` in each `docs/adr/` so the empty directory survives in git — at the root and at every target.
 
 ## Process
 
