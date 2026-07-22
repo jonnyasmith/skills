@@ -18,13 +18,19 @@ That's it. An ADR can be a single paragraph. The value is in recording *that* a 
 
 Only include these when they add genuine value. Most ADRs won't need them.
 
-- **Status** frontmatter (`proposed | accepted | deprecated | superseded by ADR-NNNN`) — useful when decisions are revisited
 - **Considered Options** — only when the rejected alternatives are worth remembering
 - **Consequences** — only when non-obvious downstream effects need to be called out
 
+## ADRs record the current decision, not a history
+
+`docs/adr/` holds only what the project has decided *now*. When a decision changes — which happens often — **amend the ADR that records it in place**: rewrite it to state the current decision and why. Do not add a new ADR that supersedes an old one, and do not keep a `superseded` or `deprecated` record around. A stale decision the reader has to load and discard is wasted tokens; git already tracks how the decision got here, so the file itself always reads as the present state.
+
+- Rename the file if amending changes what it's about (`0003-rest-api.md` → `0003-graphql-api.md`); git follows the rename.
+- If a decision is dropped with no replacement, delete its ADR — the history survives in git.
+
 ## Numbering
 
-Scan `docs/adr/` for the highest existing number and increment by one.
+New ADRs are numbered: scan `docs/adr/` for the highest existing number and increment by one. The number is just a stable, ordered filename prefix — amending an ADR never changes its number.
 
 ## When to offer an ADR
 

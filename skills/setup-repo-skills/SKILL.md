@@ -12,7 +12,7 @@ Scaffold and maintain the per-repo structure the engineering skills assume — t
 <context>/
 ├── AGENTS.md          ← this context's instructions + a routing section
 └── docs/
-    ├── adr/           ← decisions scoped to this context (immutable, numbered)
+    ├── adr/           ← decisions scoped to this context (numbered; amended in place to stay current)
     └── agents/        ← the context's reference library:
         ├── domain.md  ← glossary (created lazily by /domain-modeling, not here)
         └── …          ← conventions / process (issue-tracker, triage, design-system…)
