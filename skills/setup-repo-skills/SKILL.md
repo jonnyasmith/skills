@@ -18,9 +18,10 @@ Scaffold and maintain the per-repo structure the engineering skills assume — t
         └── …          ← conventions / process (issue-tracker, triage, design-system…)
 ```
 
-A **context** is any node that owns a bounded domain: the repository root (the *solution*) or a **working target** (an app, package, or service) nested inside it. Every context has this same shape; only content and reach change. The root `AGENTS.md` is the one file the harness auto-loads, so everything deeper is reached by **explicit routing** from it.
+A **context** is any node that owns a bounded domain: the repository root (the _solution_) or a **working target** (an app, package, or service) nested inside it. Every context has this same shape; only content and reach change. The root `AGENTS.md` is the one file the harness auto-loads, so everything deeper is reached by **explicit routing** from it.
 
 This skill is **idempotent and re-runnable**:
+
 - **First run** scaffolds the root context.
 - **Later runs** add a newly-emerged working target, or heal drift — always additively, never clobbering user edits.
 
@@ -72,7 +73,7 @@ Defaults are the five canonical roles, each label equal to its name: `needs-tria
 
 **Section C — Working targets.** Skip if exploration found none. Default to **root-only** — one context at the repo root.
 
-When working targets exist (or the user names one), confirm which ones get their own `AGENTS.md` now. Scaffold a target only when it has substance (its own verify gate, conventions, or decisions). A target too new for that is **embryonic**: it carries only `docs/agents/domain.md` (created later by `/domain-modeling`) and is reached by a direct in-route from its parent — don't scaffold an empty `AGENTS.md` for it.
+When working targets exist (or the user names one), confirm which ones to wire in now. **Default every target to embryonic — a full `AGENTS.md` is earned, not automatic.** A target earns its own `AGENTS.md` only when it *already* has substance to route to: its own verify gate, conventions, or committed decisions. A freshly-created or still-empty directory has none of that, so it is embryonic by definition — it is reached by a direct in-route from its parent to where its `docs/agents/domain.md` will live (created later by `/domain-modeling`), and gets **no `AGENTS.md` and no `docs/` scaffolding of its own**. Never write an `AGENTS.md` shell whose routing points only at files that don't exist yet — that is the failure mode this default exists to prevent.
 
 **Section D — Legacy migration.** Skip if no legacy files were found.
 
@@ -106,27 +107,44 @@ Let the user edit before writing.
 **The root `AGENTS.md` leads with routing.** This layer is paid for on every task, so its primary payload is the index — put it first, right after the title, with no preamble (no orientation sentence explaining what an `AGENTS.md` is or how routing works — agents already know; see [ROUTING.md](./ROUTING.md)). Write lines as **triggers, not labels**:
 
 ```markdown
-# <repo>
+# Solution Wide Instructions   ← root title; a target's is its capitalised name + " Instructions" (Web Instructions, Db Instructions)
 
 ## Routing — read only what the task needs, when it needs it
 
-### Working targets            ← this whole subsection only when targets exist; omit it otherwise
-- Working on <target's job, in task terms> → <target>/AGENTS.md
+### Working targets ← this whole subsection only when targets exist; omit it otherwise
+
+- Working on <target's job, in task terms> → <target>/docs/agents/domain.md ← embryonic (the default): in-route to its future domain.md
+- Working on <a substantial target's job> → <target>/AGENTS.md ← only once the target has earned its own AGENTS.md
 
 ### This context
+
 - Solution-wide vocabulary → docs/agents/domain.md
 - System-wide decisions → docs/adr/
 - Issue tracker (<one-clause note on where issues live>) → docs/agents/issue-tracker.md
-- Triage labels (<list the five labels>) → docs/agents/triage-labels.md   ← only when triage is installed
+- Triage labels (<list the five labels>) → docs/agents/triage-labels.md ← only when triage is installed
 ```
 
 The `domain.md` and `docs/adr/` lines are **bare where-pointers**, not prose rules. Do **not** author `Read before you name` / `Read before you decide` standing-rule essays — that discipline is carried by the routing line itself, and any nuance (use exact terms, don't coin, surface ADR contradictions) lives thinly in the routed file, never in this always-on layer. Keeping Tier 0 to routing-plus-invariants is the whole point of progressive disclosure.
 
-*Genuine invariants (optional, after routing).* If the repo keeps always-on working rules that apply whatever path a task takes — a commit protocol, a review loop, a comment-discipline rule — place them **after** the routing section, kept terse. Preserve any the repo already has; migrate real `CLAUDE.md` content here rather than into a preamble. Never invent invariants the repo hasn't asked for.
+_Genuine invariants (optional, after routing)._ If the repo keeps always-on working rules that apply whatever path a task takes — a commit protocol, a review loop, a comment-discipline rule — place them **after** the routing section, kept terse. Preserve any the repo already has; migrate real `CLAUDE.md` content here rather than into a preamble. Never invent invariants the repo hasn't asked for.
 
-Each working target's own `AGENTS.md` repeats the shape and leads the same way: a routing section pointing at its `docs/agents/domain.md` (solution-wide terms → `../docs/agents/domain.md`), its `docs/adr/`, and its conventions — with any target-local invariants (its verify gate) kept terse after the index, never as a preamble.
+Each **substantial** target's own `AGENTS.md` repeats the shape and leads the same way, titled with its capitalised name:
 
-**Wire every new target into its parent.** Whenever you scaffold a target's `AGENTS.md` (or add an embryonic target's `domain.md`), add the matching down-route to the parent's routing section — a trigger line stating *when* to descend, in task terms ("Working on the store of record / a migration → `db/AGENTS.md`"), never a bare label. A target nobody routes to is unreachable, so this edit is not optional. A full target earns a down-route to its `AGENTS.md`; an embryonic one gets an in-route straight to its `domain.md` until it earns an `AGENTS.md`.
+```markdown
+# Web Instructions
+
+## Routing — read only what the task needs, when it needs it
+
+### This context
+
+- Web vocabulary → docs/agents/domain.md
+- Web decisions → docs/adr/
+- <a real local convention> → docs/agents/<name>.md
+```
+
+It routes **only to its own local docs** — never back up to the root's. Do not add `solution-wide vocabulary → ../docs/agents/domain.md` or `system-wide decisions → ../docs/adr/` lines: the root `AGENTS.md` is always loaded first, so its solution-wide pointers are already in context as the agent descends, and re-pointing at them from a target is pure duplication. Keep any target-local invariants (its verify gate) terse after the index, never as a preamble.
+
+**Wire every new target into its parent.** Whenever you wire in a target, add the matching route to the parent's routing section — a trigger line stating _when_ to descend, in task terms ("Working on the store of record / a migration → …"), never a bare label. A target nobody routes to is unreachable, so this edit is not optional. A substantial target earns a down-route to its `AGENTS.md` (`… → db/AGENTS.md`); an embryonic one gets an in-route straight to where its `docs/agents/domain.md` will live (`… → db/docs/agents/domain.md`, created later by `/domain-modeling`) until it earns an `AGENTS.md`. The skill itself never writes a target's `domain.md`.
 
 Write the convention docs from the seed templates:
 

@@ -17,7 +17,7 @@ Routing is only as reliable as the trigger that gates it — the same lesson as 
 - **Write routing lines as triggers, not labels.** State *when* to read the target, in task terms — "Working on the web app or any UI change → `web/AGENTS.md`" — not "web docs → `web/AGENTS.md`". The condition is what lets the agent match task → path.
 - **Keep Tier 0 small.** "Always on" is a budget paid on every task. The root `AGENTS.md` earns its place with universal invariants + routing only; everything else sits behind a pointer.
 - **ADR filenames *are* the index.** `docs/adr/` is a directory of many files, so its cheap index tier is the titled filenames: the agent lists them, then loads only the relevant bodies. This works only if filenames state the decision — `0002-use-utc-for-all-timestamps.md`, not `0002-adr.md`. Descriptive ADR filenames are a requirement, not a nicety.
-- **Recurse.** Each target's `AGENTS.md` is its own Tier-0 index once loaded: instructions + a routing section to its `domain.md`, ADRs, and conventions. The shape never changes, only its content and reach.
+- **Recurse, but don't back-point.** Each target's `AGENTS.md` is its own local index once loaded: a routing section to *its own* `domain.md`, ADRs, and conventions, plus any local invariants. It never routes back up to the root's docs — the root `AGENTS.md` is always loaded first, so its solution-wide pointers are already in context as the agent descends; re-pointing at `../docs/…` from a target only duplicates them. The shape never changes, only its content and reach.
 
 ## The always-on vs lazy test
 
@@ -35,7 +35,7 @@ The index is the payload of the always-on layer, so it comes first — straight 
 `domain.md` and `docs/adr/` recur in every substantial context, and *when* to read them is near-identical everywhere. Their routing line carries that trigger inline and stays a bare *where*-pointer — no separate standing-rule prose:
 
 ```markdown
-- Solution-wide vocabulary → docs/agents/domain.md (a target's own terms → ./docs/agents/domain.md)
+- Solution-wide vocabulary → docs/agents/domain.md
 - System-wide decisions → docs/adr/
 ```
 
