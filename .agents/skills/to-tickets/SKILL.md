@@ -60,7 +60,10 @@ Iterate until the user approves the breakdown.
 Publish the approved tickets. **How** depends on the tracker `/setup-repo-skills` configured — the tickets are the same either way, only the shape of the blocking edges changes:
 
 - **Local files** → write one file per ticket under `.scratch/<feature-slug>/issues/<NN>-<slug>.md`, numbered from `01` in dependency order (blockers first). Each file's "Blocked by" lists the numbers/titles it depends on. Use the per-ticket file template below — one ticket per file, never a single combined file.
-- **A real issue tracker (GitHub, Linear, …)** → publish one issue per ticket in dependency order (blockers first) so each ticket's blocking edges can reference real identifiers. Use the platform's native blocking / sub-issue relationship where it has one; otherwise set each ticket's "Blocked by" to the blocking issues. Apply the `ready-for-agent` triage label unless instructed otherwise — the tickets are agent-grabbable by construction.
+- **A real issue tracker (GitHub, Linear, …)** → publish one issue per ticket in dependency order (blockers first) so relationships can reference real identifiers. Wire **two independent** native relationships — the tracker conventions file (see `/setup-repo-skills`) gives the exact mechanism for each:
+  - **Parent → child (containment):** link every ticket as a native sub-issue of the parent spec. This is **mandatory** whenever there is a parent spec — a `## Parent` line in the body is a supplement, never a substitute. (Where the tracker lacks sub-issues, fall back to a task list in the parent plus a `Part of #<parent>` line.)
+  - **Blocking (ordering):** set each ticket's blocking edges using the tracker's native dependency link; where unavailable, fall back to a "Blocked by" line.
+  Apply the `ready-for-agent` triage label unless instructed otherwise — the tickets are agent-grabbable by construction. Do not leave either relationship as body prose only when a native form exists.
 
 Work the **frontier**: any ticket whose blockers are all done. For a purely linear chain that means top to bottom.
 
@@ -85,7 +88,7 @@ Do NOT close or modify any parent issue.
 
 ## Parent
 
-A reference to the parent issue on the tracker (if the source was an existing issue, otherwise omit this section).
+A prose reference to the parent spec, for readers. This **supplements** the native sub-issue link (see step 5) — it does not replace it. Omit only if there is no parent spec.
 
 ## What to build
 

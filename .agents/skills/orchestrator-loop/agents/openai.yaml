@@ -1,0 +1,7 @@
+interface:
+  display_name: "Orchestrator Loop"
+  short_description: "Orchestrate a verified delivery loop"
+  default_prompt: "Use $orchestrator-loop to delegate and complete this change through a verified delivery loop."
+
+policy:
+  allow_implicit_invocation: false
