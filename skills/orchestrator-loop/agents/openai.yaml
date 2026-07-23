@@ -1,7 +1,7 @@
 interface:
   display_name: "Orchestrator Loop"
-  short_description: "Orchestrate a verified delivery loop"
-  default_prompt: "Use $orchestrator-loop to delegate and complete this change through a verified delivery loop."
+  short_description: "Delegate each workitem to the implement skill"
+  default_prompt: "Use $orchestrator-loop to work through these workitems, delegating each to a sub-agent that uses the implement skill."
 
 policy:
   allow_implicit_invocation: false
