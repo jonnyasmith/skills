@@ -55,6 +55,8 @@ End the report with a **Top recommendation** section: which candidate you'd tack
 
 See [HTML-REPORT.md](HTML-REPORT.md) for the full HTML scaffold, diagram patterns, and styling guidance.
 
+**Markdown swap:** to produce a plain-text report instead — for a PR, a fresh LLM session, or a repo that shouldn't open browsers — follow [MARKDOWN-REPORT.md](MARKDOWN-REPORT.md) instead. Same candidates, same before/after structure, Mermaid instead of hand-built SVG.
+
 Do NOT propose interfaces yet. After the file is written, ask the user: "Which of these would you like to explore?"
 
 ### 3. Grilling loop
