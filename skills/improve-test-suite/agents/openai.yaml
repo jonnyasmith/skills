@@ -1,0 +1,5 @@
+interface:
+  display_name: "Improve Test Suite"
+  short_description: "Audit and grill test-suite improvements"
+policy:
+  allow_implicit_invocation: false
