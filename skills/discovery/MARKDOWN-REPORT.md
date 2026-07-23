@@ -1,10 +1,10 @@
 # Markdown Report Format
 
-The discovery report is a single Markdown file saved to `docs/<feature_name>/discovery.md` in the repo. Markdown keeps the report readable by humans in any editor or on GitHub, and digestible by another LLM with no rendering layer to strip out. All diagrams are Mermaid fenced code blocks — choose the diagram type that fits the structure (see the catalogue below); never hand-roll SVG.
+The swap-in for [HTML-REPORT.md](HTML-REPORT.md) — a single Markdown file saved to `docs/<feature_name>/discovery.md` in the repo. Reach for it over the HTML default when the report is headed for a PR diff, a fresh LLM session, or a repo that shouldn't carry HTML. Markdown keeps the report readable by humans in any editor or on GitHub, and digestible by another LLM with no rendering layer to strip out. All diagrams are Mermaid fenced code blocks — choose the diagram type that fits the structure (see the catalogue below); never hand-roll SVG.
 
 After writing the file, print the absolute path. Offer to open it (`open <path>` on macOS, `xdg-open` on Linux, `start` on Windows) — but the file is meant to be read as text, so the path alone is enough.
 
-## Why Markdown, not HTML
+## Why the Markdown swap
 
 - An LLM ingesting the report reads intent directly — no `<svg>` coordinate noise, no Tailwind class soup.
 - A human reads it in their editor, in a PR diff, or rendered on GitHub.
