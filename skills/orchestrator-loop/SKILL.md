@@ -1,6 +1,7 @@
 ---
 name: orchestrator-loop
 description: Work through a set of workitems — a spec's tickets, a task list, or a hierarchy of nested issues — by delegating each one to a fresh sub-agent that uses the implement skill. Use when the user hands you the whole batch and wants it built without invoking implement against each workitem themselves.
+disable-model-invocation: true
 ---
 
 # Orchestrator Loop
@@ -28,7 +29,7 @@ unlocks the most remaining work, then the published order as a tie-breaker.
 
 Spawn one fresh sub-agent for the selected ready workitem with a compact prompt:
 
-`Use $implement to implement <workitem reference>.`
+`Use /implement to implement <workitem reference>.`
 
 If the workitem does not itself link the governing spec, append
 `The governing spec is <spec reference>.` Do not paste the workitem or spec into
@@ -39,7 +40,7 @@ any other workitem while this agent is active.
 ## 4. Close the loop
 
 Wait for the sub-agent. Confirm from its result and the repository that the
-acceptance criteria are met, the verification and review required by `$implement`
+acceptance criteria are met, the verification and review required by `/implement`
 succeeded, and the work was committed to the current branch.
 
 If the result is incomplete but recoverable, send the same sub-agent a concise

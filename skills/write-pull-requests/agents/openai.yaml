@@ -1,0 +1,4 @@
+interface:
+  display_name: "Write Pull Requests"
+  short_description: "Draft clear, reviewable pull request metadata"
+  default_prompt: "Use $write-pull-requests to draft a title and description for my pull request."

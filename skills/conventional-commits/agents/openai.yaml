@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conventional Commits"
+  short_description: "Write compliant, meaningful Git commit messages"
+  default_prompt: "Use $conventional-commits to draft a Conventional Commits v1.0.0 message for my changes."

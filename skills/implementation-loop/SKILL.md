@@ -1,6 +1,7 @@
 ---
 name: implementation-loop
 description: Sequentially implement a spec-backed set of tickets by resolving their dependency order and delegating each ready ticket to a fresh sub-agent using the implement skill. Use when the user provides a spec or spec reference plus ticket references and wants the complete ticket set implemented one ticket at a time with no concurrent ticket work.
+disable-model-invocation: true
 ---
 
 # Implementation Loop
@@ -30,7 +31,7 @@ Add a missing execution dependency when the codebase or acceptance criteria prov
 
 Spawn one fresh sub-agent for the selected ready ticket. Give it a compact prompt:
 
-`Use $implement to implement <ticket reference>.`
+`Use /implement to implement <ticket reference>.`
 
 If the ticket does not itself link to the governing spec, append `The governing spec is <spec reference>.` Do not paste the ticket or spec into the prompt when the references are accessible; the delegated agent must load the authoritative sources itself.
 
@@ -41,7 +42,7 @@ Do not ask the sub-agent to use this orchestration skill. Do not delegate multip
 Wait for the sub-agent to finish. Confirm from its result and the repository that:
 
 - the ticket's acceptance criteria are satisfied;
-- the relevant tests, type checks, and final review required by `$implement` succeeded;
+- the relevant tests, type checks, and final review required by `/implement` succeeded;
 - the implementation was committed to the current branch; and
 - no reported issue leaves the ticket incomplete.
 
