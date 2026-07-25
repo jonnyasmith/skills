@@ -13,8 +13,8 @@ Before marking any task as complete, execute and explicitly document the followi
 
 ## Git Commit Protocol
 
-If the changes successfully pass verification and are inside a repository, automatically stage and commit them using the $conventional-commits skill.
+If the changes successfully pass verification and are inside a repository, automatically stage and commit them using the /conventional-commits skill.
 
 ## PR Instructions
 
-Follow $write-pull-requests skill when creating PRs.
+Follow /write-pull-requests skill when creating PRs.

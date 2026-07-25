@@ -13,7 +13,7 @@ Choose exactly one candidate in this precedence order:
 
 1. A dev-wiki root path explicitly supplied in the current user request.
 2. The non-empty `DEV_WIKI_ROOT` environment variable.
-3. `/Users/jonny/dev/dev-wiki`.
+3. `~/dev/dev-wiki`.
 
 Expand `~` in a supplied path, but do not search the filesystem or inspect the current repository to discover alternatives. Validate the selected candidate before reading content: `<root>/index.md` must be a file and `<root>/wiki/` and `<root>/raw/` must be directories. If any check fails, name the failed candidate and missing entries, ask for a valid root, and stop. Do not silently fall through to a lower-precedence candidate.
 

@@ -1,7 +1,0 @@
-interface:
-  display_name: "II Wiki"
-  short_description: "Query Infrastructure Intelligence across repositories"
-  default_prompt: "Use $ii-wiki to answer this question about DYWIDAG's Infrastructure Intelligence platform."
-
-policy:
-  allow_implicit_invocation: false
