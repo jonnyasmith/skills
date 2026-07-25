@@ -10,6 +10,9 @@ A skill is a directory containing a `SKILL.md` with YAML frontmatter (`name`, `d
 
 | Skill | What it does |
 | --- | --- |
+| [`batch-grill-me`](skills/batch-grill-me/) | Relentless interview to sharpen a plan, three questions at a time. |
+| [`batch-grill-with-docs`](skills/batch-grill-with-docs/) | Batch grilling session that also writes ADRs and a glossary. |
+| [`batch-grilling`](skills/batch-grilling/) | Stress-test thinking three questions at a time. |
 | [`code-review`](skills/code-review/) | Two-axis (standards + spec) review of a diff, run as parallel sub-agents. |
 | [`codebase-design`](skills/codebase-design/) | Shared vocabulary for designing deep modules. |
 | [`conventional-commits`](skills/conventional-commits/) | Write and evaluate commit messages against Conventional Commits 1.0.0. |
