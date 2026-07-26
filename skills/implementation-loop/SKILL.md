@@ -8,50 +8,69 @@ disable-model-invocation: true
 
 Orchestrate the work; do not implement tickets in the host agent. Keep exactly one ticket implementation in flight at a time.
 
+Ordering, completion, and resume are decided by the scripts in `scripts/`, not by your judgement. You supply the sources and perform the dispatch; everything else is computed. Do not reorder, skip, or declare a ticket done by reading prose — if you find yourself reasoning about which ticket "feels" next, you have left the loop.
+
 ## 1. Resolve the work
 
-Read the full spec and every supplied ticket. Follow a ticket's spec reference when the user supplies only tickets. Fetch referenced issue bodies and relevant comments when the sources live in an issue tracker.
+Collect the ticket set into one of the two forms the planner accepts:
 
-For each ticket, record its identifier, acceptance criteria, status, blockers, and source reference. Treat a ticket as complete only when its source marks it complete or the repository contains clear evidence that its acceptance criteria already pass.
+- **Local tickets** — a directory of per-ticket markdown files (`.scratch/<slug>/issues/`). Pass it as `--dir`.
+- **Tracker tickets** — dump them to a JSON array of `{number, title, body, state}` first, e.g. `gh issue list --json number,title,body,state ...`, including every ticket in the set. Pass the file as `--json`.
 
-## 2. Determine the sequence
+Fetch each ticket's full body, plus the governing spec and any comments that change acceptance criteria. Do not summarise the sources into the planner — it parses the real bodies.
 
-Build a dependency graph from the tickets' blocking edges. Reject cycles, missing ticket references, and any ordering that would begin blocked work.
+Choose a journal path that persists for the run (`.scratch/<slug>/loop-journal.jsonl` is fine; the gate exempts it from its own clean-tree check). The journal is what makes an interrupted loop resume rather than re-decide.
 
-Use blockers as hard constraints. When several incomplete tickets are ready, choose the next ticket by this order:
+## 2. Compute the sequence
 
-1. Honour an explicit user-specified order.
-2. Prefer prerequisite, prefactoring, expand, or shared-foundation work that unlocks downstream tickets.
-3. Prefer the ticket that unlocks the most remaining work or reduces the greatest integration risk.
-4. Use the tickets' published order or identifier as the stable tie-breaker.
+```
+node <skill>/scripts/plan.mjs --dir <issues-dir> --journal <journal> [--order <ids>]
+node <skill>/scripts/plan.mjs --json <tickets.json> --journal <journal> [--order <ids>]
+```
 
-Add a missing execution dependency when the codebase or acceptance criteria prove that one ticket cannot safely precede another. Record the reason so it can be reported. Do not redesign or repartition approved tickets unless the user asks.
+The planner resolves blockers by number, `#number`, or exact title; rejects cycles, dangling references, self-blocks, and duplicate ids; and emits a total order. Ties among ready tickets break by explicit `--order`, then by transitive unlock count descending, then by id ascending — so the same inputs always produce the same order.
+
+Pass `--order` only when the user gave an explicit sequence. It is a preference within the dependency constraints, never an override of them.
+
+**Non-zero exit means the ticket set is unsound.** Report the `errors` array and stop. Do not repair the graph by inference; a missing blocker reference is a defect in the tickets, and guessing its target silently changes what gets built.
+
+Tickets already marked done — journal entry, closed tracker state, or a `Status:` of done/complete/closed/merged — are excluded from the frontier. `next` is the ticket to dispatch.
 
 ## 3. Delegate one ticket
 
-Spawn one fresh sub-agent for the selected ready ticket. Give it a compact prompt:
+Record the dispatch baseline before spawning:
+
+```
+git rev-parse HEAD
+```
+
+Spawn one fresh sub-agent for `next` with a compact prompt:
 
 `Use /implement to implement <ticket reference>.`
 
-If the ticket does not itself link to the governing spec, append `The governing spec is <spec reference>.` Do not paste the ticket or spec into the prompt when the references are accessible; the delegated agent must load the authoritative sources itself.
+If the ticket does not itself link the governing spec, append `The governing spec is <spec reference>.` Do not paste the ticket or spec into the prompt when the references are accessible; the delegated agent must load the authoritative sources itself.
 
 Do not ask the sub-agent to use this orchestration skill. Do not delegate multiple tickets to one agent. Do not spawn another implementation agent or begin other ticket work while this agent is active.
 
 ## 4. Close the ticket loop
 
-Wait for the sub-agent to finish. Confirm from its result and the repository that:
+Wait for the sub-agent, then gate on repository facts:
 
-- the ticket's acceptance criteria are satisfied;
-- the relevant tests, type checks, and final review required by `/implement` succeeded;
-- the implementation was committed to the current branch; and
-- no reported issue leaves the ticket incomplete.
+```
+node <skill>/scripts/gate.mjs --ticket <id> --baseline <sha> --journal <journal> \
+  [--criteria <ticket.md>] [--verify "<cmd>"]...
+```
 
-If the result is incomplete but recoverable, send the same sub-agent a concise follow-up naming only the unmet criterion or failing verification, then wait again. Never advance the frontier while the current ticket is incomplete.
+The gate checks new commits on the current branch since the baseline, a clean working tree, optionally that the ticket's acceptance-criteria checkboxes are ticked, and that each supplied verification command exits 0. Pass the project's real type-check and test commands as `--verify`; passing none means the loop trusts only that work was committed.
 
-If the ticket is blocked by missing authority, inaccessible context, an external dependency, or a failure that cannot be resolved safely, stop the loop. Report the ticket, evidence, and exact condition needed to resume; do not skip ahead.
+**Exit 0 is the only definition of done.** The gate appends the journal entry itself. The sub-agent's report is evidence for diagnosing a failure, never a substitute for the gate.
+
+On exit 1, send the same sub-agent a concise follow-up naming only the failed checks from the output — nothing else. Then re-run the gate. Never advance the frontier while the gate fails.
+
+Stop the loop and report if the gate keeps failing on the same check after a follow-up, or the ticket is blocked by missing authority, inaccessible context, or an external dependency. Report the ticket, the gate output, and the exact condition needed to resume. Do not skip ahead.
 
 ## 5. Repeat sequentially
 
-Record the ticket and commit as complete in the execution state, recompute the ready frontier, and repeat from step 3. Later agents inherit earlier committed work through the shared repository.
+Re-run the planner with the same journal and dispatch the new `next`. Later agents inherit earlier committed work through the shared repository.
 
-Finish only when every supplied ticket is either already complete or completed by the loop. Report the execution order, ticket-to-commit mapping, verification performed, and anything that remains unverified. Do not close or mutate tracker tickets unless the user separately authorises that workflow.
+Finish when the planner reports `remaining: 0`. Report the execution order, the ticket-to-commit mapping from the journal, the verification commands the gate ran, and anything that remains unverified — in particular, any acceptance criterion no `--verify` command actually exercised.
