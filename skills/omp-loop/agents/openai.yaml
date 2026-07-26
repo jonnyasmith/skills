@@ -1,0 +1,6 @@
+interface:
+  display_name: "omp Loop"
+  short_description: "Run a ticket set unattended via omp eval"
+  default_prompt: "Use $omp-loop to implement these tickets unattended from the linked spec."
+policy:
+  allow_implicit_invocation: false
