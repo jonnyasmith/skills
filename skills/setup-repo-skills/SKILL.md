@@ -38,7 +38,7 @@ It is prompt-driven, not a deterministic script. Explore, present what you found
 
 Read the current state; don't assume:
 
-- `git remote -v` and `.git/config` — is this a GitHub or GitLab repo? Which one?
+- `git remote -v` and `.git/config` — is this a GitHub, GitLab, or Azure DevOps repo? Which one? Azure DevOps remotes look like `dev.azure.com`, `ssh.dev.azure.com`, or `*.visualstudio.com`. On an Azure DevOps remote, run read-only discovery to **populate** Section A's questions — never to answer them: the project's process and its work-item types/states (`az devops invoke --area wit --resource workitemtypes --route-parameters project="<PROJECT>" --api-version 7.1`), `az boards area project list`, `az boards iteration project list`, and the open Epics (`az boards query --wiql "SELECT [System.Id], [System.Title] FROM workitems WHERE [System.WorkItemType] = 'Epic' AND [System.State] <> 'Closed'"`). If the CLI is missing or unauthenticated, skip discovery and ask outright.
 - `AGENTS.md` and `CLAUDE.md` at the repo root — do either exist? Is `CLAUDE.md` already a `@AGENTS.md` shim, or does it hold real content? Is there already a routing section in `AGENTS.md`?
 - `docs/agents/` and `docs/adr/` at the root — has this skill already run?
 - **Legacy layout** — `CONTEXT.md`, `CONTEXT-MAP.md`, or `src/*/CONTEXT.md`. Their presence means the repo predates this pattern and is a candidate for migration (Section D).
@@ -52,16 +52,26 @@ Summarise what's present and what's missing. Then take the sections in order —
 
 **Section A — Issue tracker.**
 
-> Explainer: the "issue tracker" is where issues live for this repo. Skills like `to-tickets`, `triage`, `to-spec`, and `qa` read from and write to it — they need to know whether to call `gh issue create`, `glab issue create`, write a markdown file under `.scratch/`, or follow some other workflow.
+> Explainer: the "issue tracker" is where issues live for this repo. Skills like `to-tickets`, `triage`, `to-spec`, and `qa` read from and write to it — they need to know whether to call `gh issue create`, `glab issue create`, `az boards work-item create`, write a markdown file under `.scratch/`, or follow some other workflow.
 
-Default posture: these skills were designed for GitHub. If a `git remote` points at GitHub, propose that; at GitLab, propose GitLab. Otherwise (or if the user prefers), offer:
+Default posture: these skills were designed for GitHub. If a `git remote` points at GitHub, propose that; at GitLab, propose GitLab; at Azure DevOps, propose Azure DevOps Boards. Otherwise (or if the user prefers), offer:
 
 - **GitHub** — issues in GitHub Issues (uses the `gh` CLI)
 - **GitLab** — issues in GitLab Issues (uses the [`glab`](https://gitlab.com/gitlab-org/cli) CLI)
+- **Azure DevOps Boards** — work items in Azure Boards (uses `az` with the `azure-devops` extension)
 - **Local markdown** — issues as files under `.scratch/<feature>/` (good for solo projects or repos without a remote)
-- **Other** (Jira, Linear, etc.) — ask for a one-paragraph description; record it as freeform prose
+- **Other** (Jira, Linear, etc.) — ask for a one-paragraph description; record it as freeform prose. If the tracker has work-item *types*, mandatory fields, or a parent hierarchy above the spec, model the doc on [issue-tracker-azure-devops.md](./issue-tracker-azure-devops.md) — it is the worked example for trackers richer than a flat issue list.
 
-Record the choice in `docs/agents/issue-tracker.md`. The GitHub and GitLab templates carry a "PRs as a request surface" flag, defaulted **off** — leave it off and don't raise it.
+Record the choice in `docs/agents/issue-tracker.md`. The GitHub, GitLab, and Azure DevOps templates carry a "PRs as a request surface" flag, defaulted **off** — leave it off and don't raise it.
+
+**Azure DevOps needs more than a template copy.** It has no single "issue" primitive, so four things must be resolved to concrete values before the doc is written — proposing defaults from discovery, but letting the user decide each:
+
+1. **Classification fields** — the Area path and Iteration path every work item must carry.
+2. **Type mapping** — which type is a spec and which is a ticket. Default proposal: spec → `Feature`, ticket → the process's requirement tier (`User Story` for Agile, `Product Backlog Item` for Scrum, `Requirement` for CMMI, `Issue` for Basic), defect → `Bug`. Never map a ticket to `Task`: a ticket is a vertical slice, and `Task` sits below the board's requirement tier.
+3. **Epic hierarchy** — ask whether every spec must be parented to an Epic. On yes, list the discovered Epics, have the user pick the valid parents, and collect a one-clause "use for" per Epic. On no, delete that section from the doc.
+4. **Completed states** — the terminal state per mapped type (they differ by process: `Closed` for Agile, `Done` for Scrum/Basic), so the doc never says a bare "close".
+
+Write the resolved values into `docs/agents/issue-tracker.md` as flat statements. Never leave a placeholder or a conditional in the emitted doc — an agent cannot distinguish "unconfigured" from "configured as `<EPIC_ID>`".
 
 **Section B — Triage label vocabulary.** Skip entirely if `triage` isn't installed.
 
@@ -149,6 +159,7 @@ Write the convention docs from the seed templates:
 
 - [issue-tracker-github.md](./issue-tracker-github.md) — GitHub issue tracker
 - [issue-tracker-gitlab.md](./issue-tracker-gitlab.md) — GitLab issue tracker
+- [issue-tracker-azure-devops.md](./issue-tracker-azure-devops.md) — Azure DevOps Boards issue tracker
 - [issue-tracker-local.md](./issue-tracker-local.md) — local-markdown issue tracker
 - [triage-labels.md](./triage-labels.md) — label mapping (only if `triage` is installed)
 
