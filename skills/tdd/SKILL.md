@@ -13,7 +13,7 @@ Tests verify behavior through public interfaces, not implementation details. Cod
 
 See [tests.md](tests.md) for examples and [mocking.md](mocking.md) for mocking guidelines.
 
-**Before you name a test or lay out a new suite, read [specification.md](specification.md).** It is how the suite becomes the specification: partition the rules, derive that partition from the module's state model, name each cell as a proposition, nest so the names assemble. Naming and structure decided ad hoc are how a suite ends up shaped like the code instead of the rules.
+**Before you lay out a new suite, read [specification.md](specification.md).** It is how the suite becomes the specification: partition the rules, derive that partition from the module's state model, nest so the names assemble. Structure decided ad hoc is how a suite ends up shaped like the code instead of the rules.
 
 ## Seams — where tests go
 

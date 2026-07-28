@@ -2,7 +2,7 @@
 
 A good test reads like a specification. A good *suite* **is** one: delete the implementation, and the test names alone should tell you the rules it obeyed.
 
-That only holds if the suite's structure comes from the specification's structure — the rules of the domain, the states the module distinguishes — and not from the shape of the code under test. This file is how you get there: **partition** the rules, name each cell as a **proposition**, nest so the names assemble.
+That only holds if the suite's structure comes from the specification's structure — the rules of the domain, the states the module distinguishes — and not from the shape of the code under test. This file is how you get there: **partition** the rules, derive the partition from the module's state model, nest so the names assemble.
 
 ## Partition the rules
 
@@ -51,14 +51,6 @@ This suite is the header file with assertions sprinkled on it. Two tells:
 - **It moves when the code moves.** Default the constructor and `test_constructor` has nothing left to say — a test deleted by a refactor that changed no behaviour.
 - **It has nowhere to put a precondition.** Rewrite those names as behaviours and honesty intrudes: "can be pushed", but "can *sometimes* be popped", "*sometimes* has a top". That *sometimes* is a rule, and the method-per-test structure was hiding it. Under a state model it's just the error edge out of Empty.
 
-## Name each test as a proposition
-
-A test name must be an indicative sentence — one that can be true or false. It is read aloud when the test fails, and it must name the rule that has been demonstrated false, with no recourse to the implementation.
-
-- **Indicative, not aspirational.** `it is not empty`, not `it should not be empty`. The suite states what holds; hedging costs words and certainty.
-- **Domain language, not wire format.** `IsLeapYear_YearNotDivisibleBy4_ReturnsFalse` fails on both counts: it repeats the method name, and "ReturnsFalse" describes a return value where the rule wanted "is not a leap year". A reader learns nothing about leap years from it.
-- **A proposition, not a bucket.** `TestLeapYears` is a heading, not a claim; it will accumulate assertions from two unrelated rules and report them under one name.
-
 ## Nest so names assemble
 
 Write the shared subject once and let the enclosing scopes supply it:
@@ -82,7 +74,7 @@ Nesting forces a choice of primary axis, and the three parts of given-when-then 
 - **When** — group by operation, across states and outcomes.
 - **Then** — group by outcome, across operations and states.
 
-Pick deliberately. Given-when-then also survives *inside* a test as its layout (context, invocation, expectation), which is the same three parts arrange-act-assert names.
+Pick deliberately.
 
 ## Parameterise within a cell, never across
 
@@ -92,8 +84,8 @@ Values worth including for a rule: an ordinary one, an awkward-but-legal one, an
 
 Two hard limits:
 
-- **The rule may not vary with the data.** The moment a parameterised case needs a different expectation *kind*, it's a second cell in the partition and wants its own name.
-- **The expected value never comes from a re-derivation of the implementation.** Cranking the data volume up until the oracle has to be computed is how a suite becomes **tautological** (see [SKILL.md](SKILL.md)) — an exhaustive run of 10,000 cases asserting `impl(x) == copy_of_impl(x)` proves nothing, and it has replaced four propositions with one vacuous name. Prefer few named rules over exhaustive unnamed ones.
+- **The rule may not vary with the data.** The moment a parameterised case needs a different *kind* of expectation, it's a second cell in the partition and wants its own name.
+- **Volume is not coverage.** Generating inputs exhaustively forces you to compute the expected value, and the cheapest way to compute it is the implementation's own formula — **tautological** (see [SKILL.md](SKILL.md)). Four named rules beat ten thousand unnamed cases.
 
 ---
 
