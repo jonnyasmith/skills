@@ -13,6 +13,8 @@ Tests verify behavior through public interfaces, not implementation details. Cod
 
 See [tests.md](tests.md) for examples and [mocking.md](mocking.md) for mocking guidelines.
 
+**Before you name a test or lay out a new suite, read [specification.md](specification.md).** It is how the suite becomes the specification: partition the rules, derive that partition from the module's state model, name each cell as a proposition, nest so the names assemble. Naming and structure decided ad hoc are how a suite ends up shaped like the code instead of the rules.
+
 ## Seams — where tests go
 
 A **seam** is the public boundary you test at: the interface where you observe behavior without reaching inside. Tests live at seams, never against internals.
@@ -24,6 +26,7 @@ Ask: "What's the public interface, and which seams should we test?"
 ## Anti-patterns
 
 - **Implementation-coupled** — mocks internal collaborators, tests private methods, or verifies through a side channel (querying the database instead of using the interface). The tell: the test breaks when you refactor but behavior hasn't changed.
+- **API-mirroring** — one test per public method, so the suite is the interface with assertions sprinkled on it. It moves when the code moves (default a constructor and its test has nothing left to say) and it has nowhere to put a precondition. Tests belong to rules, not methods.
 - **Tautological** — the assertion recomputes the expected value the way the code does (`expect(add(a, b)).toBe(a + b)`, a snapshot derived by hand the same way, a constant asserted equal to itself), so it passes by construction and can never disagree with the code. Expected values must come from an independent source of truth — a known-good literal, a worked example, the spec.
 - **Horizontal slicing** — writing all tests first, then all implementation. Bulk tests verify _imagined_ behavior: you test the _shape_ of things rather than user-facing behavior, the tests go insensitive to real changes, and you commit to test structure before understanding the implementation. Work in **vertical slices** instead — one test → one implementation → repeat, each test a **tracer bullet** that responds to what the last cycle taught you.
 
