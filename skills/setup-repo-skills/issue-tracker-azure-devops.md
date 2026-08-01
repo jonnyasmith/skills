@@ -64,7 +64,12 @@ az boards work-item show --id <item-id> --expand relations
   - A non-UTF-8 file is silently base64-encoded. Write UTF-8.
   - In PowerShell the `@` must be quoted (`'@body.md'`) — it is the splatting operator.
 
-  **Descriptions are HTML.** `System.Description`, `Microsoft.VSTS.TCM.ReproSteps`, and `Microsoft.VSTS.Common.AcceptanceCriteria` are `html`-typed fields and default to HTML content; `az boards work-item` always writes HTML. Markdown is opt-in **per work item and per field**, is irreversible once saved, and has no process-, project-, or org-level setting. It requires the sibling patch op `{"op":"add","path":"/multilineFieldsFormat/System.Description","value":"Markdown"}`, which `az boards work-item` cannot emit — every op it builds is hardcoded to `/fields/{field}`. To write Markdown, use `az devops invoke` with a JSON Patch document (below). Otherwise, write HTML.
+  **Descriptions are HTML, and the body format is fixed at creation.** `System.Description`, `Microsoft.VSTS.TCM.ReproSteps`, and `Microsoft.VSTS.Common.AcceptanceCriteria` are `html`-typed fields and default to HTML content; `az boards work-item` always writes HTML. Markdown is opt-in **per work item and per field**, is irreversible once saved, and has no process-, project-, or org-level setting. It requires the sibling patch op `{"op":"add","path":"/multilineFieldsFormat/System.Description","value":"Markdown"}`, which `az boards work-item` cannot emit — every op it builds is hardcoded to `/fields/{field}`.
+
+  Only `az devops invoke` can send that op, and **only on the create call** — see [Markdown bodies](#markdown-bodies). There is no CLI route that patches an existing work item, so an item created with `az boards work-item create` is HTML for the rest of its life. **Decide the body format before the first write.** Retrofitting means deleting the item and recreating it.
+
+  Azure DevOps does not convert Markdown placed in an HTML-format field: it stores the source and renders it as HTML, so `## Heading` and `- bullet` surface as literal text in one run-on paragraph. If the item is HTML-format, emit real HTML — convert the body yourself before posting.
+
 - **Read a work item**: `az boards work-item show --id <id> --expand all` (includes fields, relations, and links).
 - **List / search**: `az boards query --wiql "SELECT [System.Id], [System.Title], [System.State] FROM workitems WHERE [System.TeamProject] = '<PROJECT>' AND [System.WorkItemType] = '<TYPE>' AND [System.State] <> 'Closed'"`. `az boards query` handles **flat** WIQL only — it reads the `workItems` key of the response. A `FROM workitemLinks` query returns `workItemRelations` instead and will not come back through this command; read links with `--expand relations` on the individual item instead.
 - **Comment**: `az boards work-item update --id <id> --discussion "..."`.
@@ -76,10 +81,63 @@ az boards work-item show --id <item-id> --expand relations
   - `Bug` → `<BUG_COMPLETED_STATE>`
 
   Never use `Removed`: it is terminal but means "abandoned, never delivered", which is a different claim from "done".
-- **Raw REST via the CLI**: `az devops invoke --area <area> --resource <resource> --route-parameters project="<PROJECT>" --http-method POST --media-type application/json-patch+json --in-file <path> --api-version 7.1 -o json`. `--in-file` is the only way to send a request body. **`--api-version` defaults to `5.0`** — always pass it explicitly. Pass `7.1` or `7.1-preview`; a dotted preview such as `7.1-preview.3` crashes the version parser.
+- **Raw REST via the CLI**: `az devops invoke --area <area> --resource <resource> --route-parameters project="<PROJECT>" <route-params> --http-method POST --media-type application/json-patch+json --in-file <path> --api-version 7.1 -o json`. `--in-file` is the only way to send a request body. **`--api-version` defaults to `5.0`** — always pass it explicitly. Pass `7.1` or `7.1-preview`; a dotted preview such as `7.1-preview.3` crashes the version parser.
+
+  **Every route parameter in the resource's template is mandatory**, and a missing one surfaces as a raw `KeyError: '<name>'` traceback rather than a usage error. For `--area wit --resource workitems` the template is `{project}/_apis/wit/workItems/${type}`, so `type` is required — see [Markdown bodies](#markdown-bodies) for the consequences.
+
+  **Never run `az devops invoke` without `--area` and `--resource`.** Bare, it enumerates every resource location in the organisation and does not return in any useful time (observed: still running at 5 minutes). To discover a template, target the specific area/resource instead.
+
 - **Discovering types and states** (when this doc goes stale, or for a type not listed above): `az devops invoke --area wit --resource workitemtypes --route-parameters project="<PROJECT>" --api-version 7.1 -o json`. There is no `az boards work-item type list`. Valid relation names come from `az boards work-item relation list-type`.
 
 Infer the organisation and project from `git remote -v` — the CLI's `--detect true` default does this inside a clone; the explicit `az devops configure` defaults above make it deterministic.
+
+## Markdown bodies
+
+A spec or ticket body is long Markdown. To have it render as Markdown rather than as one literal run-on paragraph, the work item must be **created** with `az devops invoke` — `az boards work-item create` cannot set the format, and nothing can change it afterwards. Build the whole item in that one call: fields, tags, body, format, and the parent link.
+
+**Verified against a live board (Azure CLI 2.88.0, `azure-devops` extension 1.0.2, API 7.1).** Serialise the patch document with a real JSON serialiser — the body contains newlines, quotes and backticks that a shell heredoc will corrupt:
+
+```py
+import json
+body = open("/tmp/wi-body.md").read()
+patch = [
+    {"op": "add", "path": "/fields/System.Title", "value": "<title>"},
+    {"op": "add", "path": "/fields/System.AreaPath", "value": "<AREA_PATH>"},
+    {"op": "add", "path": "/fields/System.IterationPath", "value": "<ITERATION_PATH>"},
+    {"op": "add", "path": "/fields/System.Tags", "value": "<triage-label>"},
+    {"op": "add", "path": "/fields/System.Description", "value": body},
+    {"op": "add", "path": "/multilineFieldsFormat/System.Description", "value": "Markdown"},
+    # Parent link, in the same call — Hierarchy-Reverse points at the parent.
+    # Omit this op where the board has no Epic hierarchy.
+    {"op": "add", "path": "/relations/-", "value": {
+        "rel": "System.LinkTypes.Hierarchy-Reverse",
+        "url": "https://dev.azure.com/<ORGANISATION>/_apis/wit/workItems/<EPIC_ID>",
+    }},
+]
+open("/tmp/wi-patch.json", "w").write(json.dumps(patch))
+```
+
+```sh
+test -s /tmp/wi-patch.json || exit 1
+az devops invoke --area wit --resource workitems \
+  --route-parameters project="<PROJECT>" type=<SPEC_TYPE> \
+  --http-method POST --media-type application/json-patch+json \
+  --in-file /tmp/wi-patch.json --api-version 7.1 -o json \
+  --query '{id:id, fmt:multilineFieldsFormat, tags:fields."System.Tags", rel:relations[0].rel}'
+```
+
+The `--query` above is the acceptance check: `fmt` must come back `{"System.Description": "markdown"}`. Swap `type=` for `<TICKET_TYPE>` or `Bug` as appropriate; a `<TICKET_TYPE>` parents to its spec `<SPEC_TYPE>`, not to an Epic.
+
+**There is no update route through `az devops invoke`.** The `wit`/`workitems` location resolves to the create template only, so an existing item cannot be patched this way — both spellings fail, and neither error says so plainly:
+
+| Attempt | Result |
+| --- | --- |
+| `--route-parameters id=<n>` with `PATCH` | `KeyError: 'type'` traceback — the template has no `id` |
+| `--route-parameters type=<n>` with `PATCH` | `VS402323: Work item type <n> does not exist in project …` — `<n>` is read as a type name |
+
+Ordinary field updates on an existing item go through `az boards work-item update` (which writes HTML). Only the create path can choose Markdown.
+
+**If an item already exists in HTML format**, either leave it (HTML renders correctly — it is only the source that is ugly) or delete and recreate it. Do not burn time hunting for a format-flip route; there isn't one.
 
 ## Pull requests as a triage surface
 
@@ -106,7 +164,9 @@ Azure DevOps numbers work items and pull requests in separate spaces, so `AB#42`
 
 ## When a skill says "publish to the issue tracker"
 
-Create a work item of the type the mapping above gives for the artefact — `<SPEC_TYPE>` for a spec, `<TICKET_TYPE>` for a ticket, `Bug` for a defect — with the required Area and Iteration, and its Epic parent link where the Epic hierarchy section applies. Spec and ticket bodies are long and full of markdown punctuation, so write the body to a temp file and pass `--description=@<path>` (see Conventions) rather than inlining it.
+Create a work item of the type the mapping above gives for the artefact — `<SPEC_TYPE>` for a spec, `<TICKET_TYPE>` for a ticket, `Bug` for a defect — with the required Area and Iteration, and its Epic parent link where the Epic hierarchy section applies.
+
+Spec and ticket bodies are long Markdown, so **use the single `az devops invoke` create call in [Markdown bodies](#markdown-bodies)** — it sets fields, tags, body, Markdown format and the parent link at once, and the format cannot be added later. Do not reach for `az boards work-item create --description=@<path>` for these: it works, but it writes the Markdown source into an HTML field, where it renders as one literal run-on paragraph.
 
 ## When a skill says "fetch the relevant ticket"
 

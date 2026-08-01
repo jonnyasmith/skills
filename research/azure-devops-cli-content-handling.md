@@ -6,7 +6,9 @@
 
 When a coding agent creates or updates Azure Boards work items and Azure Repos pull requests through the `az` CLI, how should it format and pass field content — inline quoted/heredoc strings, or content written to a temp file and referenced by a flag? Nine specific sub-questions about file input, `az devops invoke`, description markup, quoting, `--fields`, `System.Tags`, PR content, relation types, and WIQL are answered below.
 
-Scope boundary: syntax and content-handling only. No authenticated org was available, so no live API call was made; every claim is grounded in shipping source, `--help` output generated from that source, in-process execution of the shipping code, or first-party documentation. Where a fact could only be settled by an authenticated call, that is stated as an uncertainty.
+Scope boundary: syntax and content-handling only. At the time of writing no authenticated org was available, so no live API call was made; every claim is grounded in shipping source, `--help` output generated from that source, in-process execution of the shipping code, or first-party documentation. Where a fact could only be settled by an authenticated call, that is stated as an uncertainty.
+
+**Addendum 2026-07-29.** Some of those calls have since been made against a live org, and the findings are folded in where they belong — marked as live corrections and footnoted `[^48]`. One of them overturns the §2 sample: `az devops invoke` **cannot update a work item**, only create one, which makes a work item's body format unchangeable after creation. Section 7's resource-name uncertainty is partly resolved with it.
 
 **Versions under test.** `azure-cli` 2.88.0, `azure-cli-core` 2.88.0, `knack` 0.14.0, Python 3.13/3.14, `azure-devops` extension **1.0.2**.[^1] The installed extension is byte-identical to upstream tag `20250624.2` (`1b7f6c0`) for every file cited here, and the installed `azure/cli/core/commands/__init__.py` is byte-identical to upstream tag `azure-cli-2.88.0` (`9593a61`) — so local line numbers are valid upstream line numbers.[^2]
 
@@ -49,11 +51,12 @@ Do not confuse this with `file_type`, which is **not** the `@` mechanism: `def f
 
 ### 2. `az devops invoke --in-file`
 
-Working shape for a JSON Patch work-item update:
+Working shape for a JSON Patch work-item **create** — the only work-item shape `az devops invoke` can reach (see the live correction below):
 
 ```bash
 cat > /tmp/patch.json <<'EOF'
 [
+  {"op": "add", "path": "/fields/System.Title", "value": "Example"},
   {"op": "add", "path": "/fields/System.Description", "value": "line one\nline two"},
   {"op": "add", "path": "/multilineFieldsFormat/System.Description", "value": "Markdown"}
 ]
@@ -62,12 +65,23 @@ EOF
 az devops invoke \
   --org https://dev.azure.com/MyOrg \
   --area wit --resource workitems \
-  --route-parameters project=MyProject id=1234 \
-  --http-method PATCH \
+  --route-parameters project=MyProject type=Feature \
+  --http-method POST \
   --media-type application/json-patch+json \
   --in-file /tmp/patch.json \
   --api-version 7.1 -o json
 ```
+
+> **Live correction (2026-07-29, authenticated org, Azure CLI 2.88.0 / `azure-devops` 1.0.2).** An earlier revision of this section gave the update shape — `--route-parameters project=MyProject id=1234 --http-method PATCH` — inferred from the REST reference.[^21] **It does not work, and neither does any other spelling: `az devops invoke` cannot update a work item.** The CLI resolves `--area wit --resource workitems` to a *single* resource-location template, and that template is the **create** route `{project}/_apis/wit/workItems/${type}`.[^20] The `{id}` update route is not reachable under this resource name.[^48]
+>
+> | Attempt | Result |
+> | --- | --- |
+> | `--route-parameters project=… id=1234`, `PATCH` | `KeyError: 'type'` — an unhandled traceback out of `msrest`'s `format_url`, not a CLI usage error |
+> | `--route-parameters project=… type=1234`, `PATCH` | `VS402323: Work item type 1234 does not exist in project …` — the id is substituted into the `${type}` slot and read as a type name |
+>
+> Two consequences. **(a)** Every route parameter in a resource's template is mandatory and a missing one surfaces as a raw `KeyError`, so a template must be known before the call, not guessed. **(b)** Because `multilineFieldsFormat` is only reachable through `az devops invoke`, and `az devops invoke` is only reachable for create, **a work item's body format is fixed at creation**: an item created by `az boards work-item create` is HTML for life, and retrofitting Markdown means delete-and-recreate. Set title, area, iteration, tags, body, format and the parent relation (`/relations/-` with `System.LinkTypes.Hierarchy-Reverse`) in that one create call — all verified accepted together.[^48]
+>
+> Also settled: **do not run `az devops invoke` bare** to discover the resource table, as the uncertainty note in §7 suggests. Without `--area`/`--resource` it enumerates every resource location in the organisation and does not return usefully — observed still running at 5 minutes before being killed.[^48] Target a specific area/resource instead.
 
 Confirmed from source and docs:
 
@@ -93,7 +107,7 @@ Markdown support is real, recent, and orthogonal to the field type:
 - GA announced **2025-07-07**: "we're excited to announce that Markdown support in large text fields is now generally available!", rolled out in five rings over ~4–5 weeks.[^25] Corroborated by the Sprint 259 release note (2025-07-17).[^26] Sprint 261 (2025-09-04) added interactive checklists in Markdown fields.[^27]
 - **It is opt-in per work item and per field — not per project, per process, or per organization.** "By default, all existing and new work items will continue using the HTML editor for large text fields. However, you now have the option to opt-in and use the Markdown editor for individual work items and fields."[^25] There is no named settings-page toggle; the affordance is an in-field "convert it to Markdown" action, with a sticky per-user preference for new work items. **Conversion is one-way**: "Once you convert a field to Markdown, there's no way to revert it back to HTML."[^25]
 - **The API-side signal is a sibling patch path, not a sibling field**: `{"op":"add","path":"/multilineFieldsFormat/System.Description","value":"Markdown"}` alongside the `/fields/...` op. "The default format is `HTML`."[^25]
-- **`az boards work-item` cannot emit it.** Every op is built by `_create_work_item_field_patch_operation`, which hardcodes `path = '/fields/{field}'`.[^29] So `--fields "multilineFieldsFormat/System.Description=Markdown"` produces the useless path `/fields/multilineFieldsFormat/System.Description`. There is an open feature request.[^28] Markdown therefore requires `az devops invoke` (§2).
+- **`az boards work-item` cannot emit it.** Every op is built by `_create_work_item_field_patch_operation`, which hardcodes `path = '/fields/{field}'`.[^29] So `--fields "multilineFieldsFormat/System.Description=Markdown"` produces the useless path `/fields/multilineFieldsFormat/System.Description`. There is an open feature request.[^28] Markdown therefore requires `az devops invoke` (§2) — and, since that command can only reach the **create** route, it must be chosen when the work item is first written. A field converted in the web UI is one-way per Microsoft;[^25] a field left HTML at creation is one-way in practice through the CLI, because no CLI path can flip it afterwards.[^48]
 
 **Verdict on the template's sentence** — *"Descriptions render as HTML, not markdown, unless the process is configured otherwise"*: **conclusion correct, mechanism wrong.** The default is HTML, but "the process" has nothing to do with it: the field's declared type stays `html` in both cases, and no process/project/org configuration exists. Suggested replacement: *"Large text fields (`System.Description`, `Microsoft.VSTS.TCM.ReproSteps`, `Microsoft.VSTS.Common.AcceptanceCriteria`) are HTML fields and default to HTML content. Markdown is opt-in per work item and per field and is irreversible once saved. `az boards work-item` always writes HTML; to write Markdown, use `az devops invoke` and add `{"op":"add","path":"/multilineFieldsFormat/<field>","value":"Markdown"}` alongside the `/fields/...` op."*
 
@@ -186,7 +200,7 @@ az devops invoke --org https://dev.azure.com/MyOrg \
 
 Route: `POST .../pullRequests/{pullRequestId}/labels?api-version=7.1`, body `{"name": "..."}`; `GET` the same path lists them and `DELETE .../labels/{labelIdOrName}` removes one ("The tag itself will not be deleted").[^44] The docs use "label" and "tag" interchangeably — the entity type is literally `WebApiTagDefinition`.[^44]
 
-> **Uncertainty:** `az devops invoke` resolves `--resource` against the *organization's own* resource-location table at runtime,[^15] so the exact `--resource` tokens above (`threads`, `pullRequestLabels`, `workitems`) could not be confirmed without an authenticated org. The route parameters are source-confirmed;[^46] the resource names are inferred from the REST route segments. The call that settles it is the documented discovery form, which lists every area/resource pair for the org: `az devops invoke --org <url> -o json --query "[?area=='git']"`.[^19]
+> **Uncertainty (partly resolved 2026-07-29).** `az devops invoke` resolves `--resource` against the *organization's own* resource-location table at runtime,[^15] so the exact `--resource` tokens above could not be confirmed when this was written. `workitems` is now **confirmed live** — but as the create route only, taking `project` + `type`, never `id` (§2).[^48] `threads` and `pullRequestLabels` remain inferred from the REST route segments; their route parameters are source-confirmed.[^46] **Do not settle them with the bare discovery form** `az devops invoke --org <url> -o json`: it enumerates every resource location in the organisation and does not return usefully (observed still running at 5 minutes).[^48] Query one area at a time with `--area`/`--resource` instead.
 >
 > Also: the thread-create doc samples send enums as **integers** (`commentType: 1`, `status: 1`) while responses echo **strings** (`"text"`, `"active"`). The docs never state that string input is accepted — use the integer form.[^43]
 
@@ -298,3 +312,4 @@ For a PR *description*, by contrast, no temp file is needed for short text — `
 [^45]: "Syntax guidance for basic Markdown usage" — https://learn.microsoft.com/en-us/azure/devops/project/wiki/markdown-guidance — "Comments in a pull request accept Markdown, such as `**Bold**` and `*Italic*` style for text." Primary: official docs. Accessed 2026-07-27. (Note: the *Review pull requests* page never mentions Markdown; this is the page that owns the claim.)
 [^46]: `GitClientBase.create_thread` — `~/.azure/cliextensions/azure-devops/azext_devops/devops_sdk/released/git/git_client_base.py:1000-1014` — route values are exactly `project`, `repositoryId`, `pullRequestId`; `location_id='ab6e2e5d-a0b7-4153-b64a-a4efe0d49449'`. Primary: first-party bundled SDK, extension 1.0.2.
 [^47]: `create_pull_request` labels handling — `dev/repos/pull_request.py:104, 151-152, 166-171` — `--labels` accepted on `create` only, `labels.split(' ')` into `WebApiTagDefinition`. `az repos pr update --help` exposes no `--labels`, and the bundled `git_client_base.py` defines no PR-label methods (grep for `def .*label` returns nothing). Primary: first-party source + generated help. Verified 2026-07-27.
+[^48]: Direct observation against an authenticated Azure DevOps Services organisation, 2026-07-29, `azure-cli` 2.88.0 with `azure-devops` extension 1.0.2, `--api-version 7.1`. Established by creating and then deleting throwaway `Feature` work items: (a) `--area wit --resource workitems --route-parameters project=<p> type=Feature --http-method POST` with a patch document containing `/fields/System.Title`, `/fields/System.AreaPath`, `/fields/System.IterationPath`, `/fields/System.Tags`, `/fields/System.Description`, `/multilineFieldsFormat/System.Description` and `/relations/-` (`System.LinkTypes.Hierarchy-Reverse`) succeeded in one call, the response echoing `"multilineFieldsFormat": {"System.Description": "markdown"}` plus the tag and the parent relation; (b) the same resource with `--route-parameters … id=<n> --http-method PATCH` raised `KeyError: 'type'` from `msrest.service_client.format_url`; (c) with `--route-parameters … type=<n> --http-method PATCH` the service returned `VS402323: Work item type <n> does not exist in project <guid> or you do not have permission to access it`; (d) `az devops invoke` with no `--area`/`--resource` had not returned after 300 s and was killed.
