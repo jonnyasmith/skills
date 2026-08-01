@@ -1,5 +1,0 @@
-interface:
-  display_name: "Batch Grill with Docs"
-  short_description: "Batch-grill a design and write its docs"
-policy:
-  allow_implicit_invocation: false

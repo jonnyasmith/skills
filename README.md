@@ -10,9 +10,6 @@ A skill is a directory containing a `SKILL.md` with YAML frontmatter (`name`, `d
 
 | Skill | What it does |
 | --- | --- |
-| [`batch-grill-me`](skills/batch-grill-me/) | Relentless interview to sharpen a plan, three questions at a time. |
-| [`batch-grill-with-docs`](skills/batch-grill-with-docs/) | Batch grilling session that also writes ADRs and a glossary. |
-| [`batch-grilling`](skills/batch-grilling/) | Stress-test thinking three questions at a time. |
 | [`code-review`](skills/code-review/) | Two-axis (standards + spec) review of a diff, run as parallel sub-agents. |
 | [`codebase-design`](skills/codebase-design/) | Shared vocabulary for designing deep modules. |
 | [`conventional-commits`](skills/conventional-commits/) | Write and evaluate commit messages against Conventional Commits 1.0.0. |
@@ -24,13 +21,12 @@ A skill is a directory containing a `SKILL.md` with YAML frontmatter (`name`, `d
 | [`excalidraw-diagram`](skills/excalidraw-diagram/) | Create Excalidraw diagram JSON that argues visually. |
 | [`grill-me`](skills/grill-me/) | Relentless interview to sharpen a plan or design. |
 | [`grill-with-docs`](skills/grill-with-docs/) | Grilling session that also writes ADRs and a glossary. |
-| [`grilling`](skills/grilling/) | Stress-test thinking one question at a time. |
+| [`grilling`](skills/grilling/) | Stress-test thinking, one round of unblocked questions at a time. |
 | [`handoff`](skills/handoff/) | Compact a conversation into a handoff document for another agent. |
 | [`implement`](skills/implement/) | Implement work from a spec or set of tickets. |
 | [`implementation-loop`](skills/implementation-loop/) | Implement a spec's tickets one at a time in dependency order. |
 | [`improve-codebase-architecture`](skills/improve-codebase-architecture/) | Surface deepening opportunities as a visual report, then grill one. |
 | [`improve-test-suite`](skills/improve-test-suite/) | Audit a test suite for seam quality and coverage gaps. |
-| [`interview-me`](skills/interview-me/) | Relentless interview that asks every unblocked question each round. |
 | [`orchestrator-loop`](skills/orchestrator-loop/) | Drive a batch of workitems to commits via fresh sub-agents. |
 | [`prototype`](skills/prototype/) | Build throwaway code to answer a design question. |
 | [`research`](skills/research/) | Investigate a question against primary sources, capture findings. |
