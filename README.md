@@ -30,6 +30,7 @@ A skill is a directory containing a `SKILL.md` with YAML frontmatter (`name`, `d
 | [`implementation-loop`](skills/implementation-loop/) | Implement a spec's tickets one at a time in dependency order. |
 | [`improve-codebase-architecture`](skills/improve-codebase-architecture/) | Surface deepening opportunities as a visual report, then grill one. |
 | [`improve-test-suite`](skills/improve-test-suite/) | Audit a test suite for seam quality and coverage gaps. |
+| [`interview-me`](skills/interview-me/) | Relentless interview that asks every unblocked question each round. |
 | [`orchestrator-loop`](skills/orchestrator-loop/) | Drive a batch of workitems to commits via fresh sub-agents. |
 | [`prototype`](skills/prototype/) | Build throwaway code to answer a design question. |
 | [`research`](skills/research/) | Investigate a question against primary sources, capture findings. |
