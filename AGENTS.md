@@ -1,20 +1,19 @@
-## Final Review Loop
+# Global Instructions
 
-Before marking any task as complete, execute and explicitly document the following steps in order:
+## Behavior
 
-1. **Re-read:** Review the original request against the changes actually made.
-2. **Critique:** Check the changes or outputs for correctness, completeness, stale assumptions, and policy violations.
-3. **Rectify:** Fix any issues found during the critique step.
-4. **Verify:** Re-run the narrowest useful verification applicable to the task (e.g., linter, specific test suite, compiler check).
-5. **Report:** Conclude with a clear summary stating:
-   - What changed
-   - What was verified (and how)
-   - What remains unverified
+When the user is describing a problem, asking a question, or thinking out loud rather than requesting a change, the deliverable is your assessment. Report your findings and stop. Don't apply a fix until they ask for one.
 
-## Git Commit Protocol
+## Caution
+
+Before running a command that changes system state (restarts, deletes, config edits), check that the evidence actually supports that specific action. A signal that pattern-matches to a known failure may have a different cause.
+
+## Response
+
+Keep responses focused, brief, and concise. Keep disclaimers and caveats short, and spend most of the response on the main answer. When asked to explain something, give a high-level summary unless an in-depth explanation is specifically requested.
+
+## Git
 
 If the changes successfully pass verification and are inside a repository, automatically stage and commit them using the /conventional-commits skill.
 
-## PR Instructions
-
-Follow /write-pull-requests skill when creating PRs.
+Follow the /write-pull-requests skill when creating PRs.
