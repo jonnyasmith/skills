@@ -1,0 +1,4 @@
+interface:
+  display_name: "Feature Ticket Delegator"
+  short_description: "Order a work-item hierarchy and delegate"
+  default_prompt: "Use $feature-ticket-delegator to implement this work-item hierarchy one item at a time."
