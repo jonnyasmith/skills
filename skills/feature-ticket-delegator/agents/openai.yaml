@@ -1,0 +1,4 @@
+interface:
+  display_name: "Feature Ticket Delegator"
+  short_description: "Order feature tickets and delegate implementation"
+  default_prompt: "Use $feature-ticket-delegator to implement this feature one ticket at a time."
