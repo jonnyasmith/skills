@@ -24,7 +24,7 @@ Use this structure:
 ```text
 <type>[optional scope][optional !]: <description>
 
-[optional body]
+<body>
 
 [optional footer(s)]
 ```
@@ -37,8 +37,8 @@ Choose each element deliberately:
 - Add a scope in parentheses only when it gives useful codebase context. Use a noun consistent with the repository, such as `parser` or `api`.
 - Add `!` immediately before `:` when the change breaks compatibility. Ensure the description states the breaking change.
 - Write the description as a concrete summary of the change. Begin it immediately after `: `.
-- Add a body one blank line after the description when the reason, approach, constraints, or migration context is not evident from the header. Keep the body free-form.
-- Add footers one blank line after the body, or one blank line after the description when there is no body.
+- Add a non-empty body one blank line after the description. Explain the motivation and the material implementation details, including relevant constraints or migration context. Keep the body free-form and proportionate to the change.
+- Add footers one blank line after the body.
 - Format each footer as `<token>: <value>` or `<token> #<value>`. Replace whitespace in tokens with `-`, except for `BREAKING CHANGE`.
 - Use `BREAKING CHANGE: <description>` or `BREAKING-CHANGE: <description>` for a breaking-change footer. Keep `BREAKING CHANGE` uppercase.
 - Include co-authors and other trailers only when supported by the task or repository context.
@@ -64,6 +64,7 @@ Use `Refs:` exclusively for ticket linkage. Never pair a ticket reference with `
 Before returning or using the message, confirm all of the following:
 
 - The header matches the required structure and contains a non-empty description.
+- A non-empty body follows the header with the required blank-line separation and explains the motivation and material implementation details.
 - `feat` and `fix` reflect feature and bug-fix intent rather than merely the kinds of files changed.
 - The message describes the complete commit and nothing outside it.
 - Any scope and additional type follow the repository's vocabulary.
@@ -80,6 +81,9 @@ When asked only for a commit message, return only the message without a code fen
 
 ```text
 feat(parser): support nested array expressions
+
+Parse array elements recursively so nested expressions use the same grammar and
+validation rules as top-level arrays.
 ```
 
 ```text
@@ -93,6 +97,9 @@ Refs: #482
 
 ```text
 feat(api)!: replace offset pagination with cursors
+
+Use stable cursors to prevent duplicate or skipped results when records change
+between page requests.
 
 BREAKING CHANGE: clients must send `after` instead of `page`
 ```
