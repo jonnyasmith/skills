@@ -1,0 +1,6 @@
+interface:
+  display_name: "Implement Tickets"
+  short_description: "Implement a spec's tickets in one workflow run"
+  default_prompt: "Use $implement-tickets to implement every ticket behind this spec."
+policy:
+  allow_implicit_invocation: false
