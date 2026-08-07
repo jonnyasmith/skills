@@ -1,5 +1,6 @@
 interface:
   display_name: "Implement"
-  short_description: "Build work from a spec or tickets"
+  short_description: "Implement, verify, review, and commit scoped work"
+  default_prompt: "Use $implement to implement this scoped work, verify and commit it, independently review it from the original base, and action every finding."
 policy:
   allow_implicit_invocation: false
