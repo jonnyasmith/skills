@@ -42,30 +42,30 @@ A skill is a directory containing a `SKILL.md` with YAML frontmatter (`name`, `d
 
 ## Install
 
-Clone the repo, then symlink its `skills/` directory into the locations your agents look for skills. Both Claude (`~/.claude`) and the generic agent config (`~/.agents`) are supported.
+Clone the repo, then run `install.sh`. It links each skill individually into every agent's skills directory.
 
 ```sh
 git clone git@github.com:jonnyasmith/skills.git ~/dev/skills
 cd ~/dev/skills
-
-# Claude
-mkdir -p ~/.claude
-ln -s "$PWD/skills" ~/.claude/skills
-
-# .agents
-mkdir -p ~/.agents
-ln -s "$PWD/skills" ~/.agents/skills
+./install.sh
 ```
 
-`ln -s` points a single link at the whole `skills/` directory, so pulling new commits updates every agent at once — no re-linking needed.
+Default targets: `~/.agents/skills`, `~/.claude/skills`, `~/.codex/skills`, and `~/.pi/agent/skills`. Pass paths to override them:
+
+```sh
+./install.sh ~/.claude/skills
+```
+
+Re-run the script after `git pull` adds, renames, or removes a skill. Edits to an existing skill need no re-run, because each link points at the live directory.
 
 ### Notes
 
-- If a `skills` entry already exists at either target, remove or back it up first (`rm ~/.claude/skills` for an old symlink, or move a real directory aside). `ln -s` will not overwrite an existing path.
-- Use absolute paths for the link source (`$PWD/skills` above resolves to one). A relative source is interpreted relative to the link's location, not your shell, and will dangle.
+- The script links per skill instead of pointing one link at the whole `skills/` directory. Those directories are real directories that other tools also provision — Omarchy, for example, writes its own `omarchy` and `diagnose-crash` links into all four. A directory-level link would make those tools write into this working tree.
+- Re-running is safe. The script rewrites the links it owns, removes its own links whose skill no longer exists, and never touches an entry that points elsewhere.
+- An entry that exists but is not a symlink is reported and skipped, so a real directory of your own is never deleted.
 - Verify the links resolve:
 
   ```sh
-  readlink ~/.claude/skills
-  readlink ~/.agents/skills
+  ls -l ~/.agents/skills
+  find ~/.agents/skills -maxdepth 1 -xtype l   # dangling links, expect none
   ```
