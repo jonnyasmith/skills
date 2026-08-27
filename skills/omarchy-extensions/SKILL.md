@@ -61,6 +61,8 @@ other without asking.
 
 ## Branches
 
+- Writing a menu row — fields, dotted ids, overriding a stock row:
+  [`MENU.md`](MENU.md)
 - Delivering a command as a floating terminal app: [`TUI.md`](TUI.md)
 - Anything on the bar — command module, QML module, plugin, indicator:
   [`BAR.md`](BAR.md)
@@ -101,10 +103,6 @@ That is often the reason to prefer rung 2.
 
 ## Standing traps
 
-- **Menu `provider` is a closed set.** The shipped comment reads like a plugin
-  point. `Menu.qml` holds a hard-coded map (`fonts`, `power-profiles`, plus a
-  QML-native `apps`) and silently ignores any other name. Generate rows with
-  `when` on static rows, or with a `service`/`panel` plugin.
 - **Shell IPC reaches plugins, not scripts.** `omarchy-shell shell toggle|summon`
   reaches a bar widget's popup, which is how rungs 2 and 3 drive rung 8. But
   `omarchy-shell shell call <id> <method>` resolves against panel/overlay/menu
@@ -112,6 +110,11 @@ That is often the reason to prefer rung 2.
 - **Notifications are a surface.** `omarchy notification send` with `--exec`
   makes the notification a button, and `omarchy osd` renders in the desktop's
   own visual language. Reach for these before inventing a window.
+- **Two surfaces are pure text and easy to forget.** `~/.config/omarchy/branding/`
+  holds `about.txt` and `screensaver.txt` (`omarchy branding about|screensaver`),
+  and a theme *overlay* is one edited file dropped into
+  `~/.config/omarchy/themes/<stock-name>/` — no fork, the user directory is read
+  after the packaged one.
 
 ## If the machine's config is managed
 
