@@ -70,5 +70,13 @@ FZF_THEME_OPTS="--color=fg:{{ foreground }},bg:-1,hl:{{ accent }},bg+:{{ selecti
 FZF_THEME_ACCENT="{{ accent }}"
 ```
 
+`muted` is furniture, not dim text. Every theme defines it, but what it means
+varies: Nord's is `#4c566a`, a border colour, and text set in it against Nord's
+`#2e3440` background through a 0.9-alpha terminal is invisible. For anything
+meant to be read but read *quietly* — a keybinding legend, a secondary column —
+use `{{ mix background foreground 60% }}`, which is defined against the theme's
+own background and therefore legible in all of them.
+
 Verify by switching to a different theme, confirming the rendered file's colours
-changed to match the new `colors.toml`, and switching back.
+changed to match the new `colors.toml`, and switching back. Then look at it:
+a contrast bug renders perfectly and is only visible on screen.
