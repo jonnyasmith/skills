@@ -15,6 +15,11 @@ omarchy tui install "Name" <cmd> float <icon>   # a .desktop file, for the launc
 The window closes when the command exits, which is what makes a picker — open,
 choose, gone — feel right for a keyboard user.
 
+Arguments go **after** the command as separate words, not inside one quoted
+string: the wrapper ends in `xdg-terminal-exec … -e "$1" "${@:2}"`, so
+`--app-id=TUI.float ./pick.sh /dev/sdb` works and `"./pick.sh /dev/sdb"` is
+looked up as a filename with a space in it.
+
 ## A dying process cannot spawn
 
 **The trap that costs the most time.** A TUI that exits as soon as it acts
@@ -85,6 +90,68 @@ else
   echo "$message"
 fi
 ```
+
+## Modal keys, so a picker moves like the rest of the desktop
+
+On this desktop hjkl already moves: tmux panes, Hyprland focus, vim. A picker
+that needs `ctrl-` for the same job is the odd one out, and `ctrl-h` in
+particular is a chord for something every other window does bare.
+
+`fzf` can start with **no input line at all** and treat bare letters as
+commands, which is the whole difference. The pattern is upstream's own — the
+`--no-input` entry in fzf's CHANGELOG is titled "Vim-like mode switch" — and
+needs fzf **0.63+** for the footer (`--no-input` and `FZF_INPUT_STATE` land in
+0.59, `--footer`/`change-footer` in 0.63, `print(...)` in 0.53).
+
+```bash
+bare='j,k,g,G,l,h,q'
+normal='j/k move · l open · h back · / search · q quit'
+search='type to filter · ctrl-j/k move · enter open · esc normal mode'
+
+out=$(fzf --no-input --layout=reverse --footer="$normal" \
+  --bind='j:down,k:up,ctrl-j:down,ctrl-k:up,g:first,G:last' \
+  --bind='l:accept,q:abort' \
+  --bind='h:print(__back__)+accept' \
+  --bind="/:show-input+unbind($bare)+change-footer($search)" \
+  --bind="esc:clear-query+transform:[[ \$FZF_INPUT_STATE = hidden ]] \
+    && echo abort \
+    || echo \"hide-input+rebind($bare)+change-footer($normal)\"")
+```
+
+What each piece is for, and the two that are not obvious:
+
+- **`--no-input` frees the letters.** It hides the input line *and* stops
+  keystrokes reaching the query. Without it, `j` types a `j`.
+- **Unbind on entering search, rebind on leaving**, from one list, or a key
+  added later is left typing itself into a query. Keep **chords** bound in both
+  modes — `ctrl-j`/`ctrl-k` are what make movement possible *while* filtering.
+- **`esc` means two things**, so it is a `transform` reading `$FZF_INPUT_STATE`
+  (`hidden` = normal mode → quit; otherwise → back to normal).
+- **`clear-query` must lead that chain, from outside the transform.** An action
+  list that hides the input silently discards a query change emitted after it,
+  in either order (0.74.3). The upstream snippet omits this, and the cost is
+  invisible: normal mode comes back still filtered by a pattern, with no input
+  line on screen to explain the missing rows.
+- **A back key is `print(sentinel)+accept`, never `--expect`.** `--expect`
+  captures its key in *both* modes, so `--expect=h` stops `h` ever being typed
+  into a search. And it must be `accept`, not `abort`: abort throws the output
+  queue away, so the sentinel never arrives. Read the sentinel off the front of
+  the output — a function at the far end of a pipe inside `$( )` cannot set a
+  variable its caller will see.
+- **The footer is the mode line.** It lists the keys that work *now* and changes
+  with the mode, which is what makes a modal TUI discoverable instead of a
+  guessing game. A legend that names only `enter` is what makes a reader ask
+  where the movement keys went.
+
+Two smaller notes: `--layout=reverse` is required for `j` to mean *down the
+screen* (in the default bottom-up layout, `down` moves toward the first match,
+so `j` appears dead on the first row); and `gg` cannot be a chord, because fzf
+has no key sequences — but `g` bound to `first` means pressing it twice lands
+there anyway.
+
+If two of your TUIs both do this, put the wrapper in one sourced file and have
+both read it. Two copies of a key map drift, and the second one to drift is the
+one nobody notices.
 
 ## Colours
 

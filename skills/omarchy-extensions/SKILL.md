@@ -61,9 +61,10 @@ other without asking.
 
 ## Branches
 
-- Writing a menu row — fields, dotted ids, overriding a stock row:
-  [`MENU.md`](MENU.md)
-- Delivering a command as a floating terminal app: [`TUI.md`](TUI.md)
+- Writing a menu row — fields, dotted ids, one container for your rows,
+  overriding a stock row: [`MENU.md`](MENU.md)
+- Delivering a command as a floating terminal app, and giving it modal
+  vim-style keys: [`TUI.md`](TUI.md)
 - Anything on the bar — command module, QML module, plugin, indicator:
   [`BAR.md`](BAR.md)
 - Making a foreign app follow the theme: [`THEMING.md`](THEMING.md)
