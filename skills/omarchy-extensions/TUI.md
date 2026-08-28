@@ -171,10 +171,25 @@ Two rules for a terminal UI specifically:
 
 ## Verifying without a keyboard
 
-The window is not scriptable through the tool that launched it, so drive it:
+Two halves, and they need different harnesses. Do not try to do both with one.
 
-- `wtype -k Return`, `wtype "text"` — synthesises real keystrokes into the
-  focused window. Confirms the keys your TUI binds actually arrive.
-- A pty harness (`script`, a supervised process with a pty) tests the key
-  handling but **not** the teardown race above, because nothing is exiting.
-  Reproduce a launch bug with the real floating terminal, never a pty.
+- **Key handling → a pty harness.** Fork a pty, size it, write raw bytes
+  (`\x1b` esc, `\r` enter, `/`, `j`), and read the paint back. It is
+  repeatable, it needs no focus, and it tests every branch of the key map.
+  Assert on what was *newly painted* after each key, or feed the output to a
+  terminal emulator (Python's `pyte`) and assert on the rendered screen —
+  stripping escapes from a full-screen TUI leaves cursor-addressed text in the
+  wrong order.
+- **Launch and teardown → the real floating terminal.** A pty proves nothing
+  about the spawn race above, because nothing is exiting. Reproduce that with
+  the real window, every time.
+
+**Do not synthesise keystrokes into the desktop.** `wtype` types into whatever
+is focused, which on a live session is the user's own window — a stray `q`, or a
+confirmation typed into an editor. It is also unsound as a test: it proves a key
+reached *a* window, not yours. The one thing the real window is needed for is
+the launch, and that needs no keys.
+
+A TUI that destroys something needs a third check: run it against a disposable
+target — a loop device, a scratch directory — and confirm the guard rails fire
+(the wrong confirmation string, the oversize input) as well as the happy path.
