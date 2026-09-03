@@ -1,0 +1,89 @@
+<!doctype html><html lang="en"><head><meta charset=utf-8>
+<meta http-equiv=refresh content=5><title>[GOAL] · progress</title>
+<!--
+  PROGRESS.html — the live progress page the brief asks for.
+
+  A gauntlet loop runs long, unattended, with several agents in flight, so
+  without a page the user's only way to check on the run is to interrupt it.
+  Copy this file next to the work, fill it in, keep it current.
+
+  WHERE: beside whatever holds the goal or the bar — the repo, the effort's
+  folder, `.wayfinder/<slug>/PROGRESS.html` if an answer key lives there.
+  Print the absolute path once, in the first reply, and never move it after.
+
+  Rules, none of them cosmetic:
+
+  - ONE WRITER. Only the lead agent writes this file. Builders and critics
+    report to the lead; the lead re-renders. Two writers race and lose entries.
+  - WHOLE-FILE OVERWRITE from state held in memory. Never append. A half-written
+    page is the one thing the user must not catch.
+  - NO SERVER, NO JS, NO FETCH. One self-contained file over file://. The
+    meta-refresh above does the live part. Anything that can fail while
+    unattended will.
+  - RENDER ON EVERY STATE CHANGE, not on a timer: a critic returning, a piece
+    changing status, a decision taken.
+  - THE PIECES ARE THE PAGE. The loop's own decomposition is what the user
+    cannot see from outside, and each row carries the last critic's blind pick.
+  - NEVER GREEN AHEAD OF THE EVIDENCE. A piece is won when a critic picked ours
+    blind, not when the builder says it is finished.
+  - NAME WHICH HALF OF THE BAR WAS REACHED. If the real reference could not be
+    fetched and something stood in for it, the page says so. A page implying a
+    comparison that never happened is worse than no page.
+  - KEEP THE WHOLE VERDICT IN title=. Critic reasoning is too long for a row and
+    too valuable to truncate. Hover holds it.
+  - LOG NEWEST FIRST, timestamped, one line each. The user scans the top.
+  - BINARY WORDS ONLY. won, failing, in flight — and PASS or FAIL where there
+    are checks. No scores, no percentages, no "mostly there": a score on this
+    page is the same drift that makes a soft critic useless.
+  - ESCAPE ANYTHING A CRITIC WROTE before it lands in title=. Verdict text
+    carries quotes, angle brackets and apostrophes.
+  - COLOUR NEVER ALONE, and the untouched thing is the quietest on the page.
+  - LEAVE IT ACCURATE AT THE END. The final render is the report.
+
+  Colours: won/PASS #3fa45b · failing/FAIL #c94f4f · in flight #e8a33d ·
+           can't judge #7a8fb0 · not run yet #3a3a3a border on #777 text.
+
+  The `bar checks` section is only for a bar with enumerable binary checks — an
+  answer key, a test list, a spec. Drop it for a taste bar; the pieces and their
+  blind picks are the whole story there. Add no other section.
+-->
+<style>
+body{background:#1a1a1a;color:#ddd;font:14px/1.5 ui-sans-serif,system-ui;margin:0;padding:28px 34px}
+h1{font-size:19px;margin:0 0 4px} .sub{color:#888;font-size:12px;margin-bottom:20px}
+table{border-collapse:collapse;width:100%;margin-bottom:22px}
+td,th{padding:6px 10px;border-bottom:1px solid #2e2e2e;text-align:left;vertical-align:top}
+td.n{color:#999;font-size:12px}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:#888;margin:22px 0 8px}
+.chip{display:inline-block;border:1px solid #3a3a3a;color:#777;border-radius:4px;padding:2px 8px;margin:0 5px 5px 0;font-size:12px}
+ul{margin:0;padding-left:18px;color:#aaa;font-size:12.5px} b{font-weight:600}
+.hl{background:#232323;border-left:3px solid #e8a33d;padding:9px 12px;margin-bottom:18px}
+</style></head><body>
+
+<h1>[GOAL]</h1>
+<div class=sub>[N] pieces · bar: [BAR] · started [HH:MM:SS] · refreshed [HH:MM:SS] (auto every 5s)</div>
+
+<!-- Answers what the user would ask if they interrupted the run right now. -->
+<div class=hl>[WHERE THE RUN IS, IN ONE SENTENCE]<br>
+<span style="color:#888;font-size:12px">reference: [WHICH HALF WAS REACHED — the named artifact, or the stand-in and why]</span></div>
+
+<h2>pieces</h2>
+<table>
+<tr><td>[PIECE]</td><td><b style="color:#3fa45b">won</b></td><td class=n title="[the critic's verdict in full]">[round N: critic picked ours blind]</td></tr>
+<tr><td>[PIECE]</td><td><b style="color:#c94f4f">failing</b></td><td class=n title="[the critic's verdict in full]">[round N: blind pick went to the bar — biggest gap]</td></tr>
+<tr><td>[PIECE]</td><td><b style="color:#e8a33d">in flight</b></td><td class=n>[round N running]</td></tr>
+</table>
+
+<!-- Only when the bar has enumerable binary checks. Number them as the bar does. -->
+<h2>bar checks</h2>
+<div>
+<span class=chip style="border-color:#3fa45b;color:#3fa45b" title="PASS — [what was observed]">1</span>
+<span class=chip style="border-color:#c94f4f;color:#c94f4f" title="FAIL — [what was wrong, one line]">2</span>
+<span class=chip title="not run yet">3</span>
+</div>
+
+<h2>log</h2>
+<ul>
+<li>[HH:MM:SS]  [newest line]</li>
+<li>[HH:MM:SS]  [older line]</li>
+</ul>
+</body></html>

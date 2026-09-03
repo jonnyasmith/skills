@@ -10,7 +10,7 @@ Six moves, in this order. Write it as flowing prose, not headings. Under 200 wor
 2. **The constraints**, in the same breath. Stack, hosting, data to import. Only the ones that are genuinely fixed.
 3. **The bar**, named as a thing the critic can open and look at.
 4. **The loop**: the lead agent splits the goal into the smallest pieces that can be improved and judged separately, and decides that split itself. Each important piece gets a builder and a separate harsh critic — a fresh subagent starts blank, and that blankness is the independence. Name the **instrument** each critic inspects reality with: screenshots through `browser` and `inspect_image` for anything visual, the test or benchmark command for behaviour, real measurements for performance. The critic compares against the bar blind where possible, names the single biggest gap when ours loses, and sends it back.
-5. **A scoreboard** the lead agent keeps current as the work evolves: `todo` phases plus a `local://<slug>-progress.md` page.
+5. **A scoreboard** the lead agent keeps current as the work evolves: `todo` phases plus a live `PROGRESS.html` beside the work, whose shape is `skill://gauntlet-loop/PROGRESS.html` — name that path in the brief rather than describing the page, since the template's own comments carry the rules that keep it honest.
 6. **Out of scope**, as a short list, then the trailer: `orchestrate`, lowercase, as a standalone word.
 
 ## The driver
@@ -68,8 +68,8 @@ drives the real running app in `browser`, screenshots it, and puts that image
 side by side with Todoist blind — never the builder's summary. When ours
 loses, name the single biggest gap and send it back.
 
-Keep `todo` current and a `local://todoist-progress.md` page showing the work
-evolving.
+Keep `todo` current and a live `PROGRESS.html` beside the work, in the shape of
+`skill://gauntlet-loop/PROGRESS.html`, showing the work evolving.
 
 Out of scope: collaboration, karma, third-party integrations, push
 notifications, native mobile apps.
