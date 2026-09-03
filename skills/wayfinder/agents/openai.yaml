@@ -1,5 +1,5 @@
 interface:
   display_name: "Wayfinder"
-  short_description: "Map a large effort as open questions and one answer key"
+  short_description: "Decide what you're building, and write the standard for judging it"
 policy:
   allow_implicit_invocation: false

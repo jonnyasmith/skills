@@ -1,148 +1,150 @@
 ---
 name: wayfinder
-description: Plan a huge chunk of work (more than one agent session can hold) as one map of open questions, and resolve them one at a time into one answer key until the way to the destination is clear.
+description: Decide what you're building, and write the standard for judging it.
 disable-model-invocation: true
 ---
 
-A loose idea has arrived, too big for one agent session, and wrapped in fog: the way from here to the **destination** isn't visible yet. Wayfinding is about finding that way, not charging at the destination. This skill charts the way as a **map** of open questions (questions whose resolution is a decision, not slices of a build to execute), then works them one at a time, recording each answer in a single **answer key**, until the route is clear.
+An idea has arrived, and the way from here to the finished thing isn't visible yet. This skill finds that way by naming where you're going, laying out the questions standing between here and there, and working them one at a time.
 
-An effort is exactly **two files**, written next to each other in a directory named for the effort:
+The output is **not a plan for building**. It's an **answer key** — a written standard for judging whether the finished thing came out right, including an honest list of what nobody has decided yet.
 
-- `map.md` — where you're going and what's still open.
-- `answer-key.md` — what's been settled.
-
-Nothing else is produced. A question is not a file, a ticket, or an issue; it's an entry in the map that moves to the answer key once it's answered. Two reads load the whole effort, and moving a question along is one edit to each file.
-
-The destination varies per effort, and naming it is the first act of charting: it shapes every question. It might be a spec to hand off and iterate on, a decision to lock before planning starts, or a change made in place like a data-structure migration. The map is domain-agnostic: engineering work, course content, whatever fits the shape.
+That distinction is the whole point. A plan says what to build. An answer key says how you'd know it came out wrong. If a reviewer — human or agent — is handed a plan and asked "is this good?", it has nothing to check against, so it invents a standard and approves whatever it sees. The answer key exists so nobody has to invent one.
 
 ## Plan, don't do
 
-Wayfinder is **planning** by default: each question resolves a decision, and the map is done when the way is clear, with nothing left to decide before someone goes and does the thing. The pull to just do the work is usually the signal you've reached the edge of the map and it's time to hand off. An effort can override this in its **Notes**, carrying execution into the map itself, but absent that, produce decisions, not deliverables.
+This skill **decides**. It does not build. Every question resolves into a decision plus a check, and the work is finished when nothing is left to decide before someone goes and builds the thing.
 
-## The two files
+The pull to just start building is the signal you've reached the edge of the map and it's time to stop and hand off. **This is absolute — there is no note, instruction, or exception that turns this into an execution skill.** If the user wants it built, that's a separate session, after the answer key exists.
 
-The split is by state, not by detail: the map holds only what's still open, the answer key only what's settled. A question lives in exactly one of the two, never both, so a decision is recorded in exactly one place and the map can't drift out of date. Resolving a question _is_ the move from the one to the other.
+## The file
 
-Load the map every session, before choosing a question. Load the answer key when prior decisions bear on the question in hand, which is most sessions: keep each answer tight so the key stays loadable for the life of the effort.
+Everything lives in **one markdown file**: `.wayfinder/<slug>/MAP.md`. No issue tracker, no ticket files, no dependency graph — one person, one sitting, one effort.
 
-Refer to a question by its **name** — its heading — in everything the human reads. The name is the question's identity, carried unchanged from the map into the answer key, so renaming it orphans its answer.
-
-### `map.md`
-
-The whole live effort at low resolution, loaded once per session.
+The **slug** names the thing, not the sentence: two to four words, kebab-cased — `annual-billing-upgrade`, `crash-triage-tui`. Say it once when you first write the file so the user can rename it; after that it's fixed, because it's how a later sitting finds this map again.
 
 ```markdown
-# <effort name>
+# MAP — <thing>
 
 ## Destination
 
-<what reaching the end of this map looks like: the spec, decision, or change this effort is finding its way to. One or two lines; every session orients to it before choosing a question.>
-
-## Notes
-
-<domain; skills every session should consult; standing preferences for this effort>
+<one or two lines: what reaching the end looks like>
 
 ## Open questions
 
-<!-- every question still to answer, frontier first; see "Questions". An answered question is deleted from here -->
+<!-- ordered. This list is the running order — re-sort it when new questions arrive. -->
 
-### <question name>
-
-- Type: grilling
-- Blocked by: <question name>, <question name>
-- Claimed: <dev>
-
-<the decision or investigation this question resolves, in a line or two>
+1. [ ] <question> — grilling
+2. [ ] <question> — research
+3. [ ] <question> — prototype
 
 ## Not yet specified
 
-<!-- see "Fog of war": in-scope fog you can't phrase as a question yet; graduates as the frontier advances -->
+<!-- the fog: in-scope, but you can't phrase the question sharply yet -->
 
 ## Out of scope
 
-<!-- see "Out of scope": work ruled beyond the destination; never graduates -->
+<!-- ruled beyond the destination. Adding these makes the result worse. -->
+
+## Answers
+
+<!-- the detail. One section per answered question: the answer, the reasoning, and the check. -->
+
+### <question>
+
+**Answer:** <what was decided>
+
+**Why:** <the reasoning — this is the primary source a reviewer reads when the summary isn't enough>
+
+**Source:** <citation for every outside fact this rests on — url, file path, spec section — or "—">
+
+**Check:** <how you'd know if this came out wrong — or `unknown: <why nobody can judge this yet>`>
+**Judged by:** run it | A/B pick | unknown
+**Reference:** <a named, fetchable thing — or "—">
 ```
 
-### Questions
+## Running order, not blocking
 
-Each question is one entry under **Open questions**, sized to one 100K token agent session, carrying three fields:
+The **Open questions** list is ordered, and its order is the running order. Take the top one. When new questions arrive — and they will — put them where they belong in the list rather than appending them to the end. There are no blocking edges to wire; the list position says everything a dependency graph would.
 
-- **Type**: one of `research`, `prototype`, `grilling`, `task` (see [Question Types](#question-types)).
-- **Blocked by**: the names of the questions that must be answered first. A question is **unblocked** when every name it lists is in the answer key. Omit the field when nothing blocks it.
-- **Claimed**: the dev driving the question, written **first**, before any work, so a concurrent session skips it. No `Claimed` field means unclaimed.
+Grilling works a **frontier** inside a single conversation (`commands/grill.md`) — that tree is round-local and never gets written down. The map itself stays flat.
 
-The **frontier** is the open, unblocked, unclaimed entries: the edge of the known. Keep **Open questions** ordered frontier first, so the frontier reads off the top of the map without a search.
+## The three question types
 
-The answer isn't part of the entry; it's recorded in the answer key on resolution (see [Work through the map](#work-through-the-map)). Assets created while resolving a question are linked from the answer, not pasted in.
+- **grilling** — the default. A question that can be settled by talking it through with the user. Use `commands/grill.md`. The user answers; you never answer for them.
+- **research** — a fact outside this project is blocking a decision. You go and find out; the user isn't involved. Dispatch a background agent so the interview keeps moving, and point it at primary sources — the actual documentation, spec, or code — with a citation for every claim. Those citations land in the answer's **Source** line. Run these in parallel; they're the one question type that doesn't wait its turn.
 
-### `answer-key.md`
+  Two things follow. **A found fact usually makes a `run it` check**, because the fact is the check — that's most of why this type exists. And **if the research doesn't settle it** ("the docs don't say," "it depends how you configure it"), don't decide for the user: convert it into a grilling question and put it in the running order. If the honest finding is "you'd only know by running it," that's an unknown.
+- **prototype** — "how should this look" or "how should this behave," which talking cannot settle. Use `commands/prototype.md`. Build something rough, react to it together. **The rough thing then becomes the reference** in the answer key — which is how you get a fetchable standard for something that has no famous example to point at.
 
-One entry per answered question, in the order they were answered, each under the question's unchanged name:
+## Every answer produces a check
 
-```markdown
-# <effort name> — answer key
+This is the one thing that makes the output an answer key instead of notes.
 
-### <question name>
+After the user settles a question, ask one more: **"How would you know if this came out wrong?"**
 
-<the answer in one line: the decision, or the fact that was found>
+The answer to *that* becomes the decision's **Check**, and at emit time it becomes one row on the bar. It takes one of exactly three forms — `run it`, `A/B pick`, or `unknown`.
 
-<the detail behind it: what was decided and why, what was ruled out, links to any assets>
-```
+**`CHECKS.md` is the single source for what each form requires: the wording ladder that turns a vague answer into a usable one, what makes a reference legal, and why a score is never an option. Read it before writing any check.**
 
-The one-line answer comes first, so a session skimming the key can judge relevance without reading every entry.
+## Fog — "Not yet specified"
 
-## Question Types
+The map is **deliberately incomplete**. Don't chart what you can't yet see.
 
-Every question is either **HITL** (human in the loop, worked _with_ a human who speaks for themselves) or **AFK**, driven by the agent alone. A HITL question only resolves through that live exchange; the agent never stands in for the human's side of it (a grilling agent that answers its own questions has broken this).
+Beyond the questions you've written down sit the ones you can tell are coming but can't yet pin down, because they hang on answers you don't have. That's the fog, and it goes in **Not yet specified**.
 
-- **Research** (AFK): Reading documentation, third-party APIs, or local resources like knowledge bases to surface a fact a decision waits on. Resolved by a subagent that calls the Skill tool with "research". Use when knowledge outside the current working directory is required.
-- **Prototype** (HITL): Raise the fidelity of the discussion by making a cheap, rough, concrete artifact to react to (an outline, a rough take, a stub, or UI/logic code) by calling the Skill tool with "prototype". Links the prototype as an asset. Use when "how should it look" or "how should it behave" is the key question.
-- **Grilling** (HITL): Conversation. The default case. Always call the Skill tool twice, for "grilling" and "domain-modeling".
-- **Task** (HITL or AFK): Manual work that must happen before a _decision_ can be made: nothing to decide, prototype, or research, but the discussion is blocked until it's done. Signing up for a service so its API can be judged, provisioning access, moving data so its shape can be seen. This is the one type that _does_ rather than decides, and it earns its place by unblocking a decision, not by delivering the destination. The agent drives it alone where it can (AFK); otherwise it hands the human a precise checklist (HITL). Resolved when the work is done; the answer records what was done and any resulting facts (credentials location, new URLs, row counts) later questions depend on.
+**Fog or question?** The test is whether you can state it precisely *now* — **not** whether you can answer it now.
 
-## Fog of war
+- **A question when** you can phrase it sharply, even if you can't answer it yet.
+- **Not yet specified when** you can't phrase it that sharply. Don't pre-slice fog into question-sized pieces; one patch may become three questions, or none, once you get there.
 
-The map is _deliberately_ incomplete: don't chart what you can't yet see. Beyond the open questions lies the **fog of war**: the dim view of decisions and investigations you can tell are coming but can't yet pin down, because they hang on questions still open. Answering a question clears the fog ahead of it, graduating whatever's now specifiable into fresh questions, one at a time, until the way to the destination is clear and no open questions remain.
+Answering a question clears the fog ahead of it. Whatever became sharp gets promoted into the Open questions list, and disappears from **Not yet specified** — it lives in one place, never both.
 
-The map's **Not yet specified** section is where that dim view is written down: the suspected question, the area to revisit later. It's the undiscovered frontier _toward_ the destination: everything here is in scope, just not sharp enough to write as a question. Write as loosely or as fully as the view allows; it doubles as a signpost for collaborators reading where the effort is headed.
-
-**Fog or question?** The test is whether you can state the question precisely now, _not_ whether you can answer it now.
-
-- **A question when** it's already sharp, even if it's blocked and you can't act on it yet.
-- **Not yet specified when** you can't yet phrase it that sharply. Don't pre-slice the fog into question-sized pieces: it's coarser than a question, and one patch may graduate into several questions, or none, once the frontier reaches it.
-
-**Not yet specified** excludes what's already answered (the answer key), what's already an open question, and what's out of scope (the next section).
+Fog that never clears is not a failure. It goes into the answer key's **Unknown** section, which is the most valuable thing in the document: a reviewer that hits an undecided item reports *"can't judge this yet"* and stops, instead of guessing and passing.
 
 ## Out of scope
 
-Fog only ever gathers _toward_ the destination. The destination fixes the scope, so work beyond it is **out of scope**: it isn't fog, and it doesn't belong in **Not yet specified**. It gets its own **Out of scope** section on the map: work you've consciously ruled out of _this_ effort. Scope, not sharpness, lands it here.
+Fog only ever gathers **toward** the destination. Work beyond the destination isn't fog — it's out of scope, and it gets its own section.
 
-Out-of-scope work never graduates (the frontier stops at the destination), so it returns only if the destination is redrawn, and then as a fresh effort, not a resumption.
+This section does a job most planning documents have no way to do: it's the only place that can say **adding this makes the result worse**. A reviewer told to beat a standard will try to win by adding things. Out of scope is what stops that.
 
-Ruling something out of scope is a scoping act, not a step on the route. When an open question turns out to sit past the destination (mis-scoped in while charting, or exposed by an answer), **delete it from Open questions** and leave one line in the **Out of scope** section: the gist plus why it's out of scope. It never enters the answer key, which records the route actually walked; a scope boundary isn't a step on it.
+Out-of-scope items never get promoted. If a question already on the list turns out to sit past the destination, strike it from Open questions and leave one line here — the gist plus why it's out — rather than answering it. It never gets an entry in **Answers**; a scope boundary isn't a step on the route.
 
-## Invocation
+## How to run it
 
-Two modes. Either way, **never resolve more than one question per session**, with the exception of research questions.
+### 1. Resume or chart
 
-### Chart the map
+**First action, every invocation: glob `.wayfinder/*/MAP.md`.** A map whose destination covers the idea in front of you is the map you're working — read it, say in one line where you're resuming (top open question, or ready to emit), and go to stage 2. Chart only when nothing there fits.
 
-User invokes with a loose idea.
+To chart:
 
-1. **Name the destination.** Call the Skill tool twice, for "grilling" and "domain-modeling", to pin down what this map is finding its way to: the spec, decision, or change. The destination fixes the scope, so it's settled first.
-2. **Map the frontier.** Grill again, **breadth-first** this time: fan out across the whole space rather than deep on any one thread, surfacing the open decisions and the first steps takeable now. **If this surfaces no fog** (the way to the destination is already clear, the whole journey small enough for one session), you don't need a map. Stop and ask the user how they'd like to proceed.
-3. **Write the two files.** `map.md` with Destination and Notes filled in, every question you can specify now under **Open questions** with its `Type` and `Blocked by` fields and no `Claimed` field, frontier first, and the rest of the fog sketched into **Not yet specified**; `answer-key.md` alongside it, holding its title and nothing else. Ask the user where the pair should live if they haven't said; absent an answer, put them in a directory named for the effort.
-4. **Fire the research subagents.** For each `research` question, spin up a subagent that calls the Skill tool with "research" to resolve it in parallel. Each subagent **reports back** rather than writing to either file; **this** session writes their answers into the answer key and deletes those questions from the map, so both files keep a single writer and parallel subagents never clobber each other.
-5. Stop: charting is one session's work; beyond research it hand-resolves nothing.
+1. **Name the destination.** Grill until it's one or two lines, then ask what's out of bounds. Seeds Destination and Out of scope.
+2. **Grill again, breadth-first.** Sharp questions go to **Open questions**, in running order. Everything you can't phrase sharply goes to **Not yet specified**.
+3. **If Not yet specified is empty, stop here.** Tell the user the effort is small enough to just do, and don't write a map.
+4. **Write `MAP.md`**, naming the slug you chose. Answers empty.
+5. **Start every research question now**, in the background.
 
-### Work through the map
+Use `commands/grill.md` for steps 1 and 2.
 
-User invokes with a map. A question is **optional**: without one, you pick the next decision, not the user.
+### 2. Work the questions
 
-1. Read `map.md`: the low-res view of the whole live effort.
-2. Choose the question. If the user named one, use it. Otherwise take the first frontier entry: unblocked (every `Blocked by` name is in the answer key) and unclaimed. **Claim it**: add `Claimed: <dev>` to its entry and save the map before any work.
-3. Resolve it. Read `answer-key.md` for the decisions already made, and open any asset an answer links on demand; call the Skill tool for whichever skills the `## Notes` block names. If in doubt, call the Skill tool twice, for "grilling" and "domain-modeling".
-4. **Move the question.** Append its answer to `answer-key.md` under its unchanged name, then delete its entry from the map's **Open questions**. Both writes belong to this session: a question in neither file is lost, a question in both is ambiguous.
-5. Add newly-surfaced questions to **Open questions**; graduate any fog the answer has made specifiable, clearing each graduated patch from **Not yet specified** so it lives only as its question. If the answer reveals that a question (this one or another) sits beyond the destination, **rule it out of scope** rather than answering it on the route. If the answer invalidates other open questions, edit or delete them; if it invalidates an earlier answer, edit that answer key entry in place, never leaving two answers under one name.
+Repeat until **Open questions** is empty. Several per sitting is expected.
 
-The user may run unblocked questions in parallel, so expect other sessions to be editing both files concurrently. Re-read a file immediately before writing it, and keep each write small and separate (the claim, then the answer, then the deletion), so a concurrent session's edit isn't overwritten.
+1. **Take the top question.**
+2. **Resolve it** — grilling with `commands/grill.md`, prototype with `commands/prototype.md`, research with a background agent.
+3. **Ask "how would you know if this came out wrong?"** Settle the check, its judged-by, and its reference against `CHECKS.md`. A question isn't resolved until this exists — and `unknown` is a legitimate resolution.
+4. **Write the answer, the why, the source and the check into `Answers`.** Tick the question off.
+5. **Update the map.** Promote newly-sharp fog into running order and clear it from Not yet specified; move anything past the destination to Out of scope; rewrite or strike any question this answer invalidated.
+
+### 3. Emit
+
+When **Open questions** is empty, or the user calls it: run `commands/to-bar.md` to write `.wayfinder/<slug>/ANSWER-KEY.md`.
+
+Then **stop**. Building is a separate session.
+
+## Talking to the user
+
+The person running this thinks in outcomes, not files. Ask about what the thing should do and how they'd know it was wrong. Don't narrate file paths, line counts, or mechanisms at them — write the files quietly and talk about the decisions.
+
+## Don't fabricate
+
+If something can only be settled by actually running it, mark it and move on. An invented answer in the map becomes an invented standard in the answer key, which is the exact failure this skill exists to prevent.
