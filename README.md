@@ -37,7 +37,7 @@ A skill is a directory containing a `SKILL.md` with YAML frontmatter (`name`, `d
 | [`to-spec`](skills/to-spec/) | Turn a conversation into a spec and publish to the tracker. |
 | [`to-tickets`](skills/to-tickets/) | Break a plan into tracer-bullet tickets with blocking edges. |
 | [`triage`](skills/triage/) | Move issues and external PRs through a triage state machine. |
-| [`wayfinder`](skills/wayfinder/) | Plan huge work as decision tickets, resolve one at a time. |
+| [`wayfinder`](skills/wayfinder/) | Plan huge work as a map of open questions and one answer key. |
 | [`write-pull-requests`](skills/write-pull-requests/) | Draft and verify clear PR titles and descriptions. |
 | [`writing-great-skills`](skills/writing-great-skills/) | Reference for writing predictable skills. |
 
