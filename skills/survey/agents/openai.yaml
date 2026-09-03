@@ -1,0 +1,5 @@
+interface:
+  display_name: "Survey"
+  short_description: "Survey an idea whose route isn't visible yet, and write the standard for judging it"
+policy:
+  allow_implicit_invocation: false

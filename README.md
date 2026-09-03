@@ -19,7 +19,6 @@ A skill is a directory containing a `SKILL.md` with YAML frontmatter (`name`, `d
 | [`discovery`](skills/discovery/) | Build a visual, evidence-backed architecture discovery report. |
 | [`domain-modeling`](skills/domain-modeling/) | Build and sharpen a project's domain model and decisions. |
 | [`excalidraw-diagram`](skills/excalidraw-diagram/) | Create Excalidraw diagram JSON that argues visually. |
-| [`grill-me`](skills/grill-me/) | Relentless interview to sharpen a plan or design. |
 | [`grill-with-docs`](skills/grill-with-docs/) | Grilling session that also writes ADRs and a glossary. |
 | [`grilling`](skills/grilling/) | Stress-test thinking, one round of unblocked questions at a time. |
 | [`handoff`](skills/handoff/) | Compact a conversation into a handoff document for another agent. |
@@ -27,17 +26,19 @@ A skill is a directory containing a `SKILL.md` with YAML frontmatter (`name`, `d
 | [`implementation-loop`](skills/implementation-loop/) | Implement a spec's tickets one at a time in dependency order. |
 | [`improve-codebase-architecture`](skills/improve-codebase-architecture/) | Surface deepening opportunities as a visual report, then grill one. |
 | [`improve-test-suite`](skills/improve-test-suite/) | Audit a test suite for seam quality and coverage gaps. |
+| [`interrogate`](skills/interrogate/) | Interrogate a known design's edges and emit the answer key. |
 | [`omarchy-extensions`](skills/omarchy-extensions/) | Add a feature to an Omarchy desktop on the cheapest surface that works. |
 | [`orchestrator-loop`](skills/orchestrator-loop/) | Drive a batch of workitems to commits via fresh sub-agents. |
 | [`prototype`](skills/prototype/) | Build throwaway code to answer a design question. |
 | [`research`](skills/research/) | Investigate a question against primary sources, capture findings. |
 | [`resolving-merge-conflicts`](skills/resolving-merge-conflicts/) | Resolve an in-progress merge/rebase conflict. |
 | [`setup-repo-skills`](skills/setup-repo-skills/) | Scaffold a repo's `AGENTS.md` routing, tracker, and docs layout. |
+| [`survey`](skills/survey/) | Survey an idea whose route isn't visible, and emit the answer key. |
 | [`tdd`](skills/tdd/) | Test-driven development reference and loop. |
+| [`to-gauntlet`](skills/to-gauntlet/) | Turn an answer key into a paste-ready gauntlet prompt and driver. |
 | [`to-spec`](skills/to-spec/) | Turn a conversation into a spec and publish to the tracker. |
 | [`to-tickets`](skills/to-tickets/) | Break a plan into tracer-bullet tickets with blocking edges. |
 | [`triage`](skills/triage/) | Move issues and external PRs through a triage state machine. |
-| [`wayfinder`](skills/wayfinder/) | Plan huge work as a map of open questions and one answer key. |
 | [`write-pull-requests`](skills/write-pull-requests/) | Draft and verify clear PR titles and descriptions. |
 | [`writing-great-skills`](skills/writing-great-skills/) | Reference for writing predictable skills. |
 

@@ -172,13 +172,3 @@ Spec and ticket bodies are long Markdown, so **use the single `az devops invoke`
 
 Run `az boards work-item show --id <id> --expand all`.
 
-## Wayfinding operations
-
-Used by `/wayfinder`. The **map** is one work item with **child** work items as tickets.
-
-- **Map**: a `<SPEC_TYPE>` tagged `wayfinder:map`, holding the Notes / Decisions-so-far / Fog body in its description, parented to its Epic where that applies.
-- **Child ticket**: a `<TICKET_TYPE>` linked as a **child** of the map (`az boards work-item relation add --id <child> --relation-type parent --target-id <map>`), tagged `wayfinder:<type>` (`research`/`prototype`/`grilling`/`task`). Once claimed, the ticket is assigned to the driving dev.
-- **Blocking**: Azure DevOps' native **dependency link** (`System.LinkTypes.Dependency`) — the canonical, UI-visible representation, present in every stock process. Add the edge from the blocked ticket: `az boards work-item relation add --id <child> --relation-type predecessor --target-id <blocker>`, which records "`<child>` is blocked by `<blocker>`" (it writes `Dependency-Reverse` on the child; the relation name states the **target's** role). `--relation-type` accepts **friendly names only** — `parent`, `child`, `predecessor`, `successor`, `related`; a reference name such as `System.LinkTypes.Dependency-Reverse` is rejected outright. A ticket is unblocked when every predecessor has reached its completed state. Do not record blocking as body prose.
-- **Frontier query**: list the map's children — `az boards work-item show --id <map> --expand relations` and keep the `System.LinkTypes.Hierarchy-Forward` targets — then for each child read `--expand relations` and collect its `System.LinkTypes.Dependency-Reverse` (predecessor) targets. Fetch those predecessors' states in one flat WIQL query, drop any child with an unfinished predecessor or an `System.AssignedTo` value, and take the first remaining in map order.
-- **Claim**: `az boards work-item update --id <n> --assigned-to "<user>"` — the session's first write.
-- **Resolve**: `az boards work-item update --id <n> --discussion "<answer>"`, then `az boards work-item update --id <n> --state "<TICKET_COMPLETED_STATE>"`, then append a context pointer (gist + link) to the map's Decisions-so-far.

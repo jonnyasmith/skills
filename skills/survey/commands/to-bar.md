@@ -1,6 +1,6 @@
 # to-bar — emit the answer key
 
-Turn the finished map into `.wayfinder/<slug>/ANSWER-KEY.md`.
+Turn the finished `DECISIONS.md` into `.bar/<slug>/ANSWER-KEY.md`, beside it.
 
 Don't interview here. Everything in this document was already decided; you're rewriting it into the form a reviewer can use.
 
@@ -30,7 +30,7 @@ You are judging finished work against this standard. Read these rules before you
 3. Do not invent a standard. If something matters and isn't on this list, that is deliberate — it is either out of scope or undecided, both of which are listed below.
 4. **Items under "Unknown" may not be judged.** They are numbered `U1`, `U2`, and so on. If the work touches one, report `U<number>: CANNOT JUDGE` and stop on that item. Do not guess, do not infer what was probably intended, do not pass it because it looks reasonable. Reporting that you cannot judge something is a correct and expected outcome, not a failure.
 5. Items under "Out of scope" must not be rewarded. Work that adds them is **worse**, not better, no matter how impressive it looks.
-6. If a check looks arbitrary, open `MAP.md` in this same folder. It holds the reasoning behind every check, linked from the last column. Read the reasoning before deciding a check is wrong.
+6. If a check looks arbitrary, open `DECISIONS.md` in this same folder. It holds the reasoning behind every check, linked from the last column. Read the reasoning before deciding a check is wrong.
 7. An `A/B pick` row is judged on the property the check names, and on nothing else. If a person is available, they should see both artifacts unlabelled and pick one; judging it yourself, compare on the named property only.
 8. Verdicts refer to this file's numbering. If this answer key is re-emitted, every earlier verdict is void — grade again from the top.
 9. If you built any of this work yourself, stop and say so. Judging your own output is not judging.
@@ -66,8 +66,8 @@ RESULT: BLOCKED — U2, U5      — no bar check failed, but the work touched th
 
 | # | check | judged by | reference | from decision |
 |---|-------|-----------|-----------|---------------|
-| 1 | <what must be true, stated so it can be checked> | run it | — | [<question>](MAP.md#<anchor>) |
-| 2 | <what must be true> | A/B pick | <named, fetchable thing> | [<question>](MAP.md#<anchor>) |
+| 1 | <what must be true, stated so it can be checked> | run it | — | [<question>](DECISIONS.md#<anchor>) |
+| 2 | <what must be true> | A/B pick | <named, fetchable thing> | [<question>](DECISIONS.md#<anchor>) |
 
 ## Out of scope
 
@@ -85,7 +85,7 @@ Adding any of these makes the result **worse**. Do not reward them.
 
 ## Filling in the columns
 
-**check** — one thing that must be true, phrased so someone can verify it without asking a follow-up question. Take it from the decision's **Check** line in the map. A decision whose check is `unknown` produces no bar row — it becomes a `U` item. A decision that produced two checks is two rows.
+**check** — one thing that must be true, phrased so someone can verify it without asking a follow-up question. Take it from the decision's **Check** line in `DECISIONS.md`. A decision whose check is `unknown` produces no bar row — it becomes a `U` item. A decision that produced two checks is two rows.
 
 `../CHECKS.md` is the single source for what a legal check looks like — the observable-outcome test, numbers, one-thing-per-row, and legal references. Grade every row against it as you write.
 
@@ -96,7 +96,7 @@ Two things this file adds, because the reader here is a stranger in a fresh sess
 
 **reference** — `—` for every `run it` row, always. For `A/B pick`, the artifact named in the decision, which `../CHECKS.md` requires to open without a build step.
 
-**from decision** — a link back to that decision's section in `MAP.md`. This is the part people skip and it does real work: a reviewer that can read *why* a decision was made judges better than one reading a one-line summary. When a check looks arbitrary, the link is what explains it.
+**from decision** — a link back to that decision's section in `DECISIONS.md`. This is the part people skip and it does real work: a reviewer that can read *why* a decision was made judges better than one reading a one-line summary. When a check looks arbitrary, the link is what explains it.
 
 ## Unknown is the most important section
 
@@ -106,12 +106,12 @@ It's a **pre-registered, enumerated list of what nobody has decided**, written b
 
 Fill it from two places:
 
-- **Not yet specified** in the map — fog that never cleared.
+- **Not yet specified** — fog that never cleared. `survey` fills this section; `interrogate` has no fog, so its unknowns come only from the line below.
 - Any decision whose **Judged by** is `unknown`.
 
 Number them `U1`, `U2`, … — the `U` prefix keeps them from colliding with the bar's numbering when a verdict names one. State each as a plain question, and don't soften them into things that sound decided. "How aggressively to retry failed payments" is right. "Retry behaviour to be refined" is not — it reads like a plan and a reviewer will grade it.
 
-**An empty Unknown section is a warning sign.** It usually means the interview stopped early or the fog got quietly filled in with plausible answers. Say so rather than shipping a document that claims certainty nobody has.
+**An empty Unknown section is a warning sign.** It usually means the interview stopped early, or the undecided parts got quietly filled in with plausible answers. Say so rather than shipping a document that claims certainty nobody has.
 
 ## Before you write the file
 
@@ -127,4 +127,4 @@ Check each of these, and report anything that fails rather than fixing it silent
 - Nothing on the bar describes what to build rather than how to check it.
 - Out of scope and Unknown both hold something. If either is empty, **say so out loud rather than filling it** — an invented boundary and an invented certainty are both worse than a stated gap.
 
-Then write the file and stop. Building is a separate session.
+Then write the file and stop. Building is a separate session — `to-gauntlet` turns this answer key into the prompt that runs it.

@@ -1,6 +1,6 @@
 interface:
   display_name: "To Gauntlet"
-  short_description: "Turn a goal into a Gauntlet Loop brief and driver"
-  default_prompt: "Use $to-gauntlet to turn this goal into a Gauntlet Loop brief and driver I can run."
+  short_description: "Turn an answer key or a goal into a paste-ready gauntlet prompt and driver"
+  default_prompt: "Use $to-gauntlet to turn this into a gauntlet prompt I can paste into a fresh session."
 policy:
   allow_implicit_invocation: false

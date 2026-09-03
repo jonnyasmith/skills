@@ -8,9 +8,9 @@ Six moves, in this order. Write it as flowing prose, not headings. Under 200 wor
 
 1. **The goal**, in one or two sentences, stated as what must be true when it is done. Fold the Scope you settled into this — the features that make the artifact recognisably itself.
 2. **The constraints**, in the same breath. Stack, hosting, data to import. Only the ones that are genuinely fixed.
-3. **The bar**, named as a thing the critic can open and look at.
+3. **The bar**, named as a thing the critic can open and look at. When an answer key exists, that is the bar: give its absolute path and say the critic grades every row of its table in the key's own verdict form, `BLOCKED` included.
 4. **The loop**: the lead agent splits the goal into the smallest pieces that can be improved and judged separately, and decides that split itself. Each important piece gets a builder and a separate harsh critic — a fresh subagent starts blank, and that blankness is the independence. Name the **instrument** each critic inspects reality with: screenshots through `browser` and `inspect_image` for anything visual, the test or benchmark command for behaviour, real measurements for performance. The critic compares against the bar blind where possible, names the single biggest gap when ours loses, and sends it back.
-5. **A scoreboard** the lead agent keeps current as the work evolves: `todo` phases plus a live `PROGRESS.html` beside the work, whose shape is `skill://gauntlet-loop/PROGRESS.html` — name that path in the brief rather than describing the page, since the template's own comments carry the rules that keep it honest.
+5. **A scoreboard** the lead agent keeps current as the work evolves: `todo` phases plus a live `PROGRESS.html` beside the work, whose shape is `skill://to-gauntlet/PROGRESS.html` — name that path in the brief rather than describing the page, since the template's own comments carry the rules that keep it honest.
 6. **Out of scope**, as a short list, then the trailer: `orchestrate`, lowercase, as a standalone word.
 
 ## The driver
@@ -30,7 +30,7 @@ Arm goal mode in two lines — objective first, since the budget attaches to an 
 
 Arming does not start a turn, so the brief is the first thing the agent reads. Bare `/goal` opens an editor when the objective runs long. Goal mode then re-injects the objective after every yield, holds the agent to the full objective rather than an easier subset, and refuses "done" without current-state evidence; when the budget runs out it forces a wrap-up instead of a fake success. `/autoresearch` instead has the agent write `./autoresearch.sh` (exit 0, print `METRIC <name>=<value>`), commits it as a baseline, then keeps or reverts each experiment on the metric and flags runs that look reward-hacked.
 
-Outside omp — Claude Code, Codex — the brief is unchanged, the driver is that harness's own continuation, and the stop condition is the user.
+Outside omp — Claude Code, Codex — the brief is unchanged, the driver is that harness's own continuation, and the stop condition is the user. In Claude Code that means the user's own `/loop <count|duration>` and `ultracode` keystrokes, sent after the brief; they stay out of the brief prose, where they are inert text. Elsewhere, tell the user to keep re-submitting until the critic picks ours, with builders and critics as parallel subagents.
 
 ## Rules
 
@@ -69,7 +69,7 @@ side by side with Todoist blind — never the builder's summary. When ours
 loses, name the single biggest gap and send it back.
 
 Keep `todo` current and a live `PROGRESS.html` beside the work, in the shape of
-`skill://gauntlet-loop/PROGRESS.html`, showing the work evolving.
+`skill://to-gauntlet/PROGRESS.html`, showing the work evolving.
 
 Out of scope: collaboration, karma, third-party integrations, push
 notifications, native mobile apps.

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Interrogate"
+  short_description: "Interrogate a known design until every edge is decided, and write the standard for judging it"
+  default_prompt: "Use $interrogate to grill me on the edges of this and write the answer key."
+policy:
+  allow_implicit_invocation: false

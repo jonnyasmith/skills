@@ -29,7 +29,7 @@ Once the user has picked:
    In practice that means one of two things: **a single self-contained file that opens on a double-click** — one HTML file with everything inlined, no build step, no server, no dependencies — or **a screenshot**, if what was decided is purely how it looks.
 
    A prototype that needs `pnpm dev`, a scratch database, and the right branch checked out is a dead link. Convert it before recording the decision: inline the styles, stub the data, save the file. Then note the exact path in the answer's **Reference** line.
-2. **Write the answer** into the map: what was picked, why (the user's words, not your summary of them), and the check.
+2. **Write the answer** into `DECISIONS.md`: what was picked, why (the user's words, not your summary of them), and the check.
 3. **The check for a prototype question is almost always `A/B pick`**, with this prototype as the reference. That's the point of having built it. Name the property the comparison turns on — the reviewer judges on that and nothing else.
 
 Occasionally the reaction produces a hard rule — "the empty state must always tell you what to do next." That's a **run it** check, and it's better than the A/B. Take it when it appears.

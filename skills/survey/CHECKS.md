@@ -1,6 +1,6 @@
 # checks — the two forms of judgment
 
-Every answered question carries exactly one check, and every check takes one of two forms. This file is the single source for what is legal; `SKILL.md`, `commands/grill.md` and `commands/to-bar.md` all defer to it.
+Every answered question carries exactly one check, and every check takes one of two forms. This file is the single source for what is legal; `SKILL.md`, `commands/interview.md`, `commands/to-bar.md` and the `interrogate` skill all defer to it.
 
 | Judged by | Use it when | What the reviewer does | Reference |
 |---|---|---|---|
