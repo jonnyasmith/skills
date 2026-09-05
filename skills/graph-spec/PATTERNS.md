@@ -128,21 +128,21 @@ BAR:          [absolute path / URL / product] — the checker opens it itself.
               It supplies the rows, the verdict form and the out-of-scope list.
 ANCHORS:      [the fixed numbers carried in from before this work] — restating,
               relaxing or recomputing one is a failure, not a result.
-FAN OUT:      one builder per [piece]; each owns a named subset of the bar.
-              Each piece runs its own build, check and rework loop and closes
-              when it passes, so a piece on its fourth attempt never holds up
-              a piece that passed on its first.
+FAN OUT:      one builder per [piece]; each owns a named subset of the bar
 HIDDEN EDGE:  [row N of piece A needs piece B's output] — list every one. Until
               B lands, that row is CANNOT JUDGE naming B, never FAIL.
-RULE:         builder returns what it changed. Never a grade, never a screenshot.
-VERIFY:       a fresh checker per piece opens the bar and runs every row it owns.
+PER PIECE:    an inner loop; every open piece runs its own at the same time
+  RULE:       builder returns what it changed. Never a grade, never a
+              screenshot.
+  VERIFY:     a fresh checker opens the bar and runs every row this piece owns.
               PASS / FAIL / CANNOT JUDGE. No partial credit, no fourth verdict.
               It never sees the builder's report. A row it cannot run because
               another piece has not landed is CANNOT JUDGE naming that piece,
               never FAIL — no builder can close a gap outside its own.
-REWORK:       a piece that fails any row goes back to a builder carrying the
-              checker's single biggest gap. It stays open until every row passes.
-LOOP:         each piece loops until it passes; the run ends when none is open
+  REWORK:     a piece that fails any row goes back to a builder carrying the
+              checker's single biggest gap.
+LOOP:         a piece closes when every row it owns passes. The run ends when
+              no piece is open.
 CAP:          [M] pieces x [N] attempts x 2 agents = [M*N*2]; no piece past [N]
 ON FAIL:      a row nobody could run is CANNOT JUDGE, never a pass. The cap firing
               is a failure and must not report as success.
@@ -185,18 +185,20 @@ EXPLORE:      one agent, alone, reads what the tickets need and writes notes to
 FAN OUT:      one agent per ticket whose blockers have already merged, each in
               its own worktree. Re-derive that set after every merge, so the
               width rises and falls with the graph.
-RULE:         a worker returns its branch, its commits, and what it changed.
-VERIFY:       a fresh checker per ticket, before that ticket merges. It opens
-              the ticket itself and never sees the worker's report.
-REWORK:       a rejected ticket returns to a worker and stays off the frontier
+PER TICKET:   an inner loop; every ticket on the frontier runs its own at once
+  RULE:       a worker returns its branch, its commits, and what it changed.
+  VERIFY:     a fresh checker, before that ticket merges. It opens the ticket
+              itself and never sees the worker's report.
+  REWORK:     a rejected ticket returns to a worker and stays off the frontier
               until it passes. Nothing that depends on it starts.
-MERGE:        one at a time, in completion order. A merge that conflicts or
+  MERGE:      one at a time, in completion order. A merge that conflicts or
               breaks the build is rework, not a merge.
-LOOP:         until no ticket is open
-CAP:          [N] tickets x 2 agents + [M] rounds of rework = [total]
+LOOP:         a ticket closes when it merges. The run ends when none is open.
+CAP:          [N] tickets x [M] attempts x 2 agents = [N*M*2]; none past [M]
 ON FAIL:      a ticket nobody could start names the blocker that never landed.
               Tickets still open at the cap are a failure, not a partial pass.
-REPORT:       ticket x round grid, what merged, what is open and what blocks it
+REPORT:       one row per ticket: attempts taken, when it merged, or what
+              still blocks it
 SAVE:         the PR, draft until every ticket has passed
 HUMAN GATE:   nothing is marked ready for review without asking me
 

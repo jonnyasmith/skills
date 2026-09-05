@@ -75,10 +75,11 @@ ANCHORS:      <fixed numbers carried in that may not move>            (gauntlet)
 FAN OUT:      <one agent per UNIT, in parallel>
 HIDDEN EDGE:  <what a unit needs from another, and its verdict until then>
 POINTERS:     <what each worker is handed as a path or link, never pasted>
-RULE:         <the contract each worker returns — fields, sources, dates>
-VERIFY:       <independent checker, fresh context, what it tries to kill>
-REWORK:       <what a rejected unit carries back to a builder>        (gauntlet)
-LOOP:         <what ends it — never a round count>                  (loop shapes)
+PER UNIT:     <an inner loop; every open unit runs its own>          (loop shapes)
+  RULE:       <the contract each worker returns — fields, sources, dates>
+  VERIFY:     <independent checker, fresh context, what it tries to kill>
+  REWORK:     <what a rejected unit carries back to a builder>         (gauntlet)
+LOOP:         <what closes one unit, and what ends the run>          (loop shapes)
 DEDUPE:       <what counts as a duplicate>          (when finds can repeat)
 MERGE:        <how the results become one thing>
 CAP:          <hard limit on units / agents this run>
@@ -101,6 +102,12 @@ cheap and `ON FAIL` keeps its report honest. `POINTERS` is the other half of
 that arithmetic: every worker pays for what it is handed, so hand it the path
 to the spec, the notes and the prior commits, never their contents. It appears
 whenever more than about three workers read the same source.
+
+When the spec loops, `RULE`, `VERIFY` and `REWORK` nest under `PER UNIT`. Those
+three are the loop, and the indent is what makes the back edge visible. Every
+open unit runs its own copy at the same time, so `LOOP` states two things: what
+closes one unit, and what ends the run. Only a shared workspace flattens this
+into rounds, and a spec that does it says why.
 
 Open [`PATTERNS.md`](PATTERNS.md), read every shape, and adapt the closest one.
 Read its **Fixes** section in the same pass: those are repairs bolted onto a
