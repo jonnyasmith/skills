@@ -181,7 +181,9 @@ SEAM FIRST:   one agent, alone, builds only the shared boundary every unit
 rate-limited API are not independent — that is a hidden edge. Give each its own
 space, or draw the edge and let them run in sequence. Never isolate two units a
 listed hidden edge connects: separate spaces do not remove the edge, they only
-hide it until the round is spent.
+hide it until the round is spent. Those units share one tree, so verify on a
+quiet one — every builder stopped before any checker runs — or the checks race
+the writes and the failures belong to nobody.
 
 ```text
 FAN OUT:      one agent per [unit], each in its own git worktree, in parallel
