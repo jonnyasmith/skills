@@ -150,6 +150,7 @@ ON FAIL:      a row nobody could run is CANNOT JUDGE, never a pass. The cap firi
               is a failure and must not report as success.
 REPORT:       one row per piece: attempts taken, rows still failing, and
               evidence a reader can chase
+SAVE:         [the result file] — the piece grid, every row and its evidence
 HUMAN GATE:   a checker hitting an undecided question stops the run and asks me
 
 (start the prompt with the word "workflow" so Claude builds the graph)

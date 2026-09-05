@@ -90,7 +90,7 @@ MERGE:        <how the results become one thing>
 CAP:          <hard limit on units / agents this run>
 ON FAIL:      flag any unit that returns nothing, never skip it silently
 REPORT:       <what lands in front of me, and how it is ranked>
-SAVE:         <path>                                 (when files are written)
+SAVE:         <where the report lands>               (when files are written)
 HUMAN GATE:   <what must not happen without asking me>
 
 (start the prompt with the word "workflow" so Claude builds the graph)
@@ -107,6 +107,10 @@ cheap and `ON FAIL` keeps its report honest. `POINTERS` is the other half of
 that arithmetic: every worker pays for what it is handed, so hand it the path
 to the spec, the notes and the prior commits, never their contents. It appears
 whenever more than about three workers read the same source.
+
+`SAVE` names where the output lands, and only that. A restriction on what may
+not be touched is a `HUMAN GATE`, so a spec that writes the restriction into
+`SAVE` has left its own report with nowhere to go.
 
 When the spec loops, `RULE`, `VERIFY` and `REWORK` nest under `PER UNIT`. Those
 three are the loop, and the indent is what makes the back edge visible. Every
