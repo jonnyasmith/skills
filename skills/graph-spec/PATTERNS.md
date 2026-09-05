@@ -136,6 +136,8 @@ PER PIECE:    an inner loop; every open piece runs its own at the same time
               screenshot.
   VERIFY:     a fresh checker opens the bar and runs every row this piece owns.
               PASS / FAIL / CANNOT JUDGE. No partial credit, no fourth verdict.
+              A row checked by more than one lens passes only when every lens
+              holds, and its negative control has a veto. Never a majority.
               It never sees the builder's report. A row it cannot run because
               another piece has not landed is CANNOT JUDGE naming that piece,
               never FAIL — no builder can close a gap outside its own.
@@ -161,8 +163,10 @@ every fast piece wait for the slowest.
 
 One thing forces that outer loop back: a shared tree. When the pieces cannot be
 isolated, no checker may run while any builder writes, so the barrier is real and
-the run becomes rounds. Say so when it happens, cap it as `[N] rounds x [M]
-pieces x 2 agents`, and report a piece x round grid instead.
+the run becomes rounds. Say so when it happens, and report a piece x round grid
+instead. Keep the cap on attempts even then. A round count equals an attempt
+count only when every piece runs in every round, and a piece held back to a later
+stage, or one that closes early, breaks that in both directions.
 
 The bar is the whole pattern. Named, fetchable, comparable — if a checker cannot
 open it, it will invent the comparison and pass round one. An answer key of binary

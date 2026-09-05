@@ -53,9 +53,14 @@ that verifier gets a **fresh context** — it reads the finding alone. A worker
 sharing context with its checker is one loop grading its own homework.
 
 Split the check by lens where the finding can fail more than one way: is it
-correct, is it current, is the source real. Majority keeps it alive. Point each
-lens at an **anchor** where one exists — "the test passes", not "the agent says
-it passes".
+correct, is it current, is the source real. Point each lens at an **anchor**
+where one exists — "the test passes", not "the agent says it passes".
+
+How the lenses combine depends on what is being graded, and getting this
+backwards is how a bar goes soft. A finding is weighed, so a majority keeps it
+alive and the rest is dropped. A row of a bar is binary, so every lens must hold
+and a negative control that does not fail vetoes the row on its own. A majority
+vote over a binary row is partial credit wearing a different hat.
 
 Done when every finding has a verifier and every verifier has something to
 check against.
@@ -75,11 +80,11 @@ ANCHORS:      <fixed numbers carried in that may not move>            (gauntlet)
 FAN OUT:      <one agent per UNIT, in parallel>
 HIDDEN EDGE:  <what a unit needs from another, and its verdict until then>
 POINTERS:     <what each worker is handed as a path or link, never pasted>
-PER UNIT:     <an inner loop; every open unit runs its own>          (loop shapes)
+PER UNIT:     <an inner loop; every open unit runs its own>         (loop shapes)
   RULE:       <the contract each worker returns — fields, sources, dates>
   VERIFY:     <independent checker, fresh context, what it tries to kill>
   REWORK:     <what a rejected unit carries back to a builder>         (gauntlet)
-LOOP:         <what closes one unit, and what ends the run>          (loop shapes)
+LOOP:         <what closes one unit, and what ends the run>         (loop shapes)
 DEDUPE:       <what counts as a duplicate>          (when finds can repeat)
 MERGE:        <how the results become one thing>
 CAP:          <hard limit on units / agents this run>
