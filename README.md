@@ -19,6 +19,7 @@ A skill is a directory containing a `SKILL.md` with YAML frontmatter (`name`, `d
 | [`discovery`](skills/discovery/) | Build a visual, evidence-backed architecture discovery report. |
 | [`domain-modeling`](skills/domain-modeling/) | Build and sharpen a project's domain model and decisions. |
 | [`excalidraw-diagram`](skills/excalidraw-diagram/) | Create Excalidraw diagram JSON that argues visually. |
+| [`graph-spec`](skills/graph-spec/) | Turn a job into a paste-ready GRAPH SPEC prompt for a fleet. |
 | [`grill-with-docs`](skills/grill-with-docs/) | Grilling session that also writes ADRs and a glossary. |
 | [`grilling`](skills/grilling/) | Stress-test thinking, one round of unblocked questions at a time. |
 | [`handoff`](skills/handoff/) | Compact a conversation into a handoff document for another agent. |
