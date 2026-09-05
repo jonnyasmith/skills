@@ -128,7 +128,10 @@ BAR:          [absolute path / URL / product] — the checker opens it itself.
               It supplies the rows, the verdict form and the out-of-scope list.
 ANCHORS:      [the fixed numbers carried in from before this work] — restating,
               relaxing or recomputing one is a failure, not a result.
-FAN OUT:      one builder per [piece]; each owns a named subset of the bar
+FAN OUT:      one builder per [piece]; each owns a named subset of the bar.
+              Each piece runs its own build, check and rework loop and closes
+              when it passes, so a piece on its fourth attempt never holds up
+              a piece that passed on its first.
 HIDDEN EDGE:  [row N of piece A needs piece B's output] — list every one. Until
               B lands, that row is CANNOT JUDGE naming B, never FAIL.
 RULE:         builder returns what it changed. Never a grade, never a screenshot.
@@ -139,15 +142,27 @@ VERIFY:       a fresh checker per piece opens the bar and runs every row it owns
               never FAIL — no builder can close a gap outside its own.
 REWORK:       a piece that fails any row goes back to a builder carrying the
               checker's single biggest gap. It stays open until every row passes.
-LOOP:         until no piece is open
-CAP:          [N] rounds x [M] pieces x 2 agents = [N*M*2]
+LOOP:         each piece loops until it passes; the run ends when none is open
+CAP:          [M] pieces x [N] attempts x 2 agents = [M*N*2]; no piece past [N]
 ON FAIL:      a row nobody could run is CANNOT JUDGE, never a pass. The cap firing
               is a failure and must not report as success.
-REPORT:       piece x round grid, rows still failing, evidence a reader can chase
+REPORT:       one row per piece: attempts taken, rows still failing, and
+              evidence a reader can chase
 HUMAN GATE:   a checker hitting an undecided question stops the run and asks me
 
 (start the prompt with the word "workflow" so Claude builds the graph)
 ```
+
+The loop is per piece, not per fleet. Build, check and rework are an inner loop
+inside one piece, so the fleet is [M] independent gauntlets and its width is
+however many pieces are still open. One outer loop that builds every piece and
+then grades every piece is a waterfall with a QA gate, repeated, and it makes
+every fast piece wait for the slowest.
+
+One thing forces that outer loop back: a shared tree. When the pieces cannot be
+isolated, no checker may run while any builder writes, so the barrier is real and
+the run becomes rounds. Say so when it happens, cap it as `[N] rounds x [M]
+pieces x 2 agents`, and report a piece x round grid instead.
 
 The bar is the whole pattern. Named, fetchable, comparable — if a checker cannot
 open it, it will invent the comparison and pass round one. An answer key of binary
@@ -251,3 +266,23 @@ Name that exit, and make it what the next stage needs — the arrays exist, the
 crate builds — never "the piece passes". A unit whose own rows depend on a later
 stage cannot pass in its own stage, and a plan that assumes it will spends a
 round finding out.
+
+**Mixed isolation.** Usually only part of a graph is connected. A unit is free
+only if it appears nowhere in `HIDDEN EDGE`, on either side, **and** writes no
+file another unit writes. Both, not either: two units with no edge between them
+still collide if they touch the same file, and a worktree merge finds that late.
+
+Split the fleet and run the halves at the same time under different rules.
+
+```text
+FAN OUT:      [free units] one worktree each, each running its own build, check
+              and rework loop to completion, ungated by any stage
+              [connected units] one shared tree, staged, every builder of a
+              stage stopped before any checker runs
+```
+
+Default a unit to the connected half. A unit wrongly called free is graded in a
+worktree where the other piece's output does not exist and nothing marks it
+pending, so its checker returns FAIL where the truth is CANNOT JUDGE. A wrong
+partition costs a round and a false verdict. An over-cautious one costs only the
+barrier.
