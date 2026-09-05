@@ -98,11 +98,10 @@ edge; finding one and omitting it is the failure this field exists to stop. A
 fleet burns tokens in proportion to its width, so `CAP` keeps the first run
 cheap and `ON FAIL` keeps its report honest.
 
-Match the job to a shape in [`PATTERNS.md`](PATTERNS.md) — research desk, repo
-sweep, discovery loop, gated multi-phase, content draft, gauntlet — and adapt
-the closest one. Its **Fixes** section holds the repairs for wide fan-ins, for
-units that all touch one shared seam, and for workers that share a file or an
-API; apply them when the spec has any of those.
+Open [`PATTERNS.md`](PATTERNS.md), read every shape, and adapt the closest one.
+Read its **Fixes** section in the same pass: those are repairs bolted onto a
+spec that has the matching weakness. A real job usually takes one shape and
+more than one fix, so do not stop at the first heading that matches.
 
 Done when the block reads as instructions to a fleet, with no bracket left
 unfilled.
