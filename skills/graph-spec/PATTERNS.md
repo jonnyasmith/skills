@@ -126,6 +126,8 @@ GOAL: [thing] where every row of the bar passes
 
 BAR:          [absolute path / URL / product] — the checker opens it itself.
               It supplies the rows, the verdict form and the out-of-scope list.
+ANCHORS:      [the fixed numbers carried in from before this work] — restating,
+              relaxing or recomputing one is a failure, not a result.
 FAN OUT:      one builder per [piece]; each owns a named subset of the bar
 RULE:         builder returns what it changed. Never a grade, never a screenshot.
 VERIFY:       a fresh checker per piece opens the bar and runs every row it owns.
@@ -189,4 +191,10 @@ unit wide.
 
 ```text
 FAN OUT:      [unit A] alone, then [unit B and C] at once, then [unit D] last
+STAGE EXIT:   [what must be true before the next stage starts]
 ```
+
+Name that exit, and make it what the next stage needs — the arrays exist, the
+crate builds — never "the piece passes". A unit whose own rows depend on a later
+stage cannot pass in its own stage, and a plan that assumes it will spends a
+round finding out.

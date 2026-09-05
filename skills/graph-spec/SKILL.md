@@ -35,10 +35,10 @@ Then check the fan-out for **hidden edges**: does any unit need another unit's
 output before it can be graded? If so, name which, and expect those to fail
 their first round for reasons they do not own.
 
-Then state the **widest stage** — the most units that genuinely run together
-once the edges are drawn. Below about four, say so plainly and say what the
-graph buys over a plain loop. A staged plan presented as a fan-out costs fleet
-money for loop speed.
+Then count the **widest stage** — the most units that genuinely run together
+once the edges are drawn. Carry that number to section 5. Below about four, work
+out what the graph buys over a plain loop and carry that too, because a staged
+plan presented as a fan-out costs fleet money for loop speed.
 
 Done when every remaining arrow carries named data. If no two jobs are left
 without an edge between them, the work is not wide: say so and hand back a
@@ -70,6 +70,7 @@ fields the job does not need rather than leaving them blank.
 GOAL: <one sentence, the finished artifact>
 
 BAR:          <what the checker opens; the anchor it grades against>  (gauntlet)
+ANCHORS:      <fixed numbers carried in that may not move>            (gauntlet)
 FAN OUT:      <one agent per UNIT, in parallel>
 RULE:         <the contract each worker returns — fields, sources, dates>
 VERIFY:       <independent checker, fresh context, what it tries to kill>
@@ -88,7 +89,9 @@ HUMAN GATE:   <what must not happen without asking me>
 
 `GOAL`, `FAN OUT`, `VERIFY`, `CAP`, `ON FAIL` and `REPORT` always appear. `BAR`,
 `REWORK` and `LOOP` appear together or not at all — a rework edge with no bar is
-a loop with no exit. A fleet burns tokens in proportion to its width, so `CAP`
+a loop with no exit. `ANCHORS` is separate from `BAR`: the bar is where the rows
+live, anchors are numbers that predate the work and may not be restated,
+relaxed or recomputed. A fleet burns tokens in proportion to its width, so `CAP`
 keeps the first run cheap and `ON FAIL` keeps its report honest.
 
 Match the job to a shape in [`PATTERNS.md`](PATTERNS.md) — research desk, repo
@@ -103,6 +106,8 @@ unfilled.
 ## 5. Hand it over
 
 Return the block in a fence, plus at most three lines: the assumptions you made,
-the cap you chose, and what to widen after the first run comes back clean.
+the cap you chose, and the widest stage with what the graph buys over a plain
+loop at that width. The width line is not optional — it is the only place the
+hidden-edge finding of section 2 reaches the user.
 
 Done when the user has a block they can paste with no edits.
