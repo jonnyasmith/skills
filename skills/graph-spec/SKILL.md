@@ -74,6 +74,7 @@ BAR:          <what the checker opens; the anchor it grades against>  (gauntlet)
 ANCHORS:      <fixed numbers carried in that may not move>            (gauntlet)
 FAN OUT:      <one agent per UNIT, in parallel>
 HIDDEN EDGE:  <what a unit needs from another, and its verdict until then>
+POINTERS:     <what each worker is handed as a path or link, never pasted>
 RULE:         <the contract each worker returns — fields, sources, dates>
 VERIFY:       <independent checker, fresh context, what it tries to kill>
 REWORK:       <what a rejected unit carries back to a builder>        (gauntlet)
@@ -96,7 +97,10 @@ live, anchors are numbers that predate the work and may not be restated,
 relaxed or recomputed. `HIDDEN EDGE` is dropped only when section 2 found no
 edge; finding one and omitting it is the failure this field exists to stop. A
 fleet burns tokens in proportion to its width, so `CAP` keeps the first run
-cheap and `ON FAIL` keeps its report honest.
+cheap and `ON FAIL` keeps its report honest. `POINTERS` is the other half of
+that arithmetic: every worker pays for what it is handed, so hand it the path
+to the spec, the notes and the prior commits, never their contents. It appears
+whenever more than about three workers read the same source.
 
 Open [`PATTERNS.md`](PATTERNS.md), read every shape, and adapt the closest one.
 Read its **Fixes** section in the same pass: those are repairs bolted onto a

@@ -1,6 +1,6 @@
 # Patterns
 
-Six shapes of the same diamond. Pick the closest, swap the bracketed parts,
+Seven shapes of the same diamond. Pick the closest, swap the bracketed parts,
 keep `CAP` / `ON FAIL` / `HUMAN GATE`.
 
 ## Research desk
@@ -154,6 +154,52 @@ open it, it will invent the comparison and pass round one. An answer key of bina
 rows is the strongest form: it works for goals with no existing product to sit
 beside.
 
+## Frontier
+
+A fixed set of units that block each other, and too many edges to stage by hand.
+The width is never chosen: it is re-derived after every merge.
+
+```text
+▸ GRAPH SPEC
+GOAL: [every ticket in the spec implemented, on one branch, as one PR]
+
+POINTERS:     the spec, the ticket list, the notes directory, the branch. A
+              worker is handed paths and returns paths. Nothing is pasted.
+EXPLORE:      one agent, alone, reads what the tickets need and writes notes to
+              [a directory outside the repo]. It implements nothing.
+FAN OUT:      one agent per ticket whose blockers have already merged, each in
+              its own worktree. Re-derive that set after every merge, so the
+              width rises and falls with the graph.
+RULE:         a worker returns its branch, its commits, and what it changed.
+VERIFY:       a fresh checker per ticket, before that ticket merges. It opens
+              the ticket itself and never sees the worker's report.
+REWORK:       a rejected ticket returns to a worker and stays off the frontier
+              until it passes. Nothing that depends on it starts.
+MERGE:        one at a time, in completion order. A merge that conflicts or
+              breaks the build is rework, not a merge.
+LOOP:         until no ticket is open
+CAP:          [N] tickets x 2 agents + [M] rounds of rework = [total]
+ON FAIL:      a ticket nobody could start names the blocker that never landed.
+              Tickets still open at the cap are a failure, not a partial pass.
+REPORT:       ticket x round grid, what merged, what is open and what blocks it
+SAVE:         the PR, draft until every ticket has passed
+HUMAN GATE:   nothing is marked ready for review without asking me
+
+(start the prompt with the word "workflow" so Claude builds the graph)
+```
+
+The frontier is the whole pattern. Every other shape here fixes its width before
+it starts. This one asks after each merge which tickets are now unblocked, so a
+ticket becomes available the moment its blockers land rather than when a stage
+boundary says so.
+
+It is also the only safe use of one worktree per unit. The edges are real, but
+the readiness rule guarantees the other side of each one has already merged.
+
+Use it when the units are known, they block each other, and the graph is too
+wide to stage by hand. When the blocking is shallow enough to write out, the
+staged `FAN OUT` under **Fixes** is cheaper and easier to read.
+
 ## Fixes
 
 Not patterns — repairs bolted onto a spec that has the matching weakness.
@@ -191,9 +237,10 @@ MERGE:        merge the worktrees back one at a time
 ```
 
 Isolation is not always available. When a unit needs another unit's output to
-build or to be graded, separate worktrees guarantee it fails. Draw the edge and
-run those units in sequence instead — and say so, because that stage is now one
-unit wide.
+build or to be graded, separate worktrees guarantee it fails, unless a readiness
+rule holds the unit back until its blockers have merged — that is **Frontier**.
+Without one, draw the edge and run those units in sequence instead, and say so,
+because that stage is now one unit wide.
 
 ```text
 FAN OUT:      [unit A] alone, then [unit B and C] at once, then [unit D] last
