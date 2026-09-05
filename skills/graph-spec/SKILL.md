@@ -32,8 +32,9 @@ Walk the steps. For each arrow ask: **does this step read the output of the one
 before it?** Yes → keep the edge. No → delete it; those jobs run at once.
 
 Then check the fan-out for **hidden edges**: does any unit need another unit's
-output before it can be graded? If so, name which, and expect those to fail
-their first round for reasons they do not own.
+output before it can be graded? Every one you find goes in the block under
+`HIDDEN EDGE`, named. An edge you found and did not write down is an edge the
+fleet spends a round rediscovering.
 
 Then count the **widest stage** — the most units that genuinely run together
 once the edges are drawn. Carry that number to section 5. Below about four, work
@@ -72,6 +73,7 @@ GOAL: <one sentence, the finished artifact>
 BAR:          <what the checker opens; the anchor it grades against>  (gauntlet)
 ANCHORS:      <fixed numbers carried in that may not move>            (gauntlet)
 FAN OUT:      <one agent per UNIT, in parallel>
+HIDDEN EDGE:  <what a unit needs from another, and its verdict until then>
 RULE:         <the contract each worker returns — fields, sources, dates>
 VERIFY:       <independent checker, fresh context, what it tries to kill>
 REWORK:       <what a rejected unit carries back to a builder>        (gauntlet)
@@ -91,8 +93,10 @@ HUMAN GATE:   <what must not happen without asking me>
 `REWORK` and `LOOP` appear together or not at all — a rework edge with no bar is
 a loop with no exit. `ANCHORS` is separate from `BAR`: the bar is where the rows
 live, anchors are numbers that predate the work and may not be restated,
-relaxed or recomputed. A fleet burns tokens in proportion to its width, so `CAP`
-keeps the first run cheap and `ON FAIL` keeps its report honest.
+relaxed or recomputed. `HIDDEN EDGE` is dropped only when section 2 found no
+edge; finding one and omitting it is the failure this field exists to stop. A
+fleet burns tokens in proportion to its width, so `CAP` keeps the first run
+cheap and `ON FAIL` keeps its report honest.
 
 Match the job to a shape in [`PATTERNS.md`](PATTERNS.md) — research desk, repo
 sweep, discovery loop, gated multi-phase, content draft, gauntlet — and adapt

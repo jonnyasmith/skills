@@ -129,6 +129,8 @@ BAR:          [absolute path / URL / product] — the checker opens it itself.
 ANCHORS:      [the fixed numbers carried in from before this work] — restating,
               relaxing or recomputing one is a failure, not a result.
 FAN OUT:      one builder per [piece]; each owns a named subset of the bar
+HIDDEN EDGE:  [row N of piece A needs piece B's output] — list every one. Until
+              B lands, that row is CANNOT JUDGE naming B, never FAIL.
 RULE:         builder returns what it changed. Never a grade, never a screenshot.
 VERIFY:       a fresh checker per piece opens the bar and runs every row it owns.
               PASS / FAIL / CANNOT JUDGE. No partial credit, no fourth verdict.
@@ -177,7 +179,9 @@ SEAM FIRST:   one agent, alone, builds only the shared boundary every unit
 
 **Isolation.** Two workers that write the same file or hit the same
 rate-limited API are not independent — that is a hidden edge. Give each its own
-space, or draw the edge and let them run in sequence.
+space, or draw the edge and let them run in sequence. Never isolate two units a
+listed hidden edge connects: separate spaces do not remove the edge, they only
+hide it until the round is spent.
 
 ```text
 FAN OUT:      one agent per [unit], each in its own git worktree, in parallel
