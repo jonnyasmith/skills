@@ -37,6 +37,10 @@ A bar row describes an outcome anybody can check from outside the work: a value,
 
 Test every row you write: could two completely different implementations both pass this? If only one could, you have written a design and it goes in the bin.
 
+The trap is the noun. A row that says "the cache artifact is at most 2 MiB", "the index resolves in one lookup", or "the table has a column for it" has named a mechanism, and the row now measures whether the work was built that way rather than whether it works. Worse, it fails the better answer: a generator made ten times faster needs no cache, and the row it cannot pass was never about caches.
+
+Cross out the noun and write the property it was there to buy. Not "the cache loads in 600 ms" but "opening a world already made takes at most 600 ms, and at most a tenth of making it". Whatever the run stores to achieve that, if anything, is its own business, and a size limit is phrased against whatever it stores rather than against a cache you imagined.
+
 ## Build the bar
 
 ### 1. Read what the user gave you
@@ -68,7 +72,7 @@ N. **<What property.>** <What to open, and the value or behaviour expected, with
    *Negative control:* <a concrete edit to the work that must make this row fail.>
 ```
 
-The negative control is the row's proof of life. A check a broken system can satisfy is not a check, and without a control every round passes it. The control must be a real edit somebody could make, not a hope.
+The negative control is the row's proof of life. A check a broken system can satisfy is not a check, and without a control every round passes it. The control is an edit to **the work**: a constant changed, a field dropped, a rule inverted, a step skipped. Weakening the judge is not a control. "Have the judge guess at random" or "compare against something else" tests the measurement, not the thing measured, and it leaves the row unproved.
 
 Spread the rows across what actually breaks: correct values, the shape and order of the result, handling of bad input, what must be refused, provenance, and the blind look. Not ten flavours of the happy path.
 
@@ -93,6 +97,8 @@ Everything above was written and checked by you. Check it from outside: give a f
 - Every row it could not run must name a missing piece, never a missing instruction.
 
 A row the critic had to ask a question about is broken. This is the last moment that is cheap to discover.
+
+Then record the result at the top of `BAR.md`: the date, that it was graded against the repository with none of the work done, and the verdict per row. A run that opens the bar can then see the ruler was itself measured, and a critic that scores a row PASS which the empty repository also passed knows to look again. Watch the no-regression rows here: "the existing behaviour still holds" is true before anybody does anything, so a row like that only means something when it is read while the new capability is being exercised.
 
 ## Hand back the prompt
 
