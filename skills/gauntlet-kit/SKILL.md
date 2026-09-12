@@ -1,93 +1,158 @@
 ---
 name: gauntlet-kit
-description: Forge a committed bar kit — mirrored sources, real fixtures, checksummed ground truth, reference images, binary rows with negative controls — then the prompt that runs a gauntlet loop against it.
-argument-hint: "The goal to build a kit for, and any reference you already have"
+description: Turn a goal plus whatever reference material the user supplies into a committed bar that builders and critics grade against, and hand back the prompt that runs the loop in a fresh session.
+argument-hint: "The goal, and the reference to verify it against"
 disable-model-invocation: true
 ---
 
-You hand back **a kit in the repository** and **one prompt** that points at it. The user pastes the prompt into a fresh session, and that session does the work.
+The user gives you a goal and some reference material. You give back two things:
 
-A kit is a **ruler**: a bar captured to disk before the run, so every critic in every round measures against the same thing. A reference an agent fetches per round is not a ruler. It drifts, it rate-limits, it is remembered rather than read, and thirty critics grade thirty slightly different standards.
+1. **`BAR.md`**, committed in the repository, next to the reference it was built from. Every builder and every critic in the run opens this one file.
+2. **One prompt**, in a fenced block, for the user to paste into a fresh session. That session runs the loop. You do not.
 
-**You are not running the loop.** You forge the ruler and write the brief. The receiving session splits the work, spawns builders and critics, and decides everything else. Do not offer to run it here: this session authored the standard, and judging work against a standard you wrote is not judging.
+Then you stop. This session wrote the standard, so it cannot also judge work against it.
 
-## When a kit beats a plain reference
+## The one rule
 
-`to-gauntlet` writes a brief around a reference or an existing answer key. Forge a kit instead when any of these hold:
+**The bar says what must be true of the finished thing. It never says how to build it.**
 
-- The bar has **published facts** — a specification, a table, a formula, a rule list — that a critic would otherwise recall from memory.
-- The bar has **instances** — real data, real pages, real files — that can be captured once and graded forever.
-- A round's verdict depends on a **derived value** (a decode, a parse, a render) that a checksum can settle without trusting anyone's report.
-- The work will run for **many rounds**, so per-round fetching is per-round drift.
+A bar row describes an outcome anybody can check from outside the work: a value, a behaviour, a refusal, a look. It never names a design, a data structure, a library, a file, or an order of work. The whole point of the loop is that the model decides all of that and is measured only on what came out.
 
-## Steps
+Test every row you write: could two completely different implementations both pass this? If only one could, you have written a design and it goes in the bin.
 
-`KIT.md` holds the kit's file layout, `truth.json`'s shape and a row's shape. Open it before step 2 and write into that layout as you go.
+## Build the bar
 
-### 1. Fix the bar's own truth
+### 1. Read what the user gave you
 
-Research the bar until you can name the origin of every fact you intend to grade. Primary sources: the specification, the vendor's own docs, the dataset's registry entry, the shipped product. Delegate the reading to scouts; keep the judgement.
+Every file, every link, every image they passed. That material is the only source of graded facts. Nothing in the bar comes from your own memory of the subject, and anything you cannot point at in the reference does not become a row.
 
-_Done when_ every claim you will grade has a URL or a repository path, and you have found the bar's **worked example** — the case its own authors publish as proof of correct handling. That example becomes a row.
+If the reference is thin, say what is missing and ask for it once. A bar built on guesses grades confidently and wrongly.
 
-### 2. Mirror it
+### 2. Pull out the checkable facts
 
-Copy every page, table and schema you rely on into the kit's `source/`, with a manifest giving each file its URL and its SHA-256.
+From the reference, quote every fact a critic could measure against: numbers, thresholds, rules, formulas, limits, and any example the source itself publishes as correct. Quote them verbatim in `BAR.md`, each with the file or URL it came from.
 
-_Done when_ the whole loop can run with the network off.
+If the reference includes instances - data, pages, captures, images - copy them into the bar's folder and list each with where it came from and its hash. The run then grades against fixed bytes, so round twelve measures the same thing round one did, and nothing depends on the network being up.
 
-### 3. Capture fixtures
+Where the goal has a look, the reference images are the picture side: a critic puts the work's own output beside them with labels stripped and says which is which.
 
-Real instances, named for what they are, chosen to span the bar rather than to be convenient: the easy case, the hard case, the degenerate case. Capture them raw, exactly as the source serves them, with URL and SHA-256 for each.
+### 3. Say what the target can express
 
-Then capture one more: a **defect fixture**, an instance where the bar's own data is wrong, misleading, or out of its published range. Quantify the defect exactly and say in the kit that it is kept on purpose. It is the single highest-value fixture in the kit, because it is the one an implementation that merely trusts its input cannot pass.
+Find the real limits of the thing being built: its resolution, its storage, its budget, its published constraints. Write them down with the code path or document that sets each one, then measure the reference against them.
 
-_Done when_ every fixture is hashed, one fixture is known-bad with its defect counted, and the reason each place was chosen is written down.
+This is what stops a row demanding fidelity the system cannot hold. Such a row fails every round no matter how good the work is, and it teaches the critic to distrust its own verdicts.
 
-### 4. Decode to ground truth
+### 4. Write the rows
 
-Derive the truth from the raw fixtures yourself and record it as data, not prose: per-fixture statistics, a **checksum of the derived form** with its byte layout stated, and a small sample a human can read.
+Ten or so, each binary, each in this shape:
 
-_Done when_ a critic can grade a builder's derivation by checksum alone, with no report in the loop.
+```
+N. **<What property.>** <What to open, and the value or behaviour expected, with its tolerance.>
+   *Negative control:* <a concrete edit to the work that must make this row fail.>
+```
 
-### 5. Render the picture side
+The negative control is the row's proof of life. A check a broken system can satisfy is not a check, and without a control every round passes it. The control must be a real edit somebody could make, not a hope.
 
-Where the goal has a look, render one image per fixture from the ground truth, by a recipe recorded beside it. These are what a blind A/B holds the work against. Screenshots of a live product are captured at a stated viewport and hashed like any other fixture.
+Spread the rows across what actually breaks: correct values, the shape and order of the result, handling of bad input, what must be refused, provenance, and the blind look. Not ten flavours of the happy path.
 
-_Done when_ each image is reproducible from the kit alone.
+If the reference contains an instance where the source's own data is wrong, misleading or out of its published range, keep it and quantify what is wrong with it. It is the one instance an implementation that merely trusts its input cannot pass.
 
-### 6. State what the target can represent
+Mark any row that only the finished system can satisfy - determinism across environments, a whole-project budget, the blind look. No single piece can pass those alone, and unmarked they burn a round with every piece claiming them.
 
-Find the limits of the thing being built — its resolution, its storage, its published constraints — and state them in the kit with the code path or document that sets each one. Then measure the fixtures against those limits.
+### 5. State the scoring
 
-_Done when_ the kit says plainly which properties are gradeable and which the target cannot express, so no row asks for fidelity the system cannot hold. A row that demands the impossible fails every round and teaches nothing.
+In `BAR.md`, at the end:
 
-### 7. Write the rows
+- Every row is PASS, FAIL, or CANNOT JUDGE. No fourth verdict and no partial credit on a row.
+- A row with more than one lens passes only when every lens holds. A negative control that does not fail kills the row on its own.
+- A piece is done when every row it owns passes. Not most of them.
+- A row that cannot be run because another piece has not landed is CANNOT JUDGE, naming that piece. It never counts as passed.
 
-Ten or so binary rows. Each row names the kit file it reads, the value it expects, and its **negative control**: a concrete mutation of the work that must make the row fail.
+### 6. Grade the bar before you hand it over
 
-_Done when_ a stranger can run every row without asking a question, every row has a control that is an actual edit rather than a hope, and the rows grade shape, order, provenance and refusal — not just happy-path values.
+Everything above was written and checked by you. Check it from outside: give a fresh critic subagent the bar and the repository as it stands, with none of the work done, and have it grade every row.
 
-Then state the scoring in the kit: the score is the count of rows that passed, no partial credit on a row, a row that cannot run because another piece has not landed is unjudgeable and names the piece it waits on.
+- The untouched repository must score **zero rows passed**.
+- Every row it could not run must name a missing piece, never a missing instruction.
 
-### 8. Write the run prompt
+A row the critic had to ask a question about is broken. This is the last moment that is cheap to discover.
 
-Follow `PROMPT-TEMPLATE.md`. Keep the moves it names and cut everything else. Write it into the kit as `PROMPT.md` so the run and its ruler stay together.
+## Hand back the prompt
 
-### 9. Hand it back
+Emit this in one fenced block, filled in. Keep the goal and constraints short. Leave the graph exactly as it is: it fixes who judges and what a verdict means, and nothing about the solution.
 
-Commit the kit. Tell the user to paste `PROMPT.md` into a fresh session, and give them the arming lines from `RUNNING.md`.
+```text
+<The goal, in a short paragraph. What must be true when it is done, and for whom. End with:
+"You decide everything about how this works. No architecture is prescribed here.">
 
-## What breaks a kit
+THE BAR is <path to BAR.md>, already in the repository: <one line per thing it contains>. Read it
+before you plan. It is the ruler, not a suggestion.
 
-- **A kit the loop still has to fetch around.** If a critic needs the network to grade a row, that row will be graded from memory on the round the site is slow.
-- **Rows without negative controls.** A check a broken system can satisfy is not a check, and every round will pass it.
-- **Ground truth as prose.** "The median elevation is about 1,250 m" is a claim; a checksum of the decoded grid is an instrument.
-- **No defect fixture.** Every fixture clean means the loop grades an implementation that trusts its input, which is the implementation that fails in the real world.
-- **Grading what the target cannot represent.** Absolute fidelity against a lossy store produces a row that never passes and a critic that learns to discount its own verdicts.
-- **A kit written from the model's memory of the spec.** Quote the mirror, verbatim, with its path beside it. An unsourced number in the ruler is worse than no ruler, because it is graded against confidently.
-- **Interviewing when the bar already exists.** If `.bar/*/ANSWER-KEY.md` or `.wayfinder/*/ANSWER-KEY.md` covers the goal, its rows are the rows; capture fixtures for them instead of inventing a second standard.
+Constraints that are not in the code and that you cannot discover by reading it:
 
-## Worked example
+- <only the facts a reader of this repository would not find: the dependency policy, what must
+  never be run, the standing checks and how they are invoked, what counts as evidence>
 
-`~/dev/transport/docs/reference/terrain-tiles/` is a kit forged by this process for importing AWS Terrain Tiles into a game engine: 5 mirrored specification pages, 28 real tiles across 7 named places, `truth.json` with a SHA-256 of each decoded grid, 7 hillshades as the picture side, the engine's own storage limits stated as a table, and 10 rows each with a negative control. Its defect fixture is open ocean at zoom 13, where 98.4 percent of the mosaic is a zero fill rather than the sea floor and 1,536 samples fall outside the published range. Read `BAR.md` there for the shape of a finished ruler.
+THE GRAPH
+
+You are the lead. You run this graph by spawning subagents and steering them with messages. You
+never build.
+
+DECOMPOSE:    yours. Split the goal into the smallest pieces that can be built and graded
+              independently, each owning a named subset of the bar's rows. You choose them,
+              sequence them, and change them when the work teaches you something.
+OWNERSHIP:    before any builder starts, every piece owns a named set of files, including the
+              check that grades it. Anything shared is owned by exactly one named piece. Post the
+              list before dispatching.
+FAN OUT:      one `builder` subagent per open piece, at once. Never one builder for two pieces,
+              never two builders in one piece's files.
+BLOCKED ROW:  where a row of piece A needs piece B's output, say so in the ownership post. Until B
+              lands, that row is CANNOT JUDGE naming B, never FAIL.
+PER PIECE:    an inner loop; every open piece runs its own at the same time.
+  BUILD:      the builder returns what it changed and which files it touched. Never a grade, never
+              a screenshot of its own work. It keeps its remaining items and its current gap
+              written in its piece's files or notes, not only in its head.
+  VERIFY:     one `critic` subagent per round, fresh context, no sight of the builder's reasoning
+              or report. It opens the bar, inspects the real output itself, and runs every row the
+              piece owns, blind and with labels stripped wherever a blind comparison is possible.
+              PASS / FAIL / CANNOT JUDGE per row, by the bar's scoring rule. Its last act is to
+              send the lead its per-row verdicts and the single biggest remaining gap.
+  REWORK:     a piece with any row failing goes back to a builder carrying that one gap and
+              nothing else. How it closes the gap is its own.
+LOOP:         a piece is done when every row it owns passes. The run ends when no piece is open,
+              or when I stop it.
+STALL:        a gap a critic names twice running is a stall. Tell me instead of spending another
+              round on it.
+SHARED TREE:  the pieces share one working tree and one build, so a critic reading shared build
+              output while a builder writes is grading a race. Keeping those apart is yours to
+              arrange, and another piece's half-finished edits are not your piece's breakage.
+READ-ONLY:    a critic modifies nothing. It proves a negative control in a scratch copy it throws
+              away, never in the tree.
+ON FAIL:      a row nobody could run is CANNOT JUDGE, never a pass. A builder or critic that
+              returns nothing is flagged, never silently skipped. Rows still failing when the run
+              ends are reported as failing.
+STEERING:     you may message any live agent at any time to redirect it, grant a file, answer a
+              blocker or kill a piece. Steering is how you adapt. It is not how you build. You own
+              no files: where a change is shared infrastructure, spawn a builder that owns those
+              files and steer it like the others.
+
+Maintain one live progress page at <path> that I can refresh to watch the work evolve: pieces,
+rounds, verdicts, the current biggest gap, every decision you take, who owns which files, and what
+you have promised to take. Update it every round and whenever you grant a file. It is your memory,
+not a report: re-read it before every dispatch round and write to it before you wait.
+
+Where the goal leaves something undecided, decide it against the bar and record the reasoning on
+that page. A question the bar cannot settle stops the run and comes to me.
+```
+
+Then tell the user: the bar's path, its size on disk, and to paste the block into a fresh session.
+
+## What ruins a run
+
+- **A row with no negative control.** It passes from round one and nobody notices.
+- **A row that names a solution.** "Uses a cache" is a design. Grade the latency it was supposed to buy.
+- **A row demanding what the target cannot express.** It never passes, and the critic learns to discount itself.
+- **A fact you remembered instead of quoted.** An unsourced number in a ruler is worse than no ruler.
+- **A bar the critic still has to fetch around.** On the round the source is slow, that row gets graded from memory.
+- **Every instance clean.** Then the loop grades an implementation that trusts its input, which is the one that fails in the real world.
+- **A critic that reads the builder's report.** That is one agent grading its own homework with extra steps.
