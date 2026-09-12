@@ -36,7 +36,7 @@ Interview until you can name all four, using the round format in `../survey/comm
 
 Find facts yourself with sub-agents; the decisions are the user's. When the user answers with an implementation choice, ask once what outcome that choice protects: the outcome goes under Goal or Scope, the choice under Constraints when it is genuinely fixed.
 
-Done when all four are named and every open question is answered. If the goal deserves a real standard rather than an analogy, say so — `survey` or `interrogate` produce an answer key, and an answer key is a stronger bar than any single reference.
+Done when all four are named and every open question is answered. If the goal deserves a real standard rather than an analogy, say so — `survey` or `interrogate` produce an answer key, and an answer key is a stronger bar than any single reference. Where the bar has published facts and real instances that can be captured to disk, `gauntlet-kit` forges a committed ruler — mirrored sources, hashed fixtures, checksummed ground truth, rows with negative controls — which is stronger still, because no round re-fetches it.
 
 ## The bar is the whole trick
 
