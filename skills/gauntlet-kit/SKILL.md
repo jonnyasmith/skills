@@ -1,16 +1,33 @@
 ---
 name: gauntlet-kit
-description: Turn a goal plus whatever reference material the user supplies into a committed bar that builders and critics grade against, and hand back the prompt that runs the loop in a fresh session.
+description: Turn a goal plus whatever reference material the user supplies into a bar that builders and critics grade against, and hand back the prompt that runs the loop in a fresh session.
 argument-hint: "The goal, and the reference to verify it against"
 disable-model-invocation: true
 ---
 
 The user gives you a goal and some reference material. You give back two things:
 
-1. **`BAR.md`**, committed in the repository, next to the reference it was built from. Every builder and every critic in the run opens this one file.
-2. **One prompt**, in a fenced block, for the user to paste into a fresh session. That session runs the loop. You do not.
+1. **`BAR.md`**, written into the run's own directory. Every builder and every critic in the run opens this one file.
+2. **`PROMPT.md`** beside it, and the same text in a fenced block for the user to paste into a fresh session. That session runs the loop. You do not.
 
 Then you stop. This session wrote the standard, so it cannot also judge work against it.
+
+## Where the run lives
+
+One directory per run, named for when it started and what it is for:
+
+```
+.loops/<YYYY-MM-DD-HHMM>-<feature_name>/
+  BAR.md      the ruler
+  PROMPT.md   the brief that points at it
+  <anything the bar grades against: captured instances, reference images, mirrored pages>
+```
+
+Create it, and make sure `.loops/` is in the repository's `.gitignore`. Add the line if it is not there.
+
+Ignoring it is deliberate. The bar is not work product: it existed before the run and it must not appear in the diff a critic grades, or a critic starts reading the ruler as part of the change and a builder starts editing the ruler to pass it. Ignored, `git status` during the run shows only what the builders made.
+
+A bar worth keeping past its run gets copied into the repository's own reference path and committed there, as a deliberate act, after the run.
 
 ## The one rule
 
@@ -32,7 +49,7 @@ If the reference is thin, say what is missing and ask for it once. A bar built o
 
 From the reference, quote every fact a critic could measure against: numbers, thresholds, rules, formulas, limits, and any example the source itself publishes as correct. Quote them verbatim in `BAR.md`, each with the file or URL it came from.
 
-If the reference includes instances - data, pages, captures, images - copy them into the bar's folder and list each with where it came from and its hash. The run then grades against fixed bytes, so round twelve measures the same thing round one did, and nothing depends on the network being up.
+If the reference includes instances - data, pages, captures, images - copy them into the run directory and list each with where it came from and its hash. The run then grades against fixed bytes, so round twelve measures the same thing round one did, and nothing depends on the network being up. Reference material the user already keeps in the repository stays where it is: cite its path in `BAR.md` rather than duplicating it.
 
 Where the goal has a look, the reference images are the picture side: a critic puts the work's own output beside them with labels stripped and says which is which.
 
@@ -79,14 +96,14 @@ A row the critic had to ask a question about is broken. This is the last moment 
 
 ## Hand back the prompt
 
-Emit this in one fenced block, filled in. Keep the goal and constraints short. Leave the graph exactly as it is: it fixes who judges and what a verdict means, and nothing about the solution.
+Write it to `PROMPT.md` in the run directory, then emit the same text in one fenced block. Keep the goal and constraints short. Leave the graph exactly as it is: it fixes who judges and what a verdict means, and nothing about the solution.
 
 ```text
 <The goal, in a short paragraph. What must be true when it is done, and for whom. End with:
 "You decide everything about how this works. No architecture is prescribed here.">
 
-THE BAR is <path to BAR.md>, already in the repository: <one line per thing it contains>. Read it
-before you plan. It is the ruler, not a suggestion.
+THE BAR is .loops/<run>/BAR.md, already on disk: <one line per thing it contains>. Read it before
+you plan. It is the ruler, not a suggestion. Nothing in .loops/ is yours to edit.
 
 Constraints that are not in the code and that you cannot discover by reading it:
 
@@ -136,16 +153,17 @@ STEERING:     you may message any live agent at any time to redirect it, grant a
               no files: where a change is shared infrastructure, spawn a builder that owns those
               files and steer it like the others.
 
-Maintain one live progress page at <path> that I can refresh to watch the work evolve: pieces,
-rounds, verdicts, the current biggest gap, every decision you take, who owns which files, and what
-you have promised to take. Update it every round and whenever you grant a file. It is your memory,
-not a report: re-read it before every dispatch round and write to it before you wait.
+Maintain one live progress page at .loops/<run>/PROGRESS.md that I can refresh to watch the work
+evolve: pieces, rounds, verdicts, the current biggest gap, every decision you take, who owns which
+files, and what you have promised to take. Update it every round and whenever you grant a file. It
+is your memory, not a report: re-read it before every dispatch round and write to it before you
+wait.
 
 Where the goal leaves something undecided, decide it against the bar and record the reasoning on
 that page. A question the bar cannot settle stops the run and comes to me.
 ```
 
-Then tell the user: the bar's path, its size on disk, and to paste the block into a fresh session.
+Then tell the user: the run directory, its size on disk, and to paste the block into a fresh session.
 
 ## What ruins a run
 
