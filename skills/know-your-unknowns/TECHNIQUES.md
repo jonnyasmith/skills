@@ -1,8 +1,6 @@
 # Techniques
 
-The seven techniques [`know-your-unknowns`](SKILL.md) owns, grouped by phase. Run the one the picker chose. Every technique obeys the rules in the skill: one HTML artifact, grounded in the repo, ending in a round trip.
-
-The other four rows of the picker belong to `teach`, `prototype`, and `grilling`.
+The eleven techniques of [`know-your-unknowns`](SKILL.md), grouped by phase. Run the one the picker chose. Every one obeys the rules in the skill: a single self-contained HTML artifact, grounded in the repo, ending in a round trip.
 
 ---
 
@@ -22,6 +20,40 @@ Read the module and its callers first — the pass is only as good as the readin
 
 Rank the cards by what they'd cost to discover later, not by how interesting they are. The artifact ends with the accepted fixes assembled into one improved implementation prompt, ready to paste.
 
+### Teach me my unknowns
+
+*The user lacks the vocabulary to say what they want.*
+
+"Make it nicer" is not a vague person, it is a missing word. Build a **vocabulary ladder** for the domain the request lives in — five or six terms, ordered so each one needs the one before it — and give every term a live demonstration rather than a definition:
+
+- A control that moves the thing the term names: a slider, a toggle, a pair of presets.
+- A before/after view that updates as the control moves, so the word attaches to a visible change.
+- One sentence of prose per term, no more. The demonstration teaches; the sentence labels.
+
+Finish with the presets the user reached for, rewritten as the precise request they were trying to make. The export hands back that sentence.
+
+### Four design directions
+
+*Nobody knows what good looks like yet.*
+
+Render the same real content four **wildly different** ways — not four palettes of one layout. Pull the directions from genuinely separate traditions: an ops console, an editorial page, a board, a terminal. The spread is the instrument; four near-neighbours measure nothing.
+
+Use the user's actual data, never lorem ipsum. Half the reaction a direction earns comes from seeing real rows in it.
+
+Each direction carries **steal** and **skip** chips on its individual parts, so the user can take the density of one and the navigation of another. The export assembles the checked chips into the reply describing the design they actually want.
+
+### Mock before you wire
+
+*Placement or interaction is in doubt.*
+
+Build the throwaway mock before touching production code. Fidelity goes only as deep as the question: if the doubt is placement, the buttons need not do anything.
+
+- Make the contested choice **toggleable** — the toolbar docked, floating, or inline — so the user switches between them instead of imagining them.
+- Put the A/B questions beside the mock, numbered, each one answerable by clicking.
+- Keep everything else deliberately plain, so attention lands on the part in doubt.
+
+The export fills in a reply template: which placement, which answers, what to build.
+
 ### Brainstorm the intervention
 
 *The goal is agreed, the move isn't.*
@@ -29,6 +61,18 @@ Rank the cards by what they'd cost to discover later, not by how interesting the
 Produce around ten interventions that would move the metric, every one grounded in code that exists. Plot them on two axes the user can see: **effort**, from ship-this-afternoon to quarter-long bet, and **blast radius**, from one file to a cross-cutting change.
 
 Include the options you expect to lose. A field of ten where two are obviously right tells the user more than three plausible ones, because it shows the edges. Each option carries a *resonates* checkbox; checking assembles the user's reply.
+
+### The interview
+
+*The request is ambiguous and the user is reachable.*
+
+Ask **one question at a time**, ordered by architectural blast radius — the choice that constrains the most other choices goes first. A batch of twenty questions gets skimmed and half-answered; a single question with three concrete options gets a real answer.
+
+- Offer options to click, plus a free-text box for the answer you failed to predict.
+- Give your recommendation and the one line of reasoning behind it, so the user can accept by default.
+- Let later questions depend on earlier answers. Questions that a previous answer made irrelevant never appear.
+
+The artifact ends with a **decisions table** — question, answer, consequence — and a ready-to-paste implementation prompt built from it.
 
 ### Point at a reference
 
