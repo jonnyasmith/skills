@@ -23,6 +23,7 @@ A skill is a directory containing a `SKILL.md` with YAML frontmatter (`name`, `d
 | [`grill-with-docs`](skills/grill-with-docs/) | Grilling session that also writes ADRs and a glossary. |
 | [`grilling`](skills/grilling/) | Stress-test thinking, one round of unblocked questions at a time. |
 | [`handoff`](skills/handoff/) | Compact a conversation into a handoff document for another agent. |
+| [`html-artifact`](skills/html-artifact/) | Render a deliverable as one self-contained HTML file. |
 | [`implement`](skills/implement/) | Implement work from a spec or set of tickets. |
 | [`implementation-loop`](skills/implementation-loop/) | Implement a spec's tickets one at a time in dependency order. |
 | [`improve-codebase-architecture`](skills/improve-codebase-architecture/) | Surface deepening opportunities as a visual report, then grill one. |

@@ -1,0 +1,3 @@
+interface:
+  display_name: "HTML Artifact"
+  short_description: "Render a deliverable as one self-contained HTML file"
