@@ -29,6 +29,7 @@ A skill is a directory containing a `SKILL.md` with YAML frontmatter (`name`, `d
 | [`improve-codebase-architecture`](skills/improve-codebase-architecture/) | Surface deepening opportunities as a visual report, then grill one. |
 | [`improve-test-suite`](skills/improve-test-suite/) | Audit a test suite for seam quality and coverage gaps. |
 | [`interrogate`](skills/interrogate/) | Interrogate a known design's edges and emit the answer key. |
+| [`know-your-unknowns`](skills/know-your-unknowns/) | Buy the cheapest answer to what you don't know about a piece of work. |
 | [`omarchy-extensions`](skills/omarchy-extensions/) | Add a feature to an Omarchy desktop on the cheapest surface that works. |
 | [`orchestrator-loop`](skills/orchestrator-loop/) | Drive a batch of workitems to commits via fresh sub-agents. |
 | [`prototype`](skills/prototype/) | Build throwaway code to answer a design question. |
