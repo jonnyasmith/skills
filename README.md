@@ -42,8 +42,8 @@ A skill is a directory containing a `SKILL.md` with YAML frontmatter (`name`, `d
 | [`to-gauntlet`](skills/to-gauntlet/) | Turn an answer key into a paste-ready gauntlet prompt and driver. |
 | [`to-intent`](skills/to-intent/) | Turn a conversation into `intent.html`, the proto-spec that starts a change. |
 | [`to-plan`](skills/to-plan/) | Turn a plan approved in plan mode into `plan.html`. |
-| [`to-spec`](skills/to-spec/) | Turn a conversation into a spec and publish to the tracker. |
-| [`to-tickets`](skills/to-tickets/) | Break a plan into tracer-bullet tickets with blocking edges. |
+| [`to-spec`](skills/to-spec/) | Turn a conversation and its intent into `spec.html`. |
+| [`to-tickets`](skills/to-tickets/) | Break a plan into tracer-bullet ticket HTML files with blocking edges. |
 | [`triage`](skills/triage/) | Move issues and external PRs through a triage state machine. |
 | [`write-pull-requests`](skills/write-pull-requests/) | Draft and verify clear PR titles and descriptions. |
 | [`writing-great-skills`](skills/writing-great-skills/) | Reference for writing predictable skills. |
