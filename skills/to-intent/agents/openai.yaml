@@ -1,0 +1,5 @@
+interface:
+  display_name: "To Intent"
+  short_description: "Turn a conversation into intent.html"
+policy:
+  allow_implicit_invocation: false

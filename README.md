@@ -35,10 +35,13 @@ A skill is a directory containing a `SKILL.md` with YAML frontmatter (`name`, `d
 | [`prototype`](skills/prototype/) | Build throwaway code to answer a design question. |
 | [`research`](skills/research/) | Investigate a question against primary sources, capture findings. |
 | [`resolving-merge-conflicts`](skills/resolving-merge-conflicts/) | Resolve an in-progress merge/rebase conflict. |
+| [`sdlc`](skills/sdlc/) | Router for the change-artifact chain, and the shared HTML artifact rules. |
 | [`setup-repo-skills`](skills/setup-repo-skills/) | Scaffold a repo's `AGENTS.md` routing, tracker, and docs layout. |
 | [`survey`](skills/survey/) | Survey an idea whose route isn't visible, and emit the answer key. |
 | [`tdd`](skills/tdd/) | Test-driven development reference and loop. |
 | [`to-gauntlet`](skills/to-gauntlet/) | Turn an answer key into a paste-ready gauntlet prompt and driver. |
+| [`to-intent`](skills/to-intent/) | Turn a conversation into `intent.html`, the proto-spec that starts a change. |
+| [`to-plan`](skills/to-plan/) | Turn a plan approved in plan mode into `plan.html`. |
 | [`to-spec`](skills/to-spec/) | Turn a conversation into a spec and publish to the tracker. |
 | [`to-tickets`](skills/to-tickets/) | Break a plan into tracer-bullet tickets with blocking edges. |
 | [`triage`](skills/triage/) | Move issues and external PRs through a triage state machine. |

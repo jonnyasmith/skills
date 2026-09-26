@@ -1,0 +1,5 @@
+interface:
+  display_name: "To Plan"
+  short_description: "Turn an approved plan into plan.html"
+policy:
+  allow_implicit_invocation: false

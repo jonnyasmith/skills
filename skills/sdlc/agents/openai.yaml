@@ -1,0 +1,5 @@
+interface:
+  display_name: "SDLC"
+  short_description: "Which change-artifact skill to run next"
+policy:
+  allow_implicit_invocation: false
