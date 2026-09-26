@@ -1,0 +1,5 @@
+interface:
+  display_name: "Build Change"
+  short_description: "Build a change's plan.html through a review loop"
+policy:
+  allow_implicit_invocation: false

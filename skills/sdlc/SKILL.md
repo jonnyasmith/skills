@@ -1,6 +1,6 @@
 ---
 name: sdlc
-description: Router for the AI-native SDLC playbook's planning chain - which skill to run at each stage, from first idea to an approved plan.
+description: Router for the AI-native SDLC playbook's chain - which skill to run at each stage, from first idea to a built change.
 disable-model-invocation: true
 ---
 
@@ -14,7 +14,9 @@ A **change** moves through a chain of artifacts, each an HTML file committed und
 | Requirements and design | `/to-design` | the accepted `intent.html` and the policy skills | `spec.html` |
 | Product owner accepts | review of `spec.html`, concerns resolved with policy owners | `intent.html`, `spec.html` | a go or no-go |
 | Plan | Claude Code plan mode, then `/to-plan` | `intent.html`, `spec.html`, the approved plan | `plan.html` |
+| Build | `/build-change` | `plan.html`, `spec.html` | commits on `feat/<slug>`, reviewed until clean |
+| User tries it | merge or request changes | the running change | a merged change |
 
-The approved plan goes to implementation. None of the `to-*` skills interviews; each writes up what its inputs already hold. When a stage needs more thinking first, run `/grilling` before it.
+None of the `to-*` skills interviews; each writes up what its inputs already hold. When a stage needs more thinking first, run `/grilling` before it.
 
 Tell the user where the change is in the chain and which skill comes next.
