@@ -1,6 +1,6 @@
 ---
 name: sdlc
-description: Router for the change-artifact chain - which skill to run at each stage, from first idea to tickets.
+description: Router for the AI-native SDLC playbook's planning chain - which skill to run at each stage, from first idea to an approved plan.
 disable-model-invocation: true
 ---
 
@@ -11,10 +11,10 @@ A **change** moves through a chain of artifacts, each an HTML file committed und
 | Talk the idea through | `/grilling` | the idea, a ticket, or an incident | shared understanding, nothing on disk |
 | Capture the intent | `/to-intent` | the conversation | `intent.html` |
 | Product owner accepts | a PR or review of `intent.html` | `intent.html` | an accepted intent |
-| Requirements and design | `/to-spec` | `intent.html` and the conversation | `spec.html` |
+| Requirements and design | `/to-design` | the accepted `intent.html` and the policy skills | `spec.html` |
+| Product owner accepts | review of `spec.html`, concerns resolved with policy owners | `intent.html`, `spec.html` | a go or no-go |
 | Plan | Claude Code plan mode, then `/to-plan` | `intent.html`, `spec.html`, the approved plan | `plan.html` |
-| Split the work | `/to-tickets` (optional, for work too big for one session) | `plan.html` or `spec.html` | `tickets/*.html` |
 
-Each `to-*` skill writes up what the conversation already holds; none of them interviews. When a stage needs more thinking first, run `/grilling` again before it.
+The approved plan goes to implementation. None of the `to-*` skills interviews; each writes up what its inputs already hold. When a stage needs more thinking first, run `/grilling` before it.
 
 Tell the user where the change is in the chain and which skill comes next.

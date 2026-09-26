@@ -20,7 +20,7 @@ Read [../sdlc/ARTIFACTS.md](../sdlc/ARTIFACTS.md) before writing. It sets where 
 
 3. **Hand it back for correction.** Tell the user the path, and ask them to read it and correct anything misunderstood. Apply their corrections. The step is done when the user confirms the intent says what they meant.
 
-4. **Commit it**, per ARTIFACTS.md. Tell the user the product owner reviews it next, and `/to-spec` follows once it is accepted.
+4. **Commit it**, per ARTIFACTS.md. Tell the user the product owner reviews it next, and `/to-design` follows once it is accepted.
 
 <intent-sections>
 

@@ -1,6 +1,6 @@
 # Change artifacts
 
-The rules every artifact skill (`to-intent`, `to-spec`, `to-plan`, `to-tickets`) follows. This file is the single source of truth for where artifacts live and what shape they take; the skills only name their own sections.
+The rules every artifact skill (`to-intent`, `to-design`, `to-plan`) follows. This file is the single source of truth for where artifacts live and what shape they take; the skills only name their own sections.
 
 ## Where they live
 
@@ -11,10 +11,6 @@ changes/<slug>/
   intent.html
   spec.html
   plan.html
-  tickets/
-    index.html
-    01-<ticket-slug>.html
-    02-<ticket-slug>.html
 ```
 
 The slug names the change, not the sentence: two to four words, kebab-cased (`claims-status-portal`). A later artifact reuses the slug of the change it belongs to. When no change directory exists yet, pick the slug, say it once so the user can rename it, and create the directory.
@@ -31,12 +27,10 @@ Each artifact is one standalone HTML document that opens correctly from disk in 
 Machine-readable facts go in `<meta>` tags in the `<head>`, so later tooling can read them without parsing prose:
 
 ```html
-<meta name="artifact" content="intent">        <!-- intent | spec | plan | ticket -->
+<meta name="artifact" content="intent">        <!-- intent | spec | plan -->
 <meta name="change" content="claims-status-portal">
 <meta name="status" content="draft">
 ```
-
-A skill that needs more tags (a ticket's `blocked-by`) names them.
 
 ## Diagrams
 
@@ -45,7 +39,7 @@ Use inline SVG diagrams wherever a diagram gets the idea across faster than pros
 - the flow today beside the proposed flow;
 - the users, systems and components a change touches, and how they connect;
 - a sequence of calls between systems;
-- the order of work, or the dependency graph between tickets.
+- the order of work.
 
 Each diagram:
 

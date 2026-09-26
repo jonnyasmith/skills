@@ -18,7 +18,7 @@ Read [../sdlc/ARTIFACTS.md](../sdlc/ARTIFACTS.md) before writing. It sets where 
 
 3. **Check it against the bar.** Read the file back as that engineer would. Every file the plan touches is listed, every step says what it changes, and every risk names what would go wrong. Fix any gap from the approved plan; if the approved plan itself has the gap, list it for the user rather than inventing an answer.
 
-4. **Commit it**, per ARTIFACTS.md. Tell the user the next step: implement, or `/to-tickets` if the work is too big for one session.
+4. **Commit it**, per ARTIFACTS.md. Tell the user the plan is ready to implement.
 
 <plan-sections>
 
