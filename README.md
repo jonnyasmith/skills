@@ -10,7 +10,6 @@ A skill is a directory containing a `SKILL.md` with YAML frontmatter (`name`, `d
 
 | Skill | What it does |
 | --- | --- |
-| [`build-change`](skills/build-change/) | Build a change's `plan.html` through an implement, check, critic and fixer Workflow loop. |
 | [`code-review`](skills/code-review/) | Two-axis (standards + spec) review of a diff, run as parallel sub-agents. |
 | [`codebase-design`](skills/codebase-design/) | Shared vocabulary for designing deep modules. |
 | [`conventional-commits`](skills/conventional-commits/) | Write and evaluate commit messages against Conventional Commits 1.0.0. |
