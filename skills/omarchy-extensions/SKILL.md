@@ -6,6 +6,7 @@ description: >
   floating terminal. Use also when making an app that knows nothing about
   Omarchy follow `omarchy theme set`. Changing config that already exists is
   the `omarchy` skill.
+disable-model-invocation: true
 ---
 
 # Extending Omarchy

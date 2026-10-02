@@ -1,3 +1,5 @@
 interface:
   display_name: "Omarchy Extensions"
   short_description: "Add a feature to the Omarchy desktop on the cheapest surface"
+policy:
+  allow_implicit_invocation: false

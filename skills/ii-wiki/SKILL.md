@@ -1,6 +1,7 @@
 ---
 name: ii-wiki
 description: "Answer architecture and work-scoping questions about DYWIDAG's Infrastructure Intelligence platform across its multi-repository application estate. Resolve the infrastructure-intelligence-wiki checkout relative to the current repository, use its wiki as the knowledge map, and verify relevant facts against its repository clones. Use when the user asks how an Infrastructure Intelligence application or service works, which repositories a change touches, where a contract or data flow lives, or how to scope work across the platform before building."
+disable-model-invocation: true
 ---
 
 # Infrastructure Intelligence platform query

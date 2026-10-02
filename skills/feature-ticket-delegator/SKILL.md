@@ -1,6 +1,7 @@
 ---
 name: feature-ticket-delegator
 description: "Resolve and deterministically plan the descendants of a supplied root issue, feature, or local Markdown item, then delegate each ready work item to a fresh /implement worker one at a time and run a final whole-branch review. Use when the user wants a spec-backed hierarchy implemented sequentially with isolated workers and independent review."
+disable-model-invocation: true
 ---
 
 # Feature Ticket Delegator

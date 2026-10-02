@@ -1,6 +1,7 @@
 ---
 name: review-loop
 description: Build a Workflow loop where an implementer writes a change, a critic tries to break it, and a fixer applies what the critic found. Use when the user asks for work to be built and reviewed in rounds, for agents to critique each other's output, for a self-checking or adversarial workflow, or when a multi-step spec is being implemented step by step and each step needs a gate.
+disable-model-invocation: true
 ---
 
 # Review loop

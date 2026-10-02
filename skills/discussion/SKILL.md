@@ -1,6 +1,7 @@
 ---
 name: discussion
 description: Enter discussion mode - talk through a problem, design, or codebase without changing anything. Use when the user wants to think out loud, explore options, review an approach, or says to discuss it and not implement it.
+disable-model-invocation: true
 ---
 
 We are talking, not building. The deliverable of this session is **understanding**, not a diff.

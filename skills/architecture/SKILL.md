@@ -3,6 +3,7 @@ name: architecture
 description: "Creates or updates root ARCHITECTURE.md from verified implementation. Use when a repository needs current architecture documentation or a structural change made it stale. Use design for proposed systems or changes."
 user-invocable: true
 argument-hint: "[repository or existing ARCHITECTURE.md]"
+disable-model-invocation: true
 ---
 
 # Architecture

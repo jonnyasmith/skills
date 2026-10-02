@@ -1,6 +1,7 @@
 ---
 name: html-artifact
 description: Render a deliverable as one self-contained HTML file rather than markdown. Use when the output is a set of options to choose between, a diff or module map, design tokens or component states, motion or a click-through, a diagram, a deck, an explainer, a status report or post-mortem, or a throwaway editor.
+disable-model-invocation: true
 ---
 
 # HTML artifact

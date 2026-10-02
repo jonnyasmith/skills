@@ -1,6 +1,7 @@
 ---
 name: dev-wiki
 description: Query the user's dev-wiki when they explicitly ask to use their dev-wiki or personal developer wiki, including by supplying its path. Apply its read-only boundary to explicit mutation requests; do not invoke for general repository or web research.
+disable-model-invocation: true
 ---
 
 # Dev wiki query

@@ -2,3 +2,5 @@ interface:
   display_name: "Feature Ticket Delegator"
   short_description: "Plan, delegate, and review ticket hierarchies"
   default_prompt: "Use $feature-ticket-delegator to plan and implement this work-item hierarchy sequentially, then review the whole branch."
+policy:
+  allow_implicit_invocation: false
