@@ -1,6 +1,7 @@
 ---
 name: azure-devops
 description: Open, read and update pull requests and create or read work items (PBIs) in Azure DevOps (datumplatforminteractive / Platform Interactive) through its REST API, without the Azure CLI. Use when asked to open or raise a PR in Azure Repos, check a PR's status, change a PR's title, description or draft state, or create or look up a PBI or other Azure Boards work item.
+disable-model-invocation: true
 ---
 
 # Azure DevOps

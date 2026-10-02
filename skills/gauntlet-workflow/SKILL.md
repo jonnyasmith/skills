@@ -1,6 +1,7 @@
 ---
 name: gauntlet-workflow
 description: Runs a gauntlet loop as a Workflow script instead of a pasted prompt - a deterministic outer loop that builds each piece, grades it with a fresh harsh critic against a concrete bar, feeds the critic's single biggest gap back to the builder, and keeps going until every piece passes. Use when the goal has a real inspectable bar and you want the rounds enforced by code rather than by an agent's good intentions. Triggers on "/gauntlet-workflow", "gauntlet workflow", "gauntlet this as a workflow", "loop until it beats X, deterministically".
+disable-model-invocation: true
 ---
 
 # Gauntlet Workflow

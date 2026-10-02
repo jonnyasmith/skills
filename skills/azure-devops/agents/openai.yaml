@@ -1,0 +1,5 @@
+interface:
+  display_name: "Azure DevOps"
+  short_description: "Open and update Azure DevOps PRs and work items"
+policy:
+  allow_implicit_invocation: false

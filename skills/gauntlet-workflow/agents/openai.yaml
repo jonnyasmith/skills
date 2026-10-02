@@ -1,0 +1,5 @@
+interface:
+  display_name: "Gauntlet Workflow"
+  short_description: "Run a builder-and-critic gauntlet loop as a Workflow"
+policy:
+  allow_implicit_invocation: false

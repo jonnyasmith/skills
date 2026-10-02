@@ -1,6 +1,7 @@
 ---
 name: review-pr
 description: Review an Azure DevOps pull request by id and produce a visual HTML page that explains it (what changed and why, diagrams, the diff grouped by concern with notes, test coverage, and what the CI Terraform plan will change) and shows its CI results and the manual checks it still needs. Use when the user passes a PR id or link and asks to review, explain, walk through or understand it, or asks for a PR review page.
+disable-model-invocation: true
 ---
 
 # Review a pull request

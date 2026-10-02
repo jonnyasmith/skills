@@ -1,0 +1,5 @@
+interface:
+  display_name: "Build Change"
+  short_description: "Build a change from its plan.html with a Workflow"
+policy:
+  allow_implicit_invocation: false
