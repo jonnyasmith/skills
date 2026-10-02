@@ -46,5 +46,5 @@ Do not use the official `skills-ref` validator. It rejects harness fields such a
 ## Harness facts
 
 - omp does not enforce `disable-model-invocation`, so manual-only skills can still trigger there. Claude Code, Pi, and Codex enforce it.
-- omp is set (in chezmoi) not to read `~/.claude/skills`, so it loads each skill only once.
+- omp reads `~/.claude/skills` only when opted in, so it loads each skill once, through `~/.agents/skills`. chezmoi sets `skills.enableClaudeUser: false`, which is also omp's default. Listing `claude` in `enabledProviders` or setting `CLAUDE_CONFIG_DIR` opts it back in, and omp would then load every skill twice.
 - Claude Code has no setting for extra skill directories. Codex reads only `~/.agents/skills` and its own built-in locations. This is why the links exist.
