@@ -1,22 +1,50 @@
-# Global Instructions
+# Skills Repository
 
-## Behavior
+This repository holds personal agent skills and nothing else. Global agent instructions and harness config files live in the dotfiles repository, which chezmoi manages (`~/.local/share/chezmoi`). Do not add them here.
 
-When the user is describing a problem, asking a question, or thinking out loud rather than requesting a change, the deliverable is your assessment. Report your findings and stop. Don't apply a fix until they ask for one.
+## Layout
 
-## Response
+- `skills/<name>/` — one installed skill: `SKILL.md`, `agents/openai.yaml`, and any supporting files.
+- `archive/<name>/` — retired skills. No harness loads them.
+- `skills.py` — checks and fixes skills. Needs `uv`.
+- `install.sh` — links the harnesses to `skills/` and enables the pre-commit hook.
+- `.githooks/pre-commit` — runs `./skills.py check`.
+- `research/` — research notes about skills. These are not skills.
 
-Respond in ASD-STE100 Simplified Technical English. Keep responses focused, brief, and concise. Keep disclaimers and caveats short, and spend most of the response on the main answer. When asked to explain something, give a high-level summary unless an in-depth explanation is specifically requested.
+## How skills reach the harnesses
 
-## Subagent Models
+`install.sh` makes two directory-level links:
 
-- Implementation subagents: use `sonnet` for clear, narrow tasks. Escalate to `opus` after two failed attempts.
-- Review and critique subagents: use `opus`. Use a fresh context.
-- Planning, specs, and final branch review: use `opus`.
-- Rote work (search, lookups, test runs): use `haiku`.
+| Link | Read by |
+| --- | --- |
+| `~/.claude/skills` → `skills/` | Claude Code |
+| `~/.agents/skills` → `skills/` | Codex, Pi, omp |
 
-## Git
+Because the links point at the whole directory:
 
-In a repository, when tests and lint pass (or the project has no checks), automatically stage and commit the changes using the /conventional-commits skill. Do not push or create PRs unless asked.
+- An edit to a skill is live at once. No sync step is needed.
+- A skill that an agent creates in `~/.claude/skills` or `~/.agents/skills` lands in `skills/`. Commit it like any other change.
+- Other tools also write into `skills/`, such as Claude's account-synced `synced/` directory and Omarchy's links. `.gitignore` excludes them. Do not commit, move, or delete them.
 
-Follow the /write-pull-requests skill when creating PRs.
+Do not create skills in `~/.codex/skills`, `~/.pi/agent/skills`, or `~/.omp/agent/skills`. The harnesses do not need these locations, and `./skills.py check` warns about any skill it finds there.
+
+## Rules for changing skills
+
+- **Frontmatter.** Use `name` and `description`, plus only known harness fields such as `disable-model-invocation` and `argument-hint`. `name` must match the directory name. `description` must be 1,024 characters or fewer, and must say what the skill does and when to use it.
+- **Manual-only invocation.** Most skills are manual-only. Set `disable-model-invocation: true` in the frontmatter, then run `./skills.py fix`. The frontmatter is the only source. `fix` writes the Codex equivalent (`policy.allow_implicit_invocation`) into `agents/openai.yaml`. Do not edit that value by hand. Only `conventional-commits` and `write-pull-requests` run automatically.
+- **New skill.** Create `skills/<name>/SKILL.md` and `agents/openai.yaml` with `interface.display_name` and `interface.short_description`. Make it manual-only unless an agent must find it without being asked. Then run `./skills.py fix`.
+- **Per-harness differences.** Keep one `SKILL.md` for all harnesses. Put harness settings in the frontmatter or in `agents/openai.yaml`. Put short behaviour notes in the body, for example "In Codex, …". Make a separate skill with a different name only when the procedure itself is different.
+- **Retiring a skill.** Run `git mv skills/<name> archive/<name>`. Do not delete it.
+- **README.** When you add, rename, or retire a skill, update the table in `README.md`.
+
+## Verification
+
+Run `./skills.py check` before you commit. The pre-commit hook also runs it. It checks the frontmatter rules, unknown fields, and `agents/openai.yaml` against the frontmatter.
+
+Do not use the official `skills-ref` validator. It rejects harness fields such as `disable-model-invocation`.
+
+## Harness facts
+
+- omp does not enforce `disable-model-invocation`, so manual-only skills can still trigger there. Claude Code, Pi, and Codex enforce it.
+- omp is set (in chezmoi) not to read `~/.claude/skills`, so it loads each skill only once.
+- Claude Code has no setting for extra skill directories. Codex reads only `~/.agents/skills` and its own built-in locations. This is why the links exist.
