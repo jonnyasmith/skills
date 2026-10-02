@@ -12,6 +12,13 @@ Before running a command that changes system state (restarts, deletes, config ed
 
 Respond in ASD-STE100 Simplified Technical English. Keep responses focused, brief, and concise. Keep disclaimers and caveats short, and spend most of the response on the main answer. When asked to explain something, give a high-level summary unless an in-depth explanation is specifically requested.
 
+## Subagent Models
+
+- Implementation subagents: use `sonnet` for clear, narrow tasks. Escalate to `opus` after two failed attempts.
+- Review and critique subagents: use `opus`. Use a fresh context.
+- Planning, specs, and final branch review: use `opus`.
+- Rote work (search, lookups, test runs): use `haiku`.
+
 ## Git
 
 If the changes successfully pass verification and are inside a repository, automatically stage and commit them using the /conventional-commits skill.
