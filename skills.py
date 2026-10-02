@@ -43,8 +43,10 @@ STRAY_ROOTS = [
 ]
 
 
+# Links in skills/ were written by other tools, such as Omarchy, and are not
+# this repo's skills.
 def skill_dirs():
-    return sorted(d for d in SKILLS.iterdir() if (d / "SKILL.md").is_file())
+    return sorted(d for d in SKILLS.iterdir() if not d.is_symlink() and (d / "SKILL.md").is_file())
 
 
 def frontmatter(path):
