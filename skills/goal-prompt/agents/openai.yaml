@@ -1,2 +1,5 @@
+interface:
+  display_name: "Goal Prompt"
+  short_description: "Write a /goal prompt that runs a verifier-first loop"
 policy:
   allow_implicit_invocation: false

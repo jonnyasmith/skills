@@ -1,2 +1,5 @@
+interface:
+  display_name: "Review Loop"
+  short_description: "Build an implementer, critic, and fixer Workflow loop"
 policy:
   allow_implicit_invocation: false

@@ -1,2 +1,5 @@
+interface:
+  display_name: "Gauntlet Loop"
+  short_description: "Turn a goal into a builder-and-critic loop prompt"
 policy:
   allow_implicit_invocation: false

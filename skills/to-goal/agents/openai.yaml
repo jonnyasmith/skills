@@ -1,2 +1,5 @@
+interface:
+  display_name: "To Goal"
+  short_description: "Turn a task into a /goal verification loop prompt"
 policy:
   allow_implicit_invocation: false

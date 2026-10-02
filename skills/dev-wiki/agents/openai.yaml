@@ -1,2 +1,5 @@
+interface:
+  display_name: "Dev Wiki"
+  short_description: "Query your personal developer wiki, read-only"
 policy:
   allow_implicit_invocation: false

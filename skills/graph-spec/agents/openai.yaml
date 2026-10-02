@@ -1,2 +1,5 @@
+interface:
+  display_name: "Graph Spec"
+  short_description: "Turn a plain-language job into a GRAPH SPEC prompt"
 policy:
   allow_implicit_invocation: false

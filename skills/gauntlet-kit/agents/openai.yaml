@@ -1,2 +1,5 @@
+interface:
+  display_name: "Gauntlet Kit"
+  short_description: "Turn a goal and reference material into a bar and a loop prompt"
 policy:
   allow_implicit_invocation: false

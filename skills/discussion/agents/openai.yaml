@@ -1,2 +1,5 @@
+interface:
+  display_name: "Discussion"
+  short_description: "Talk through a problem or design without changing anything"
 policy:
   allow_implicit_invocation: false
