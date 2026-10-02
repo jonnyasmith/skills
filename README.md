@@ -55,7 +55,7 @@ A skill is a directory containing a `SKILL.md` with YAML frontmatter (`name`, `d
 
 ## Install
 
-Clone the repo, then run `install.sh`. It links each skill individually into every agent's skills directory.
+Clone the repo, then run `install.sh`. It points each agent harness's skills directory at `skills/` with one directory-level link.
 
 ```sh
 git clone git@github.com:jonnyasmith/skills.git ~/dev/skills
@@ -63,22 +63,18 @@ cd ~/dev/skills
 ./install.sh
 ```
 
-Default targets: `~/.agents/skills`, `~/.claude/skills`, `~/.codex/skills`, and `~/.pi/agent/skills`. Pass paths to override them:
+| Link | Read by |
+| --- | --- |
+| `~/.claude/skills` | Claude Code |
+| `~/.agents/skills` | Codex, omp, and other tools that read the shared path |
+| `~/.pi/agent/skills` | Pi, only when `~/.pi` exists |
 
-```sh
-./install.sh ~/.claude/skills
-```
-
-Re-run the script after `git pull` adds, renames, or removes a skill. Edits to an existing skill need no re-run, because each link points at the live directory.
+The script also removes the old per-skill links in `~/.codex/skills` and the `~/.omp/skills` link. Codex and omp read `~/.agents/skills`, so those copies would load each skill twice.
 
 ### Notes
 
-- The script links per skill instead of pointing one link at the whole `skills/` directory. Those directories are real directories that other tools also provision — Omarchy, for example, writes its own `omarchy` and `diagnose-crash` links into all four. A directory-level link would make those tools write into this working tree.
-- Re-running is safe. The script rewrites the links it owns, removes its own links whose skill no longer exists, and never touches an entry that points elsewhere.
-- An entry that exists but is not a symlink is reported and skipped, so a real directory of your own is never deleted.
-- Verify the links resolve:
-
-  ```sh
-  ls -l ~/.agents/skills
-  find ~/.agents/skills -maxdepth 1 -xtype l   # dangling links, expect none
-  ```
+- This repo is the only place skills live. When an agent creates a skill in its own skills directory, the skill lands in `skills/` and shows in `git status`. Commit it here.
+- Changes need no re-run, because every link points at the live directory. Re-run only on a new machine or after adding a harness.
+- Re-running is safe. A skills directory that holds anything other than links into this repo is reported and left alone.
+- Other tools also write into these directories, so their files land in `skills/`. `.gitignore` excludes the known ones: Claude's `synced/` account skills and Omarchy's `omarchy` and `diagnose-crash` links.
+- Per-harness differences live inside the skill: Claude settings in the `SKILL.md` frontmatter, Codex settings in `agents/openai.yaml`, and short per-harness notes in the `SKILL.md` body.
