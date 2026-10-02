@@ -66,10 +66,9 @@ cd ~/dev/skills
 | Link | Read by |
 | --- | --- |
 | `~/.claude/skills` | Claude Code |
-| `~/.agents/skills` | Codex, omp, and other tools that read the shared path |
-| `~/.pi/agent/skills` | Pi, only when `~/.pi` exists |
+| `~/.agents/skills` | Codex, Pi, omp, and other tools that read the shared path |
 
-The script also removes the old per-skill links in `~/.codex/skills` and the `~/.omp/skills` link. Codex and omp read `~/.agents/skills`, so those copies would load each skill twice.
+The script also removes this repo's old links in `~/.codex/skills`, `~/.pi/agent/skills` and `~/.omp/skills`. Those tools read `~/.agents/skills`, so the copies would load each skill twice.
 
 ### Notes
 

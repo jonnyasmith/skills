@@ -7,12 +7,11 @@
 #
 # Harness skills directories:
 #   ~/.claude/skills      Claude Code
-#   ~/.agents/skills      Codex, omp, and other tools that read the shared path
-#   ~/.pi/agent/skills    Pi (only when ~/.pi exists)
+#   ~/.agents/skills      Codex, Pi, omp, and other tools that read the shared path
 #
-# Legacy per-skill links in ~/.codex/skills and the unused ~/.omp/skills link
-# are removed: Codex and omp already read ~/.agents/skills, so those copies
-# would load every skill twice.
+# Older links in ~/.codex/skills, ~/.pi/agent/skills and ~/.omp/skills are
+# removed: those tools already read ~/.agents/skills, so the copies would load
+# every skill twice.
 #
 # Safe to re-run. A directory that holds anything other than links into this
 # repo is reported and left alone.
@@ -26,7 +25,6 @@ src="$(cd "$(dirname "${BASH_SOURCE[0]}")/skills" && pwd)"
 targets=(
   "$HOME/.claude:$HOME/.claude/skills"
   "$HOME/.agents:$HOME/.agents/skills"
-  "$HOME/.pi:$HOME/.pi/agent/skills"
 )
 
 # Remove links in $1 that point into this repo, counting them in $pruned.
@@ -76,14 +74,18 @@ for pair in "${targets[@]}"; do
   echo "$root: linked"
 done
 
-if [[ -d "$HOME/.codex/skills" && ! -L "$HOME/.codex/skills" ]]; then
-  prune_own_links "$HOME/.codex/skills" || true
-  if [[ $pruned -gt 0 ]]; then
-    echo "$HOME/.codex/skills: removed $pruned legacy links"
+# Remove this repo's links from directories the harnesses no longer need. A
+# real directory keeps any other entries, such as Codex's own .system skills.
+for legacy in "$HOME/.codex/skills" "$HOME/.pi/agent/skills" "$HOME/.omp/skills"; do
+  if [[ -L "$legacy" ]]; then
+    if [[ "$(readlink "$legacy")" == "$src" ]]; then
+      rm "$legacy"
+      echo "$legacy: removed legacy link"
+    fi
+  elif [[ -d "$legacy" ]]; then
+    prune_own_links "$legacy" || true
+    if [[ $pruned -gt 0 ]]; then
+      echo "$legacy: removed $pruned legacy links"
+    fi
   fi
-fi
-
-if [[ -L "$HOME/.omp/skills" && "$(readlink "$HOME/.omp/skills")" == "$src" ]]; then
-  rm "$HOME/.omp/skills"
-  echo "$HOME/.omp/skills: removed unused link"
-fi
+done
