@@ -10,6 +10,8 @@ A skill is a directory containing a `SKILL.md` with YAML frontmatter (`name`, `d
 
 | Skill | What it does |
 | --- | --- |
+| [`azure-devops`](skills/azure-devops/) | Open and update Azure DevOps PRs and work items through the REST API. |
+| [`build-change`](skills/build-change/) | Build a change from its `plan.html` through an implement, critique and fix workflow. |
 | [`code-review`](skills/code-review/) | Two-axis (standards + spec) review of a diff, run as parallel sub-agents. |
 | [`codebase-design`](skills/codebase-design/) | Shared vocabulary for designing deep modules. |
 | [`conventional-commits`](skills/conventional-commits/) | Write and evaluate commit messages against Conventional Commits 1.0.0. |
@@ -19,6 +21,7 @@ A skill is a directory containing a `SKILL.md` with YAML frontmatter (`name`, `d
 | [`discovery`](skills/discovery/) | Build a visual, evidence-backed architecture discovery report. |
 | [`domain-modeling`](skills/domain-modeling/) | Build and sharpen a project's domain model and decisions. |
 | [`excalidraw-diagram`](skills/excalidraw-diagram/) | Create Excalidraw diagram JSON that argues visually. |
+| [`gauntlet-workflow`](skills/gauntlet-workflow/) | Run a gauntlet loop as a deterministic Workflow script. |
 | [`graph-spec`](skills/graph-spec/) | Turn a job into a paste-ready GRAPH SPEC prompt for a fleet. |
 | [`grill-with-docs`](skills/grill-with-docs/) | Grilling session that also writes ADRs and a glossary. |
 | [`grilling`](skills/grilling/) | Stress-test thinking, one round of unblocked questions at a time. |
@@ -35,6 +38,7 @@ A skill is a directory containing a `SKILL.md` with YAML frontmatter (`name`, `d
 | [`prototype`](skills/prototype/) | Build throwaway code to answer a design question. |
 | [`research`](skills/research/) | Investigate a question against primary sources, capture findings. |
 | [`resolving-merge-conflicts`](skills/resolving-merge-conflicts/) | Resolve an in-progress merge/rebase conflict. |
+| [`review-pr`](skills/review-pr/) | Review an Azure DevOps PR as a visual HTML page with CI results. |
 | [`sdlc`](skills/sdlc/) | Router for the AI-native SDLC planning chain, and its shared HTML artifact rules. |
 | [`setup-repo-skills`](skills/setup-repo-skills/) | Scaffold a repo's `AGENTS.md` routing, tracker, and docs layout. |
 | [`survey`](skills/survey/) | Survey an idea whose route isn't visible, and emit the answer key. |
