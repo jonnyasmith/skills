@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Validate skills before each commit. install.sh points core.hooksPath here.
+set -euo pipefail
+
+if ! command -v uv >/dev/null; then
+  echo "pre-commit: uv not found, skills check skipped" >&2
+  exit 0
+fi
+
+exec "$(git rev-parse --show-toplevel)/skills.py" check

@@ -77,3 +77,27 @@ The script also removes this repo's old links in `~/.codex/skills`, `~/.pi/agent
 - Re-running is safe. A skills directory that holds anything other than links into this repo is reported and left alone.
 - Other tools also write into these directories, so their files land in `skills/`. `.gitignore` excludes the known ones: Claude's `synced/` account skills and Omarchy's `omarchy` and `diagnose-crash` links.
 - Per-harness differences live inside the skill: Claude settings in the `SKILL.md` frontmatter, Codex settings in `agents/openai.yaml`, and short per-harness notes in the `SKILL.md` body.
+
+## Checks
+
+`./skills.py check` validates every skill. It needs [uv](https://docs.astral.sh/uv/). `install.sh` sets `core.hooksPath` to `.githooks`, so the check also runs before each commit.
+
+- `name` and `description` follow the [Agent Skills spec](https://agentskills.io/specification): the name matches the directory, and the description is 1,024 characters or fewer. The official `skills-ref` validator is not used, because it rejects harness fields such as `disable-model-invocation`.
+- Unknown frontmatter fields are errors.
+- `agents/openai.yaml` has an `interface` block, and its `policy` matches the frontmatter.
+- A real skill directory in `~/.codex/skills`, `~/.pi/agent/skills` or `~/.omp/agent/skills` is a warning. An agent wrote it outside this repo. Move it into `skills/` to keep it.
+
+### Manual-only skills
+
+Set `disable-model-invocation: true` in `SKILL.md` frontmatter, then run `./skills.py fix`. The frontmatter is the only source. `fix` writes the Codex equivalent (`policy.allow_implicit_invocation`) into `agents/openai.yaml`, so do not edit that value by hand.
+
+| Harness | Reads | Enforced |
+| --- | --- | --- |
+| Claude Code | `disable-model-invocation` | Yes |
+| Pi | `disable-model-invocation` | Yes |
+| Codex | `agents/openai.yaml` policy | Yes |
+| omp | `disable-model-invocation` | No. Its docs say the field is kept as metadata only. |
+
+## Archive
+
+Retire a skill with `git mv skills/<name> archive/<name>`. Nothing in `archive/` is linked, so no harness loads it.

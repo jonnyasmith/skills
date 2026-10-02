@@ -74,6 +74,9 @@ for pair in "${targets[@]}"; do
   echo "$root: linked"
 done
 
+# Run ./skills.py check before each commit.
+git -C "$src/.." config core.hooksPath .githooks
+
 # Remove this repo's links from directories the harnesses no longer need. A
 # real directory keeps any other entries, such as Codex's own .system skills.
 for legacy in "$HOME/.codex/skills" "$HOME/.pi/agent/skills" "$HOME/.omp/skills"; do

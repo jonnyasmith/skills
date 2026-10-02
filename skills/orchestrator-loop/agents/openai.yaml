@@ -2,6 +2,5 @@ interface:
   display_name: "Orchestrator Loop"
   short_description: "Delegate each workitem to the implement skill"
   default_prompt: "Use $orchestrator-loop to work through these workitems, delegating each to a sub-agent that uses the implement skill."
-
 policy:
   allow_implicit_invocation: false
