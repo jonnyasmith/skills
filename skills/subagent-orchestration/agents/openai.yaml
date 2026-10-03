@@ -1,0 +1,6 @@
+interface:
+  display_name: "Subagent Orchestration"
+  short_description: "Rules for model, review and test gates in subagent work"
+  default_prompt: "Use $subagent-orchestration before spawning subagents for this task."
+policy:
+  allow_implicit_invocation: true
