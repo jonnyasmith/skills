@@ -11,7 +11,8 @@ where it is checked out, ask. Its README is the reference; this skill only seque
 touch primary checkouts, unrelated Docker containers or secrets (see `AGENTS.md`).
 
 1. **Scope.** List the services the feature needs and check each has a `catalogue/<service>.json`.
-   If one is missing, follow README "Adding an app" (including the product code seams).
+   If one is missing, or depends on a service with no emulator, follow README "Adding an app"
+   (including the product code seams) and "Faking a dependency with no emulator".
 2. **Workspace.** Write `features/<name>/workspace.json` (README "Feature workflow", step 2), then
    `bin/harness workspace new features/<name>/workspace.json --dir <dir>`, or `workspace adopt` for
    existing worktrees. Do all edits to product code in `<dir>`.
