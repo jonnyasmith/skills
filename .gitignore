@@ -2,3 +2,6 @@
 skills/synced/
 skills/omarchy
 skills/diagnose-crash
+
+# Python bytecode from running skill scripts.
+__pycache__/
