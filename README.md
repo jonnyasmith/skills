@@ -13,7 +13,7 @@ A skill is a directory containing a `SKILL.md` with YAML frontmatter (`name`, `d
 | [`azure-devops`](skills/azure-devops/) | Open and update Azure DevOps PRs and work items through the REST API. |
 | [`conventional-commits`](skills/conventional-commits/) | Write and evaluate commit messages against Conventional Commits 1.0.0. |
 | [`harness`](skills/harness/) | Verify a feature locally with ii-test-harness: workspace, runtime, scenario first, accept, attach the report. |
-| [`review-pr`](skills/review-pr/) | Review an Azure DevOps PR as a visual HTML page with CI results. |
+| [`review-pr`](skills/review-pr/) | Review an Azure DevOps PR as a visual Artifact page with CI results. |
 | [`subagent-orchestration`](skills/subagent-orchestration/) | Rules for model, effort, review and test gates in subagent work. |
 | [`write-pull-requests`](skills/write-pull-requests/) | Draft and verify clear PR titles and descriptions. |
 

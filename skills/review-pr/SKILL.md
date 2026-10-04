@@ -1,6 +1,6 @@
 ---
 name: review-pr
-description: Review an Azure DevOps pull request by id and produce a visual HTML page that explains it (what changed and why, diagrams, the diff grouped by concern with notes, test coverage, and what the CI Terraform plan will change) and shows its CI results and the manual checks it still needs. Use when the user passes a PR id or link and asks to review, explain, walk through or understand it, or asks for a PR review page.
+description: Review an Azure DevOps pull request by id and publish a visual review page, as a private claude.ai Artifact, that explains it (what changed and why, diagrams, the diff grouped by concern with notes, test coverage, and what the CI Terraform plan will change) and shows its CI results and the manual checks it still needs. Use when the user passes a PR id or link and asks to review, explain, walk through or understand it, or asks for a PR review page.
 disable-model-invocation: true
 ---
 
@@ -80,7 +80,7 @@ Write for someone who knows the product but hasn't read this code. Use plain, di
 Guidance:
 - **Concerns** group files by purpose, in the order a reviewer should read them, with each test file next to the code it tests. Every changed file belongs to exactly one concern or to `mechanical`. The page lists any leftovers under "Not explained", and `render.py` warns about them, so fix the JSON until the warning goes away.
 - **Notes** attach to new-file line numbers, which you can take from the hunks in `files.json`. Use them for the few lines that carry the change, not as a narration of every line.
-- **Diagrams** should show the mechanism that changed: before and after, a data flow, or a state machine. One or two good diagrams beat several decorative ones. Leave diagrams out for trivial PRs. Write each one as inline SVG. The page works offline and has no diagram library, so lay the diagram out yourself: build the SVG with a short Python script using `scripts/svg.py` (its docstring shows how), rather than typing coordinates by hand. Its `box()` sizes each box to its longest line and raises an error if a box runs past the diagram width, so text never overflows; pass the same `min_w` to boxes in one column to line them up, set to fit the column's longest label. Style it only with the page's classes, which follow the light and dark theme:
+- **Diagrams** should show the mechanism that changed: before and after, a data flow, or a state machine. One or two good diagrams beat several decorative ones. Leave diagrams out for trivial PRs. Write each one as inline SVG. The page loads nothing external and has no diagram library, so lay the diagram out yourself: build the SVG with a short Python script using `scripts/svg.py` (its docstring shows how), rather than typing coordinates by hand. Its `box()` sizes each box to its longest line and raises an error if a box runs past the diagram width, so text never overflows; pass the same `min_w` to boxes in one column to line them up, set to fit the column's longest label. Style it only with the page's classes, which follow the light and dark theme:
   - `box` on a `<rect rx="8">`, plus `ok`, `bad`, `warn` or `accent` for colour. Use `bad` for the broken path, `ok` for the fixed one and `accent` for the entry point.
   - `edge` on a `<path>` gives a line with an arrowhead; add `ok`, `bad` or `dashed`.
   - `<text>` is plain; add `muted`, `mono` (for code names) or `label` (small caps, for "Before", "After", "yes", "no").
@@ -91,14 +91,25 @@ Guidance:
 - **Terraform plans:** one entry per file in `context.json`'s `terraformPlans`, with one `changes` item per resource in its `resources`, using the address exactly as listed. `render.py` warns about a plan or resource you didn't explain and about an address that isn't in the plan, so fix the JSON until the warnings go away.
 - **The verdict** follows CI and reproduced issues only: a failed build, a failing blocking policy or a reproduced issue means `changes`; otherwise `ready`. Its summary names every check in `verification` that hasn't been run, not a selection of them. When a Terraform plan contains changes not caused by the PR, and merging would apply them, say so in the summary.
 
-## 5. Render and deliver
+## 5. Render and publish
 
 ```
 python3 ~/.claude/skills/review-pr/scripts/render.py <workdir>
 ```
 
-It writes `~/pr-reviews/<repo>-<id>.html` and reports any warnings. Open it for the user with `xdg-open <file>`. In chat, give the verdict, the blocking issues in one line each, the Terraform plan's summary line with how many changes come from the PR and how many don't, and the path. Don't repeat the page.
+It writes `<workdir>/review.html` and reports any warnings. The page already meets the Artifact page contract (no external resources, light and dark theme tokens, phone layout), so publish it as is; don't restyle or rewrite it.
 
-Only when the user asks, publish the page as a private Artifact, or post the issues as PR comments. Posting comments is visible to the team, so confirm first.
+Publish it with the Artifact tool, from `<workdir>/review.html`:
+
+- **First review of this PR:** publish with `icon: "review"` and a `description` such as "Review of PR <id>: <title>". Save the URL the result returns to `<workdir>/artifact-url`.
+- **Re-review** (`<workdir>/artifact-url` exists): keep the same link. If this conversation already published the page, republish the same file. Otherwise read the artifact (`action: "read"` with that URL) first, then publish with `url` set to it.
+
+The Artifact is private. Don't share it or change who can see it unless the user asks.
+
+In chat, give the verdict, the blocking issues in one line each, the Terraform plan's summary line with how many changes come from the PR and how many don't, and the Artifact link. Don't repeat the page.
+
+In Codex, Pi or omp, which have no Artifact tool, open the file with `xdg-open <workdir>/review.html` and give its path instead of the link.
+
+Only when the user asks, post the issues as PR comments. Posting comments is visible to the team, so confirm first.
 
 When the user is done with the review, remove the worktree: `git -C <clone> worktree remove <workdir>/worktree`.

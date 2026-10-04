@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Render a pull request review as one self-contained HTML page.
 
+The page meets the Artifact page contract (no external resources, theme
+tokens for light, dark and data-theme), so it can be published as is.
+
 Reads context.json, files.json (from prepare.py) and review.json (written by
 the reviewing agent) from the work directory. Diffs come from files.json, that
 is from git, never from the agent, so the code shown is exactly what changed.
@@ -18,9 +21,6 @@ import json
 import re
 import sys
 from pathlib import Path
-
-OUT_DIR = Path.home() / "pr-reviews"
-
 
 # --------------------------------------------------------------------------- #
 # Small Markdown subset for agent-written text
@@ -547,13 +547,18 @@ def build(ctx: dict, files: list[dict], review: dict) -> str:
 """
 
 
+# Dark theme tokens: used for the system preference and for an explicit
+# data-theme="dark", which the Artifact viewer sets.
+DARK = """--ink:#e3e9f0;--muted:#9fb0c2;--line:#2e3b4a;--paper:#17212c;--wash:#0f161e;--head:#0b1f33;--headink:#b9cde2;--blue:#8cc0f0;
+--add:#12301f;--addln:#184029;--del:#3a1d1f;--delln:#4a2427;--hunk:#1c2836;--code:#1f2a36;
+--ok:#8fd6ae;--okbg:#16301f;--warn:#f0c878;--warnbg:#352a14;--bad:#f0a0a0;--badbg:#3a1d1f;--note:#2e2a18"""
+
 CSS = """
 :root{--ink:#172438;--muted:#5a6878;--line:#d9e1e8;--paper:#fff;--wash:#f4f7fa;--head:#102b46;--headink:#d0e1f2;--blue:#124f88;
 --add:#e6f6ec;--addln:#cdebd8;--del:#fbeaea;--delln:#f3d3d3;--hunk:#eef2f8;--code:#eef2f6;
 --ok:#236345;--okbg:#e2f3ea;--warn:#845400;--warnbg:#fdf1d8;--bad:#9b2e2e;--badbg:#fbe7e7;--note:#fff8dc}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#e3e9f0;--muted:#9fb0c2;--line:#2e3b4a;--paper:#17212c;--wash:#0f161e;--head:#0b1f33;--headink:#b9cde2;--blue:#8cc0f0;
---add:#12301f;--addln:#184029;--del:#3a1d1f;--delln:#4a2427;--hunk:#1c2836;--code:#1f2a36;
---ok:#8fd6ae;--okbg:#16301f;--warn:#f0c878;--warnbg:#352a14;--bad:#f0a0a0;--badbg:#3a1d1f;--note:#2e2a18}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){DARK}}
+:root[data-theme="dark"]{DARK}
 *{box-sizing:border-box}
 body{margin:0;background:var(--wash);color:var(--ink);font:15px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
 .wrap{max-width:1180px;margin:0 auto;padding:0 16px}
@@ -622,13 +627,13 @@ svg.dg .region{fill:none;stroke:var(--line);stroke-dasharray:4 4}
 ul.mech{list-style:none;padding:0}
 .foot{margin-top:40px;font-size:.85rem}
 @media (max-width:760px){.cards{grid-template-columns:repeat(2,1fr)}header.top h1{font-size:1.35rem}}
-"""
+""".replace("DARK", DARK)
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("workdir")
-    parser.add_argument("--out", help="output HTML path (default: ~/pr-reviews/<repo>-<id>.html)")
+    parser.add_argument("--out", help="output HTML path (default: <work dir>/review.html)")
     args = parser.parse_args()
     work = Path(args.workdir).expanduser()
     ctx = json.loads((work / "context.json").read_text())
@@ -639,7 +644,7 @@ def main() -> int:
         raise SystemExit(f"error: {review_path} not found; write the review first.")
     review = json.loads(review_path.read_text())
     page = build(ctx, files, review)
-    out = Path(args.out).expanduser() if args.out else OUT_DIR / f"{ctx['repository']}-{ctx['id']}.html"
+    out = Path(args.out).expanduser() if args.out else work / "review.html"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(page)
     print(json.dumps({"html": str(out), "bytes": len(page), "warnings": getattr(build, "warnings", [])}))

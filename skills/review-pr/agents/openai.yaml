@@ -1,5 +1,5 @@
 interface:
   display_name: "Review PR"
-  short_description: "Review an Azure DevOps PR as a visual HTML page"
+  short_description: "Review an Azure DevOps PR as a visual review page"
 policy:
   allow_implicit_invocation: false
