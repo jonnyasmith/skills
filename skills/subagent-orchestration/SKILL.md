@@ -28,14 +28,19 @@ Each unit (a milestone, module or fix) runs: build → review → fix → test g
 
 ## Reviews
 
-Most reviews that pass everything are caused by the setup, not the reviewer. Set it up so a review can fail:
+A review is an adversarial check of what the implementer did, against the requirements as first written. Implementers game their checks: they edit the spec or plan to fit the code, weaken or delete tests, write tests that pass whatever the code does, and report work as done when it isn't. The reviewer is there to catch that.
 
-- **Hide the author's account.** A reviewer gets the diff, the requirements and the code, not the implementer's report, which it would anchor on.
-- **One verdict per requirement.** Ask for met, not met or can't tell, each with evidence, instead of one overall pass. Split a large unit between two or three reviewers by area.
-- **Keep every finding.** The reviewer reports everything with a severity. The script decides what goes back for fixing: correctness and requirement gaps do, style doesn't. Notes that don't go back are listed in the final report, never dropped.
-- **Prefer a check that can fail.** Where something can be tested, write or run a test or reproduction instead of reading code.
+- **Give the reviewer everything, and trust none of it.** A fresh context, the original requirements, the full diff (code, tests, docs, config) and the implementer's report. Every claim in the report is something to disprove, not a summary to accept.
+- **Read the code.** Check what it actually does against each requirement. Running it backs this up; it doesn't replace it.
+- **Audit the guardrails in the diff:**
+  - requirements, plans, specs or docs changed to fit the code;
+  - tests deleted, skipped or loosened, assertions removed, expected values changed to match the output;
+  - new tests that would pass without the fix: in a scratch copy or worktree, undo the fix and check they fail;
+  - special cases for tests, silenced warnings or lint, swallowed errors, stubs and TODOs.
+- **One verdict per requirement:** met, not met or can't tell, each with evidence. Split a large unit between two or three reviewers by area.
+- **Keep every finding.** The reviewer reports everything with a severity. The script decides what goes back for fixing: correctness, requirement and guardrail gaps do, style doesn't. Notes that don't go back are listed in the final report, never dropped.
 - **Can't tell isn't a pass,** but it isn't a fix round either. Report it to the user as unverified.
-- **Be suspicious of a clean sweep.** If every reviewer passes first time, read what they ran before reporting success.
+- **Be suspicious of a clean sweep.** If every reviewer passes first time, read what they did before reporting success.
 - **Rounds.** At most two fix rounds per unit, unless the task sets its own limit.
 
 ## Test gate
