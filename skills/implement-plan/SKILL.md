@@ -15,8 +15,8 @@ Read the plan in full first, with the Artifact tool's `read` action, including i
 
 ## Requirements
 
-- Review as the Reviews section of /subagent-orchestration says: acceptance criteria and failing checks written before the build by an agent other than the implementer, cold graders per lens that default to "not met", a refuter, a planted-defect calibration, and the script deciding what goes back for fixing. Grade correctness and the plan's acceptance criteria, not style.
-- Fix every failed or unknown criterion and re-grade. Stop after 5 rounds, or after 2 rounds in a row with no progress, and report what is still unresolved instead of looping.
+- Implementation must be reviewed by fresh agents that did not write the code, set up as the Reviews section of /subagent-orchestration says. Reviewers grade correctness and the plan's acceptance criteria, not style.
+- Fix every requirement that is not met and re-review. Stop after 5 rounds, or after 2 rounds in a row with no progress, and report what is still unresolved instead of looping.
 - Verify by running things, not by reading code: tests, build, lint, and the running app for UI changes. Show the evidence.
 - Do not change anything outside the plan's scope.
 

@@ -15,8 +15,7 @@ Set the model on every subagent explicitly. Reasoning effort is `medium` for all
 | Implementation: large or judgement-heavy | `opus` | Multi-file features, UI and visual work, unclear specs |
 | Implementation: UI changes | `opus` | Anything to do with UI work |
 | Fix after review | Same as the implementer | Escalate to `opus` on the second round |
-| Acceptance criteria and failing checks | `opus` | Never the implementer |
-| Grading, refuting and critique | `opus` | Fresh context, see Reviews |
+| Review and critique | `opus` | Fresh context |
 | Planning, specs, final branch review | `opus` | |
 | Rote work: search, lookups, test runs, gates | `haiku` | No edits |
 | Commits | `sonnet` | Uses /conventional-commits |
@@ -25,20 +24,19 @@ Escalation: when an implementer fails twice (tests still failing, or the same bl
 
 ## Unit of work
 
-Each unit (a milestone, module or fix) runs: acceptance criteria and failing checks → build → grade and refute → fix → test gate → commit. The composition can vary by task; every unit ends with the full test suite passing and one commit.
+Each unit (a milestone, module or fix) runs: build → review → fix → test gate → commit. The composition can vary by task; every unit ends with the full test suite passing and one commit.
 
 ## Reviews
 
-A review exists to stop bad work, so build it so that passing is hard. A reviewer that passes everything is broken, not reassuring.
+Most reviews that pass everything are caused by the setup, not the reviewer. Set it up so a review can fail:
 
-- **Criteria and checks first.** Before building, turn each requirement or finding into concrete acceptance criteria and, wherever possible, a check that fails now: a test, a script or a reproduction. An agent other than the implementer writes the checks and runs them to show they fail. Prefer these deterministic checks; use model judgement only for what a check can't cover.
-- **The burden of proof is on the work.** Graders start from "not met". A criterion is met only with evidence the grader produced itself (a command and its output, a test, a screenshot). Unknown counts as not met.
-- **Cold, narrow graders.** A grader sees the diff, the criteria and the code, never the implementer's report or reasoning. Give each grader one lens (correctness and races; the requirement as written; regressions in the running app; the domain risk, such as security or privacy), with a verdict per criterion, instead of one reviewer for a whole unit. Group small criteria under a lens rather than spawning an agent per line.
-- **A refuter.** Separately, one agent per unit tries to break the change by writing a new failing test or reproduction. A break that holds is a failure.
-- **The script decides, not the reviewer.** Graders return pass, fail or unknown per criterion with evidence, plus every other observation. They don't return a pass flag of their own choosing. In code: any fail or unknown goes back to the fixer; other observations are kept and listed in the final report, never dropped. Grade correctness and the stated requirements, not style.
-- **Calibrate.** In each run, give one grader a copy of the work with a known planted defect (in a worktree, never committed) and check it is caught. If it isn't, stop and report: the review can't be trusted.
-- **Read before trusting.** If every grader passes first time, check what they actually ran before reporting success.
-- **Rounds.** Fix and re-grade until every criterion passes. Stop after 5 rounds, or 2 rounds in a row with no progress, and report what is unresolved.
+- **Hide the author's account.** A reviewer gets the diff, the requirements and the code, not the implementer's report, which it would anchor on.
+- **One verdict per requirement.** Ask for met, not met or can't tell, each with evidence, instead of one overall pass. Split a large unit between two or three reviewers by area.
+- **Keep every finding.** The reviewer reports everything with a severity. The script decides what goes back for fixing: correctness and requirement gaps do, style doesn't. Notes that don't go back are listed in the final report, never dropped.
+- **Prefer a check that can fail.** Where something can be tested, write or run a test or reproduction instead of reading code.
+- **Can't tell isn't a pass,** but it isn't a fix round either. Report it to the user as unverified.
+- **Be suspicious of a clean sweep.** If every reviewer passes first time, read what they ran before reporting success.
+- **Rounds.** At most two fix rounds per unit, unless the task sets its own limit.
 
 ## Test gate
 
@@ -48,6 +46,5 @@ Before each commit, a `haiku` agent runs the full test suite and checks that no 
 
 - Point to the spec and files by path instead of pasting them.
 - State the hard constraints, the scratch directory, and what the agent must not touch.
-- Never pass an implementer's report or reasoning to a grader or refuter.
 - Ask for a short report that ends with a "Deviations" list; the commit body carries it.
 
