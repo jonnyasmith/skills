@@ -17,7 +17,7 @@ Set the model on every subagent explicitly. Reasoning effort is `medium` for all
 | Fix after review | Same as the implementer | Escalate to `opus` on the second round |
 | Review and critique | `opus` | Fresh context |
 | Planning, specs, final branch review | `opus` | |
-| Rote work: search, lookups, test runs, gates | `haiku` | No edits |
+| Rote work: search, lookups, test runs | `haiku` | No edits |
 | Commits | `sonnet` | Uses /conventional-commits |
 
 Escalation: when an implementer fails twice (tests still failing, or the same blocking finding comes back), retry with `opus`.
@@ -37,15 +37,16 @@ A review is an adversarial check of what the implementer did, against the requir
   - tests deleted, skipped or loosened, assertions removed, expected values changed to match the output;
   - new tests that would pass without the fix: in a scratch copy or worktree, undo the fix and check they fail;
   - special cases for tests, silenced warnings or lint, swallowed errors, stubs and TODOs.
-- **One verdict per requirement:** met, not met or can't tell, each with evidence. Split a large unit between two or three reviewers by area.
+- **One verdict per requirement:** met, not met or can't tell, each with evidence. Use one reviewer per unit; split a unit only when it is too big for one reviewer to read.
 - **Keep every finding.** The reviewer reports everything with a severity. The script decides what goes back for fixing: correctness, requirement and guardrail gaps do, style doesn't. Notes that don't go back are listed in the final report, never dropped.
 - **Can't tell isn't a pass,** but it isn't a fix round either. Report it to the user as unverified.
 - **Be suspicious of a clean sweep.** If every reviewer passes first time, read what they did before reporting success.
+- **Add agents only on need.** Start from one implementer and one reviewer per unit. A fixer and a re-review run only for a unit whose review found gaps, and a fixer can run the tests and commit itself.
 - **Rounds.** At most two fix rounds per unit, unless the task sets its own limit.
 
 ## Test gate
 
-Before each commit, a `haiku` agent runs the full test suite and checks that no data or constrained files changed. Give it the exact commands, including any environment setup a fresh shell needs (for example loading `JAVA_HOME`). A gate that can't run is a broken gate command: fix the command, and don't count it as a pass or a code failure. If the code fails the gate, one `opus` repair attempt, then stop and report.
+Before each commit the full test suite passes and no data or constrained files changed. The implementer or fixer runs it; check its output yourself instead of spawning a separate gate agent. Give the exact commands, including any environment setup a fresh shell needs (for example loading `JAVA_HOME`). A gate that can't run is a broken gate command: fix the command, and don't count it as a pass or a code failure.
 
 ## Prompting subagents
 
