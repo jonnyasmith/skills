@@ -7,20 +7,15 @@ description: Rules for composing subagent and workflow work — model and effort
 
 ## Models and effort
 
-Set the model on every subagent explicitly. Reasoning effort is `medium` for all subagents unless the user asked for a different level.
+Set the model and effort on every subagent explicitly. Effort is `medium` for every role unless the user asked for a different level.
 
-| Role | Model | Notes |
-|---|---|---|
-| Implementation: clear, narrow task | `sonnet` | One module, a fix, a well-specified milestone |
-| Implementation: large or judgement-heavy | `opus` | Multi-file features, UI and visual work, unclear specs |
-| Implementation: UI changes | `opus` | Anything to do with UI work |
-| Fix after review | Same as the implementer | Escalate to `opus` on the second round |
-| Review and critique | `opus` | Fresh context |
-| Planning, specs, final branch review | `opus` | |
-| Rote work: search, lookups, test runs | `haiku` | No edits |
-| Commits | `sonnet` | Uses /conventional-commits |
+| Role | Model |
+|---|---|
+| Implementation, fixes, reviews, planning, specs, final branch review | `opus` |
+| Test gates, checks, search and lookups (no edits) | `haiku` |
+| Commits (uses /conventional-commits) | `sonnet` |
 
-Escalation: when an implementer fails twice (tests still failing, or the same blocking finding comes back), retry with `opus`.
+Escalation raises effort, not the model, and applies to implementers and fixers only. The first fix round runs at `high` and the second at `xhigh`. Reviewers, gates and commits stay at `medium`.
 
 ## Unit of work
 
@@ -41,12 +36,12 @@ A review is an adversarial check of what the implementer did, against the requir
 - **Keep every finding.** The reviewer reports everything with a severity. The script decides what goes back for fixing: correctness, requirement and guardrail gaps do, style doesn't. Notes that don't go back are listed in the final report, never dropped.
 - **Can't tell isn't a pass,** but it isn't a fix round either. Report it to the user as unverified.
 - **Be suspicious of a clean sweep.** If every reviewer passes first time, read what they did before reporting success.
-- **Add agents only on need.** Start from one implementer and one reviewer per unit. A fixer and a re-review run only for a unit whose review found gaps, and a fixer can run the tests and commit itself.
+- **Add agents only on need.** Start from one implementer and one reviewer per unit. A fixer and a re-review run only for a unit whose review found gaps.
 - **Rounds.** At most two fix rounds per unit, unless the task sets its own limit.
 
 ## Test gate
 
-Before each commit the full test suite passes and no data or constrained files changed. The implementer or fixer runs it; check its output yourself instead of spawning a separate gate agent. Give the exact commands, including any environment setup a fresh shell needs (for example loading `JAVA_HOME`). A gate that can't run is a broken gate command: fix the command, and don't count it as a pass or a code failure.
+Before each commit the full test suite passes and no data or constrained files changed. A `haiku` gate agent runs it and reports the output; a `sonnet` agent commits only after the gate passes. Give the exact commands, including any environment setup a fresh shell needs (for example loading `JAVA_HOME`). A gate that can't run is a broken gate command: fix the command, and don't count it as a pass or a code failure.
 
 ## Prompting subagents
 
