@@ -18,6 +18,20 @@ Set the model and effort on every subagent explicitly, from this table, unless t
 
 Only fixers escalate. When the task sets a different round limit, its final round runs at `xhigh`.
 
+## Workflows and ad hoc agents
+
+These rules apply whether you write a Workflow script or spawn agents one at a time with the Agent tool. The orchestrator is whatever runs the units: the script while a workflow runs, otherwise you.
+
+| | Workflow script | Agent tool |
+|---|---|---|
+| Model and effort | `model` and `effort` on every `agent()` call; work out a fixer's effort from its round number | `model` and `effort` on every call |
+| Parallel units | `isolation: 'worktree'` | `isolation: "worktree"` |
+| Review verdicts and gate results | Request them with a `schema` so the script can branch on them | Ask for the same fields in the agent's report |
+| Judgement calls: the clean-sweep check, unverified and blocked reports | The script returns the evidence; you make them after the workflow returns | You make them as you go |
+
+- In a workflow, set `model` and `effort` on every `agent()` call even though the workflow reference says to omit them. This skill's table wins.
+- A workflow returns blocked units with their open findings. A blocked unit doesn't stop the other units.
+
 ## Unit of work
 
 Each unit (a milestone, module or fix) runs: build → review → fix → test gate → commit. The composition can vary by task; every unit ends either with the full test suite passing and one commit, or reported to the user as blocked.
@@ -45,7 +59,7 @@ A review is an adversarial check of what the implementer did, against the requir
 
 ## Test gate
 
-Before each commit the full test suite passes and none of the data or constrained files the task prompt lists has changed. A `haiku` gate agent runs it and returns the exact commands, their exit codes and the raw tail of the output; read those yourself instead of accepting the agent's verdict. A failing gate starts a fix round. A `sonnet` agent commits only after the gate passes. Give the exact commands, including any environment setup a fresh shell needs (for example loading `JAVA_HOME`). A gate that can't run is a broken gate command: fix the command, and don't count it as a pass or a code failure.
+Before each commit the full test suite passes and none of the data or constrained files the task prompt lists has changed. A `haiku` gate agent runs it and returns the exact commands, their exit codes and the raw tail of the output; the orchestrator decides from the exit codes and output, never from the agent's own verdict. A failing gate starts a fix round. A `sonnet` agent commits only after the gate passes. Give the exact commands, including any environment setup a fresh shell needs (for example loading `JAVA_HOME`). A gate that can't run is a broken gate command: fix the command, and don't count it as a pass or a code failure.
 
 ## Prompting subagents
 
