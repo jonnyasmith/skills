@@ -15,7 +15,7 @@ Set the model and effort on every subagent explicitly. Effort is `medium` for ev
 | Test gates, checks, search and lookups (no edits) | `haiku` |
 | Commits (uses /conventional-commits) | `sonnet` |
 
-Escalation raises effort, not the model, and applies to fixers only. The first and second fix rounds run at `medium`, the third at `high`, and the fourth and every later round at `xhigh`. Implementers, reviewers, gates and commits stay at `medium`.
+Escalation raises effort, not the model, and applies to fixers only. Fix rounds 1 and 2 run at `medium`, rounds 3 and 4 at `high`, and the final round 5 at `xhigh`. When the task sets a different round limit, its final round runs at `xhigh`. Implementers, reviewers, gates and commits stay at `medium`.
 
 ## Unit of work
 
