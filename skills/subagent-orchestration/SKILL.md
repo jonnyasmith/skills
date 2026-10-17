@@ -15,7 +15,7 @@ Set the model and effort on every subagent explicitly. Effort is `medium` for ev
 | Test gates, checks, search and lookups (no edits) | `haiku` |
 | Commits (uses /conventional-commits) | `sonnet` |
 
-Escalation raises effort, not the model, and applies to implementers and fixers only. The first fix round runs at `high` and the second at `xhigh`. Reviewers, gates and commits stay at `medium`.
+Escalation raises effort, not the model, and applies to fixers only. The first and second fix rounds run at `medium`, the third at `high`, and the fourth and every later round at `xhigh`. Implementers, reviewers, gates and commits stay at `medium`.
 
 ## Unit of work
 
@@ -37,7 +37,7 @@ A review is an adversarial check of what the implementer did, against the requir
 - **Can't tell isn't a pass,** but it isn't a fix round either. Report it to the user as unverified.
 - **Be suspicious of a clean sweep.** If every reviewer passes first time, read what they did before reporting success.
 - **Add agents only on need.** Start from one implementer and one reviewer per unit. A fixer and a re-review run only for a unit whose review found gaps.
-- **Rounds.** At most two fix rounds per unit, unless the task sets its own limit.
+- **Rounds.** Fix rounds continue, escalating as above, until the review passes or the task's own round limit is reached.
 
 ## Test gate
 
