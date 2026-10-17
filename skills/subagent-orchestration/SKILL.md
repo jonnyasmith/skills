@@ -20,7 +20,12 @@ Only fixers escalate. When the task sets a different round limit, its final roun
 
 ## Unit of work
 
-Each unit (a milestone, module or fix) runs: build → review → fix → test gate → commit. The composition can vary by task; every unit ends with the full test suite passing and one commit.
+Each unit (a milestone, module or fix) runs: build → review → fix → test gate → commit. The composition can vary by task; every unit ends either with the full test suite passing and one commit, or reported to the user as blocked.
+
+- **Add agents only on need.** Start from one implementer and one reviewer per unit. A fixer and a re-review run only for a unit whose review or gate found gaps.
+- **Fix rounds.** A finding that goes back for fixing, or a failing gate, starts a fix round: a fixer, a re-review, then the gate. Every round counts toward the limit and escalates effort as in the table. Rounds continue until the review and the gate both pass, or the round limit is reached: 5 rounds unless the task sets its own. At the limit, stop work on the unit, don't commit it, and report it to the user as blocked with the findings still open.
+- **Carry context between rounds.** Give each fixer the open findings, what earlier rounds tried, and why each attempt failed. The re-review checks every open finding and audits the fix diff for the same guardrail gaps as the first review.
+- **Parallel units.** Units that run at the same time each work in their own worktree, and their commits land one at a time.
 
 ## Reviews
 
@@ -34,15 +39,13 @@ A review is an adversarial check of what the implementer did, against the requir
   - new tests that would pass without the fix: in a scratch copy or worktree, undo the fix and check they fail;
   - special cases for tests, silenced warnings or lint, swallowed errors, stubs and TODOs.
 - **One verdict per requirement:** met, not met or can't tell, each with evidence. Use one reviewer per unit; split a unit only when it is too big for one reviewer to read.
-- **Keep every finding.** The reviewer reports everything with a severity. The script decides what goes back for fixing: correctness, requirement and guardrail gaps do, style doesn't. Notes that don't go back are listed in the final report, never dropped.
-- **Can't tell isn't a pass,** but it isn't a fix round either. Report it to the user as unverified.
-- **Be suspicious of a clean sweep.** If every reviewer passes first time, read what they did before reporting success.
-- **Add agents only on need.** Start from one implementer and one reviewer per unit. A fixer and a re-review run only for a unit whose review found gaps.
-- **Rounds.** Fix rounds continue, escalating as above, until the review passes or the round limit is reached: 5 rounds unless the task sets its own. At the limit, stop work on the unit, don't commit it, and report it to the user as blocked with the findings still open.
+- **Keep every finding.** The reviewer reports everything with a severity. The orchestrator decides what goes back for fixing: correctness, requirement and guardrail gaps do, style doesn't. Notes that don't go back are listed in the final report, never dropped.
+- **Can't tell isn't a pass,** but it isn't a fix round either, and it doesn't block the commit. Commit the unit and report the requirement to the user as unverified.
+- **Be suspicious of a clean sweep.** If every reviewer passes first time, re-check one requirement's evidence yourself before reporting success.
 
 ## Test gate
 
-Before each commit the full test suite passes and no data or constrained files changed. A `haiku` gate agent runs it and reports the output; a `sonnet` agent commits only after the gate passes. Give the exact commands, including any environment setup a fresh shell needs (for example loading `JAVA_HOME`). A gate that can't run is a broken gate command: fix the command, and don't count it as a pass or a code failure.
+Before each commit the full test suite passes and none of the data or constrained files the task prompt lists has changed. A `haiku` gate agent runs it and returns the exact commands, their exit codes and the raw tail of the output; read those yourself instead of accepting the agent's verdict. A failing gate starts a fix round. A `sonnet` agent commits only after the gate passes. Give the exact commands, including any environment setup a fresh shell needs (for example loading `JAVA_HOME`). A gate that can't run is a broken gate command: fix the command, and don't count it as a pass or a code failure.
 
 ## Prompting subagents
 
