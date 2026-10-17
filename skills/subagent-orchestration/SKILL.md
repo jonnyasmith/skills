@@ -7,15 +7,16 @@ description: Rules for composing subagent and workflow work — model and effort
 
 ## Models and effort
 
-Set the model and effort on every subagent explicitly. Effort is `medium` for every role unless the user asked for a different level.
+Set the model and effort on every subagent explicitly, from this table, unless the user asked for a different level.
 
-| Role | Model |
-|---|---|
-| Implementation, fixes, reviews, planning, specs, final branch review | `opus` |
-| Test gates, checks, search and lookups (no edits) | `haiku` |
-| Commits (uses /conventional-commits) | `sonnet` |
+| Role | Model | Effort |
+|---|---|---|
+| Implementation, reviews, planning, specs, final branch review | `opus` | `medium` |
+| Fixes | `opus` | Rounds 1–2 `medium`, rounds 3–4 `high`, final round 5 `xhigh` |
+| Test gates, checks, search and lookups (no edits) | `haiku` | `medium` |
+| Commits (uses /conventional-commits) | `sonnet` | `medium` |
 
-Escalation raises effort, not the model, and applies to fixers only. Fix rounds 1 and 2 run at `medium`, rounds 3 and 4 at `high`, and the final round 5 at `xhigh`. When the task sets a different round limit, its final round runs at `xhigh`. Implementers, reviewers, gates and commits stay at `medium`.
+Only fixers escalate. When the task sets a different round limit, its final round runs at `xhigh`.
 
 ## Unit of work
 
