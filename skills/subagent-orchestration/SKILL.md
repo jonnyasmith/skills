@@ -37,7 +37,7 @@ A review is an adversarial check of what the implementer did, against the requir
 - **Can't tell isn't a pass,** but it isn't a fix round either. Report it to the user as unverified.
 - **Be suspicious of a clean sweep.** If every reviewer passes first time, read what they did before reporting success.
 - **Add agents only on need.** Start from one implementer and one reviewer per unit. A fixer and a re-review run only for a unit whose review found gaps.
-- **Rounds.** Fix rounds continue, escalating as above, until the review passes or the task's own round limit is reached.
+- **Rounds.** Fix rounds continue, escalating as above, until the review passes or the round limit is reached: 5 rounds unless the task sets its own. At the limit, stop work on the unit, don't commit it, and report it to the user as blocked with the findings still open.
 
 ## Test gate
 
